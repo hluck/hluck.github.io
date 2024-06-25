@@ -1,0 +1,161 @@
+---
+title: 内部类的特点和使用场景
+tag: Java复习
+top: 99
+---
+
+### 1.什么是内部类
+
+先说一下什么是内部类，把类定义在其他类的内部，那么这个类我们就称作内部类。它体现了一种代码的隐藏机制和访问控制机制。内部类与所在外部类有一定的关系，往往**只有该外部类调用此内部类，所以没有必要专门用一个 Java 文件存放这个类**。
+内部类分为四种：`静态内部类`、`成员内部类`、`局部内部类`、`匿名内部类`。
+
+### 2.特点
+
+ #### 静态内部类
+
+```java
+/**
+ * @author ljh
+ * @ClassName Test.java
+ * @createTime 2022年01月18日
+ */
+public class Test {
+    private static int num1 = 1;
+    public static int num2 = 2;
+
+    public static void main(String[] args) {
+        new StaticInner().test();
+    }
+
+    public static class StaticInner{//静态内部类
+        public void test(){
+            System.out.println("StaticInner:" + (num2 + num1));
+        }
+    }
+}
+```
+
+静态内部类 (static inner class)
+
+1. 定义类时加上 static 关键字
+2. 不能和外部类名字相同
+3. 被编译成一个完全独立的. class 文件 (名称为 OuterClass$InnerClass.class 的形式)
+4. **只可以访问外部类的静态成员和静态方法，包括了私有的静态成员和方法。**
+5. 生成静态内部类对象的方式为：OuterClass.InnerClass inner = new OuterClass.InnerClass();
+
+#### 成员内部类
+
+```java
+public class Test {
+    private static int num1 = 1;
+    public static int num2 = 2;
+    private  int num3 = 1;
+    public  int num4 = 2;
+
+    public static void main(String[] args) {
+//        new Test().new Inner().test();
+        Test test = new Test();
+        Inner inner = test.new Inner();
+        inner.test();
+    }
+
+    public  class Inner{
+        public void test(){
+            System.out.println("Inner:" + (num3 + num4));
+        }
+    }
+}
+```
+
+成员内部类 (member inner class)
+
+1. 静态内部类去掉 static 关键字就是成员内部类
+2. 成员内部类和静态内部类可以类比为非静态的成员变量和静态的成员变量
+3. 成员内部类就像一个实例变量
+4. **它可以访问它的外部类的所有成员变量和方法，不管是静态的还是非静态的都可以**
+5. 在外部类里面创建成员内部类的实例：this.new Innerclass();
+6. 在外部类之外创建内部类的实例：(new Outerclass()).new Innerclass();
+
+#### 局部内部类
+
+```java
+public class Test {
+    private static int num1 = 1;
+    public static int num2 = 2;
+    private  int num3 = 1;
+    public  int num4 = 2;
+
+    public static void main(String[] args) {
+//        new Test().new Inner().test();
+        new Test().test();
+    }
+
+    public void test(){
+      class Inner{
+            public void sum(){
+                System.out.println("Inner:" + (num3 + num4 + num1 + num2));
+            }
+       }
+       new Inner().sum();
+    }
+}
+```
+
+局部内部类 local inner class
+
+1. 局部内部类定义在方法中，比方法的范围还小。是内部类中最少用到的一种类型。
+2. 像局部变量一样，不能被 public, protected, private 和 static 修饰
+3. **局部内部类在方法中定义，所以只能在方法中使用，即只能在方法当中生成局部内部类的实例并且调用其方法**
+
+#### 匿名内部类
+
+```java
+interface A{
+    void hi();
+}
+public class Test {
+    public static void main(String[] args) {
+        A a = () -> System.out.println("hi");
+        a.hi();
+    }
+}
+```
+
+```java
+class A{
+    void hi(){
+        System.out.println(1);
+    }
+}
+public class Test {
+    public static void main(String[] args) {
+        A a = new A(){ //继承了类名为A的匿名内部类
+            @Override
+            void hi() {
+                System.out.println("嗨");
+            }
+        };
+        a.hi();
+    }
+}
+```
+
+匿名内部类 anonymous inner class
+
+1. 匿名内部类就是没有名字的局部内部类，不使用关键字 class, extends, implements, 没有构造方法
+
+2. 匿名内部类隐式地继承了一个父类或者实现了一个接口
+
+3. 匿名内部类使用得比较多，通常是作为一个方法参数
+4. 生成的. class 文件中，匿名类会生成 OuterClass$1.class 文件，数字根据是第几个匿名类而类推
+
+### 3.场景
+
+场景一：当某个类除了它的外部类，不再被其他的类使用时
+
+场景二：解决一些非面向对象的语句块
+
+场景三：一些多算法场合	
+
+场景四：适当使用内部类，使得代码更加灵活和富有扩展性
+

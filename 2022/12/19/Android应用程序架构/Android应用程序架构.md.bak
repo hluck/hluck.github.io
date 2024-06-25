@@ -1,0 +1,135 @@
+---
+title: Android应用程序架构
+tag: Android权威指南2
+top: 88
+---
+
+### Android应用程序中的资源
+
+#### 资源存放在哪里
+
+​		在Android工程中有一个res目录。在该目录下有若干个子目录，例如，drawable-hdpi、layout、menu、values等，这些子目录有很多都是本地化的资源目录，也就是说这些资源目录中的资源只有Android应用程序运行在特定的环境中才会使用。例如，drawable-hdpi用于存放图像资源，该资源目录仅针对高密度的屏幕才会使用。而真正的资源目录是前面的drawable。如果不考虑本地化，可以直接在res目录中建立一个drawable目录。该目录的图像资源在其他本地化图像资源目录中没有符合要求的图像资源的情况下会使用res/drawable目录中的图像资源。
+
+​		Android系统会首先考虑某一类型的资源是否有本地化资源目录，并且本地化资源目录中是否有符合要求的资源，然后才会考虑默认的资源目录。也就是说系统会首先确认当前屏幕密度是否为高密度，如果是高密度屏幕，会首先到values-hdpi目录寻找资源文件，如果未找到，才会到values目录中继续寻找
+
+#### 资源的基本使用方法
+
+​		在编译Android应用程序的同时，系统会使用一个资源文件编译程序（aapt）对这些资源文件进行编译。这些资源主要包括图像资源（/res/drawable）、动画资源（res/anim）、布局资源（res/layout）、菜单资源（res/menu）等。Android会为每一种资源在R类中生成一个唯一的ID，这个ID是int类型的变量。
+
+R源文件：
+
+```java
+package mobile.android.show.datetime;
+
+public final class R {
+    public static final class attr {
+    }
+    public static final class drawable {
+        public static final int ic_action_search=0x7f020000;
+        public static final int ic_launcher=0x7f020001;
+    }
+    public static final class id {
+        public static final int btnShowDate=0x7f070000;
+        public static final int btnShowTime=0x7f070001;
+        public static final int menu_settings=0x7f070002;
+    }
+    public static final class layout {
+        public static final int activity_datetime=0x7f030000;
+    }
+    public static final class menu {
+        public static final int activity_datetime=0x7f060000;
+    }
+    public static final class string {
+        public static final int app_name=0x7f040000;
+        public static final int hello_world=0x7f040001;
+        public static final int menu_settings=0x7f040002;
+        public static final int title_activity_datetime=0x7f040003;
+    }
+    public static final class style {
+        public static final int AppTheme=0x7f050000;
+    }
+}
+```
+
+​		ADT为res目录中每一个子目录或标签（例如，res/values/strings.xml中的＜string＞标签）都生成了一个静态的子类，不仅如此，还为XML布局文件中的每一个指定id属性的控件生成了唯一的ID，并封装在id子类中。这就意味着在Android应用程序中可以通过ID使用这些控件。
+
+​		Android SDK中的很多方法都支持直接使用ID值来引用资源，例如，android.app.Activity.setTitle方法除了支持以字符串形式设置Activity的标题外，还支持以字符串资源ID的形式设置Activity的标签。例如，下面的代码使用字符串资源重新设置了Activity的标题。
+
+**setTitle(R.string.hello);**
+
+### Android的应用程序组件
+
+​		在Android程序中没有Main函数，取而代之的是一系列的组件，这些组件都可以单独实例化。应用程序向外共享功能一般也是通过这4种应用程序组件实现的。
+
+#### 窗口（Activity）组件
+
+​		onCreate对Activity进行初始化。通过setContentView方法可以将Activity与View绑定，setContentView方法的参数一般为XML布局文件的资源ID。实际上，**Activity上并不能自己放控件，而必须将控件放到与Activity绑定的View上。**
+
+#### 服务（Service）组件
+
+​		服务没有可视化接口，但可以在后台运行。每一个服务类必须继承自android.app.Service类。
+
+​		其他的程序还可以与服务进行通信。当与服务连接成功后，就可以利用服务中共享出来的接口与服务进行通信了。
+
+#### 广播接收者（Broadcast receivers）组件
+
+​		广播接收者组件的唯一功能就是接收广播消息。
+
+​		有很多时候，广播消息是由系统发出的，例如，时区的变化、电池的电量不足、收到短信等。除此之外，应用程序还可以发送自定义广播消息，例如，通知其他的程序数据已经下载完毕，并且这些数据已经可以使用了。
+
+​		所有的广播接收者类必须继承自android.content. BroadcastReceiver类。
+
+​		广播接收者与服务一样，都没有用户接口，但在广播接收者中可以启动一个Activity来响应广播消息。
+
+#### 内容提供者（Content Provider）组件
+
+​		内容提供者可以为其他应用程序提供数据，这些数据可以保存在文件系统中，例如，SQLite数据库或任何其他格式的文件。每一个内容提供者是一个类，这些类都需要从android.content. ContentProvider类继承。
+
+​		在ContentProvider类中定义了一系列的方法，通过这些方法可以使其他的应用程序获得和存储内容提供者所支持的数据。但在应用程序中不能直接调用这些方法，而需要通过android.content.ContentResolver类的方法来调用内容提供者类中提供的方法。
+
+### AndroidManifest.xml文件的结构
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+	<uses-permission/>
+    <permission />
+    <permission-tree />
+    <instrumentation />
+    <uses-sdk />
+    <uses-configuration />
+    <uses-feature />
+    <supports-screens />
+    <compatible-screens />
+    <supports-gl-texture />
+    <application>
+    	<activity>
+        	<intent-filter>
+            	<action />
+                <category />
+                <data />
+            </intent-filter>
+            <meta-data />
+        </activity>
+        <activity-alias>
+        	<intent-filter></intent-filter>
+            <meta-data />
+        </activity-alias>
+        <service>
+            <intent-filter></intent-filter>
+            <meta-data />
+        </service>
+        <receiver>
+            <intent-filter></intent-filter>
+            <meta-data />
+        </receiver>
+        <provider>
+        	<intent-filter></intent-filter>
+            <meta-data />
+        </provider>
+        <use-library />
+    </application>
+</manifest>
+```
+
