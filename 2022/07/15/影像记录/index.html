@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="SurfaceView表面视图​        Android的绘图机制是由UI线程在屏幕上绘图，一般情况下不允许其他线程直接做绘图操作。这个机制在处理简单页面时没什么问题，因为普通页面不会频繁且大面积地绘图，但是该机制在处理复杂多变的页面时会产生问题，比如时刻变化着的游戏界面、拍照或录像时不断变换着的预览界面就会导致UI线程资源堵塞，即界面卡死的状况。 ​        表面视图SurfaceV">
+<meta property="og:type" content="article">
+<meta property="og:title" content="影像记录">
+<meta property="og:url" content="https://hluck.github.io/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="SurfaceView表面视图​        Android的绘图机制是由UI线程在屏幕上绘图，一般情况下不允许其他线程直接做绘图操作。这个机制在处理简单页面时没什么问题，因为普通页面不会频繁且大面积地绘图，但是该机制在处理复杂多变的页面时会产生问题，比如时刻变化着的游戏界面、拍照或录像时不断变换着的预览界面就会导致UI线程资源堵塞，即界面卡死的状况。 ​        表面视图SurfaceV">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/3.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/4.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/8.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/5.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/6.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/7.png">
+<meta property="article:published_time" content="2022-07-15T06:59:58.200Z">
+<meta property="article:modified_time" content="2023-01-05T14:04:38.305Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>影像记录 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          影像记录
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-07-15 14:59:58" itemprop="dateCreated datePublished" datetime="2022-07-15T14:59:58+08:00">2022-07-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-05 22:04:38" itemprop="dateModified" datetime="2023-01-05T22:04:38+08:00">2023-01-05</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>32k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>29 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="SurfaceView表面视图"><a href="#SurfaceView表面视图" class="headerlink" title="SurfaceView表面视图"></a>SurfaceView表面视图</h2><p>​        Android的绘图机制是由UI线程在屏幕上绘图，一般情况下不允许其他线程直接做绘图操作。这个机制在处理简单页面时没什么问题，因为普通页面不会频繁且大面积地绘图，但是该机制在处理复杂多变的页面时会产生问题，比如时刻变化着的游戏界面、拍照或录像时不断变换着的预览界面就会导致UI线程资源堵塞，即界面卡死的状况。</p>
+<p>​        <strong>表面视图SurfaceView是Android用来解决子线程绘图的特殊视图</strong>，拥有独立的绘图表面，即不与其宿主页面共享同一个绘图表面。由于拥有独立的绘图表面，因此表面视图的界面能够在一个独立线程中进行绘制，这个子线程为渲染线程。因为渲染线程不占用主线程资源，所以一方面可以实现复杂而高效的UI刷新，另一方面及时响应用户的输入事件。由于表面视图具备以上特性，因此可用于拍照和录像的预览界面，也可用于游戏的实时界面。</p>
+<p>​        因为表面视图不在UI主线程绘图，无论是onDraw方法还是dispatchDraw方法都没有进行绘图操作，所以表面视图必然要通过其他途径绘图，这个途径便是内部类表面持有者SurfaceHolder<strong>外部调用SurfaceView对象的getHolder方法获得SurfaceHolder对象，然后进行预览界面的相关绘图操作。</strong></p>
+<p>下面是SurfaceHolder的常用方法。</p>
+<ul>
+<li><p>lockCanvas：锁定并获取绘图表面的画布。</p>
+</li>
+<li><p>unlockCanvasAndPost：解锁并刷新绘图表面的画布。</p>
+</li>
+<li><p>addCallback：添加绘图表面的回调接口SurfaceHolder.Callback。回调接口有以下3个方法。</p>
+<ol>
+<li>surfaceCreated：在绘图表面创建后触发，可在此打开相机。</li>
+<li>surfaceChanged：在绘图表面变更后触发。</li>
+<li>surfaceDestroyed：在绘图表面销毁后触发。</li>
+</ol>
+</li>
+<li><p>removeCallback：移除绘图表面的回调接口。</p>
+</li>
+<li><p>isCreating：判断绘图表面是否有效。如果在别处操作SurfaceView，就要判断当前绘图表面是否有效。</p>
+</li>
+<li><p>getSurface：获取绘图表面的对象，即预览界面。</p>
+</li>
+<li><p>setFixedSize：设置预览界面的尺寸。</p>
+</li>
+<li><p>setFormat：设置绘图表面的格式。</p>
+</li>
+</ul>
+<p>绘图格式的取值说明见表9-1。</p>
+<a id="more"></a>
+<p><img src="/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/1.png" alt></p>
+<h2 id="TextureView纹理视图"><a href="#TextureView纹理视图" class="headerlink" title="TextureView纹理视图"></a>TextureView纹理视图</h2><p>​        表面视图SurfaceView在一般情况下足够使用了，但是有一些限制。因为表面视图不是通过onDraw方法和dispatchDraw方法进行绘图，所以无法使用View的基本视图方法。例如，各种视图变化方法均无法奏效，包括透明度变化方法setAlpha、平移方法setTranslation、缩放方法setScale、旋转方法setRotation等，甚至连最基础的背景图设置方法setBackground都失效了。</p>
+<p>​        为了解决表面视图的不足之处，Android在4.0之后引入了纹理视图TextureView。与表面视图相比，<strong>纹理视图并没有创建一个单独的绘图表面用来绘制，可以像普通视图一样执行变换操作，也可以正常设置背景图。</strong></p>
+<p>下面是TextureView的常用方法。</p>
+<ul>
+<li><p>lockCanvas：锁定并获取画布。</p>
+</li>
+<li><p>unlockCanvasAndPost：解锁并刷新画布。</p>
+</li>
+<li><p>setSurfaceTextureListener：设置表面纹理的监听器。该方法相当于SurfaceHolder的addCallback方法，用来监控表面纹理的状态变化事件。方法参数为SurfaceTextureListener监听器对象，需重写以下4个方法。</p>
+<ol>
+<li>onSurfaceTextureAvailable：在表面纹理可用时触发，可在此进行打开相机等操作。</li>
+<li>onSurfaceTextureSizeChanged：在表面纹理尺寸变化时触发。</li>
+<li>onSurfaceTextureDestroyed：在表面纹理销毁时触发。</li>
+<li>onSurfaceTextureUpdated：在表面纹理更新时触发。</li>
+</ol>
+</li>
+<li><p>isAvailable：判断表面纹理是否可用。</p>
+</li>
+<li><p>getSurfaceTexture：获取表面纹理。</p>
+</li>
+</ul>
+<h2 id="二代相机"><a href="#二代相机" class="headerlink" title="二代相机"></a>二代相机</h2><h3 id="使用Camera2拍照"><a href="#使用Camera2拍照" class="headerlink" title="使用Camera2拍照"></a>使用Camera2拍照</h3><p>​        如同纹理视图是表面视图的升级版那样，Android在5.0之后推出了Camera的升级版——Camera 2。按照Android的官方说明，Camera 2支持以下5点新特性：</p>
+<ol>
+<li>支持每秒30帧的全高清连拍。</li>
+<li>支持在每帧之间使用不同的设置。</li>
+<li>支持原生格式的图像输出。</li>
+<li>支持零延迟快门和电影速拍。</li>
+<li>支持相机在其他方面的手动控制，比如设置噪音消除的级别。</li>
+</ol>
+<p>​            Camera2在架构上做了大幅改造，原先的Camera类被拆分为多个管理类，主要有<strong>相机管理器CameraManager</strong>、<strong>相机设备CameraDevice</strong>、<strong>相机拍照会话CameraCaptureSession</strong>、<strong>图像读取器ImageReader</strong>。</p>
+<h4 id="相机管理器CameraManager"><a href="#相机管理器CameraManager" class="headerlink" title="相机管理器CameraManager"></a>相机管理器CameraManager</h4><p>​        相机管理器用于获取可用摄像头列表、打开摄像头等，对象从系统服务CAMERA_SERVICE获取。常用方法说明如下。</p>
+<ul>
+<li>getCameraIdList：获取相机列表。通常返回两条记录，一条是后置摄像头，另一条是前置摄像头。</li>
+<li>getCameraCharacteristics：获取相机的参数信息。包括相机的支持级别、照片的尺寸等。</li>
+</ul>
+<p>​       先检查相机的支持级别，如果返回值为INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY，就不建议在App中使用Camera2的相关技术。检查相机支持级别的代码如下：</p>
+<p><img src="/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/2.png" alt></p>
+<ul>
+<li>openCamera：打开指定摄像头，第一个参数为指定摄像头的id，第二个参数为设备状态监听器，该监听器需实现接口CameraDevice.StateCallback的onOpened方法（方法内部再调用CameraDevice对象的createCaptureRequest方法）。</li>
+<li>setTorchMode：在不打开摄像头的情况下，开启或关闭闪光灯。为true表示开启闪光灯，为false表示关闭闪光灯。</li>
+</ul>
+<h4 id="相机设备CameraDevice"><a href="#相机设备CameraDevice" class="headerlink" title="相机设备CameraDevice"></a>相机设备CameraDevice</h4><p>​        相机设备用于创建拍照请求、添加预览界面、创建拍照会话等。常用方法说明如下。</p>
+<ul>
+<li>createCaptureRequest：创建拍照请求，第二个参数为会话状态的监听器，该监听器需实现会话状态回调接口CameraCaptureSession.StateCallback的onConfigured方法（方法内部再调用CameraCaptureSession对象的setRepeatingRequest方法，将预览影像输出到屏幕）。createCaptureRequest方法返回一个CaptureRequest的预览对象。</li>
+<li>close：关闭相机。</li>
+</ul>
+<h4 id="相机拍照会话CameraCaptureSession"><a href="#相机拍照会话CameraCaptureSession" class="headerlink" title="相机拍照会话CameraCaptureSession"></a>相机拍照会话CameraCaptureSession</h4><p>​        相机拍照会话用于设置单拍会话（每次只拍一张照片）、连拍会话（自动连续拍摄多张照片）等。常用方法说明如下。</p>
+<ul>
+<li>getDevice：获得该会话的相机设备对象。</li>
+<li>capture：拍照并输出到指定目标。输出目标为CaptureRequest对象时，表示显示在屏幕上；输出目标为ImageReader对象时，表示要保存照片。</li>
+<li>setRepeatingRequest：设置连拍请求并输出到指定目标。输出目标为CaptureRequest对象时，表示显示在屏幕上；输出目标为ImageReader对象时，表示要保存照片。</li>
+<li>stopRepeating：停止连拍。</li>
+</ul>
+<h4 id="图像读取器ImageReader"><a href="#图像读取器ImageReader" class="headerlink" title="图像读取器ImageReader"></a>图像读取器ImageReader</h4><p>​        图像读取器用于获取并保存照片信息，一旦有图像数据生成，立刻触发onImageAvailable方法。常用方法说明如下。</p>
+<ul>
+<li><p>getSurface：获得图像读取的表面对象。</p>
+</li>
+<li><p>setOnImageAvailableListener：设置图像数据的可用监听器。该监听器需实现接口ImageReader.OnImageAvailableListener的onImageAvailable方法。</p>
+<pre><code>这几个相机类之间的调用流程比原来的Camera类要复杂许多，大致的处理流程为：**TextureView→SurfaceTextureListener→CameraManager→StateCallback→CameraDevice→CaptureRequest.Builder→CameraCaptureSession→ImageReader→OnImageAvailableListener→Bitmap**。</code></pre></li>
+</ul>
+<h3 id="使用Camera2录像"><a href="#使用Camera2录像" class="headerlink" title="使用Camera2录像"></a>使用Camera2录像</h3><h2 id="ExoPlayer"><a href="#ExoPlayer" class="headerlink" title="ExoPlayer"></a>ExoPlayer</h2><p>​    Android 在新一代的 Jetpack 库中推出了新型播放器 ExoPlayer，它的音视频内核依赖于原生的 MediaCodec 接口，不但能够播放 MediaPlayer 所支持的任意格式的视频，而且具备以下几点优异特性：</p>
+<ol>
+<li>对于网络视频，允许一边下载一边播放。</li>
+<li>支持三大视频直播协议，包括自适应流（DASH）、直播流（HLS）、平滑流（Smooth Streaming）。</li>
+<li>支持播放采取 Widevine 技术加密的网络视频。</li>
+<li>只要提供了对应的字幕文件（srt 格式），就支持在播放视频时同步显示字幕。</li>
+<li>支持合并、串联、循环等多种播放方式。<br><a href="https://exoplayer.dev/doc/reference/" target="_blank" rel="noopener">ExoPlayer文档</a><br>官方源码地址：<a href="https://github.com/google/ExoPlayer" target="_blank" rel="noopener">https://github.com/google/ExoPlayer</a><br>因为 ExoPlayer 来自 Jetpack 库，所以使用之前要先修改 build.gradle，添加下面一行依赖配置：</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation 'com.google.android.exoplayer:exoplayer:2.14.1'</span><br></pre></td></tr></table></figure>
+
+<p>ExoPlayer 的播放界面采用播放器视图 PlayerView，它的自定义属性分别说明如下：</p>
+<ul>
+<li>fastforward_increment：每次快进的时长，单位为毫秒。</li>
+<li>rewind_increment：每次倒带的时长，单位为毫秒。</li>
+<li>show_buffering：缓冲进度的显示模式，值为 never 时表示从不显示，值为 when_playing 时表示播放时才显示，值为 always 时表示一直显示。</li>
+<li>show_timeout：控制栏的消失间隔，单位为毫秒。</li>
+<li>use_controller：是否显示控制栏，值为 true 时表示显示控制栏，值为 false 时表示不显示控制栏。</li>
+</ul>
+<p>xml:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".ui.ExoPlayerActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/btn_play_local"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"播放本地视频"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"15sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/btn_play_network"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"播放网络视频"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"15sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/btn_play_subtitle"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"播放字幕视频"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"15sp"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!-- use_controller是否显示控制栏，show_timeout控制栏的消失间隔，fastforward_increment每次快进的时长，rewind_increment每次快退的时长 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">com.google.android.exoplayer2.ui.PlayerView</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/pv_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">app:fastforward_increment</span>=<span class="string">"30000"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">app:rewind_increment</span>=<span class="string">"30000"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">app:show_buffering</span>=<span class="string">"always"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">app:show_timeout</span>=<span class="string">"5000"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">app:use_controller</span>=<span class="string">"true"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"40dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:paddingLeft</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:orientation</span>=<span class="string">"horizontal"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"数字中国迎宾曲："</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Spinner</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/sp_welcome"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"left|center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:spinnerMode</span>=<span class="string">"dialog"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>activity:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExoPlayerActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityExoPlayerBinding</span>&gt;</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">companion</span> <span class="keyword">object</span>&#123;</span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">val</span> TAG = <span class="string">"ExoPlayerActivity"</span></span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">val</span> URL_HTTPS = <span class="string">"https://storage.googleapis.com/exoplayer-test-media-0/BigBuckBunny_320x180.mp4"</span></span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">val</span> URL_VIDEO = <span class="string">"http://82.157.163.217/海洋世界.mp4"</span></span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">val</span> URL_SUBTITLE = <span class="string">"http://82.157.163.217/海洋世界.srt"</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 只在视频库挑选图片的请求码</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> chooseCode = <span class="number">3</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> mPlayer:SimpleExoPlayer</span><br><span class="line">    <span class="comment">// 当前的播放位置</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mCurrentPosition = <span class="number">0L</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> welcomeArray = arrayOf(<span class="string">"首届（2018年）"</span>, <span class="string">"第二届（2019年）"</span>, <span class="string">"第三届（2020年）"</span>, <span class="string">"第四届（2021年）"</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> urlArray = arrayOf(</span><br><span class="line">        <span class="string">"https://ptgl.fujian.gov.cn:8088/masvod/public/2018/04/17/20180417_162d3639356_r38_1200k.mp4"</span>,</span><br><span class="line">        <span class="string">"https://ptgl.fujian.gov.cn:8088/masvod/public/2019/04/15/20190415_16a1ef11c24_r38_1200k.mp4"</span>,</span><br><span class="line">        <span class="string">"https://ptgl.fujian.gov.cn:8088/masvod/public/2020/09/26/20200926_174c8f9e4b6_r38_1200k.mp4"</span>,</span><br><span class="line">        <span class="string">"https://ptgl.fujian.gov.cn:8088/masvod/public/2021/03/19/20210319_178498bcae9_r38.mp4"</span>,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityExoPlayerBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="comment">//播放本地视频按钮逻辑</span></span><br><span class="line">        btnPlayLocal.setOnClickListener &#123;</span><br><span class="line">            <span class="comment">// ACTION_GET_CONTENT只可选择近期的视频</span></span><br><span class="line">            <span class="keyword">val</span> intent = Intent(Intent.ACTION_GET_CONTENT)</span><br><span class="line">            <span class="comment">// ACTION_PICK可选择所有视频</span></span><br><span class="line">            <span class="comment">//Intent intent = new Intent(Intent.ACTION_PICK);</span></span><br><span class="line">            <span class="comment">// 类型为视频</span></span><br><span class="line">            intent.type = <span class="string">"video/*"</span></span><br><span class="line">            <span class="comment">// 打开系统视频库</span></span><br><span class="line">            startActivityForResult(intent,chooseCode)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//播放网络视频按钮逻辑</span></span><br><span class="line">        btnPlayNetwork.setOnClickListener&#123;</span><br><span class="line">            playVideo(Uri.parse(URL_HTTPS))</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//播放带字幕的视频按钮逻辑</span></span><br><span class="line">        btnPlaySubtitle.setOnClickListener &#123;</span><br><span class="line">            <span class="keyword">val</span> uri = Uri.parse(URL_VIDEO)</span><br><span class="line">            <span class="keyword">val</span> subtitleUri = Uri.parse(URL_SUBTITLE)</span><br><span class="line">            playVideoWithSubtitle(uri,subtitleUri)</span><br><span class="line">        &#125;</span><br><span class="line">        mPlayer = SimpleExoPlayer.Builder(<span class="keyword">this</span><span class="symbol">@ExoPlayerActivity</span>).build()</span><br><span class="line">        <span class="comment">// 设置播放器视图的播放器对象</span></span><br><span class="line">        pvContent.player = mPlayer</span><br><span class="line">        <span class="comment">// 初始化迎宾曲下拉框</span></span><br><span class="line">        initWelcomeSpinner()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化迎宾曲下拉框</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">initWelcomeSpinner</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> welcomeAdapter = ArrayAdapter&lt;String&gt;(<span class="keyword">this</span>,R.layout.item_select,welcomeArray)</span><br><span class="line">        mBinding.spWelcome.prompt = <span class="string">"请选择要播放的迎宾曲"</span></span><br><span class="line">        mBinding.spWelcome.adapter = welcomeAdapter</span><br><span class="line">        mBinding.spWelcome.onItemSelectedListener = WelcomeSelectedListener()</span><br><span class="line">        mBinding.spWelcome.setSelection(<span class="number">3</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 播放视频</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">playVideo</span><span class="params">(uri:<span class="type">Uri</span>)</span></span>&#123;</span><br><span class="line">        <span class="comment">// 创建指定视频格式的工厂对象</span></span><br><span class="line">        <span class="keyword">val</span> factory:DataSource.Factory = <span class="keyword">if</span> (uri.toString().startsWith(<span class="string">"http"</span>))&#123; <span class="comment">// HTTP在线视频</span></span><br><span class="line">            DefaultHttpDataSource.Factory()</span><br><span class="line">                .setUserAgent(Util.getUserAgent(<span class="keyword">this</span>,getString(R.string.app_name)))</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123; <span class="comment">// 本地存储卡视频</span></span><br><span class="line">            DefaultDataSourceFactory(<span class="keyword">this</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 创建指定地址的媒体对象</span></span><br><span class="line">        <span class="keyword">val</span> videoItem = MediaItem.Builder().setUri(uri).build()</span><br><span class="line">        <span class="comment">// 基于工厂对象和媒体对象创建媒体来源</span></span><br><span class="line">        <span class="keyword">val</span> mediaSource = ProgressiveMediaSource.Factory(factory)</span><br><span class="line">            .createMediaSource(videoItem)</span><br><span class="line">        <span class="comment">// 设置播放器的媒体来源</span></span><br><span class="line">        mPlayer.setMediaSource(mediaSource)</span><br><span class="line">        <span class="comment">// 给播放器添加事件监听器</span></span><br><span class="line">        mPlayer.addListener(<span class="keyword">object</span> :Player.Listener&#123;</span><br><span class="line">            <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onPlaybackStateChanged</span><span class="params">(state: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">                <span class="keyword">when</span>(state)&#123;</span><br><span class="line">                    Player.STATE_BUFFERING -&gt; android.util.Log.d(TAG,<span class="string">"视频正在缓冲"</span>)</span><br><span class="line">                    Player.STATE_READY -&gt; android.util.Log.d(TAG,<span class="string">"视频准备就绪"</span>)</span><br><span class="line">                    Player.STATE_ENDED -&gt; android.util.Log.d(TAG,<span class="string">"视频播放完毕"</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        mPlayer.prepare()</span><br><span class="line">        mPlayer.play()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 播放带字幕的视频</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">playVideoWithSubtitle</span><span class="params">(uir:<span class="type">Uri</span>,subtitleUri:<span class="type">Uri</span>)</span></span>&#123;</span><br><span class="line">        android.util.Log.d(TAG,<span class="string">"getLanguage = <span class="subst">$&#123;Locale.getDefault().language&#125;</span>"</span>)</span><br><span class="line">        <span class="comment">// 创建指定视频格式的工厂对象</span></span><br><span class="line">        <span class="keyword">val</span> factory:DataSource.Factory = DefaultHttpDataSource.Factory()</span><br><span class="line">            .setUserAgent(Util.getUserAgent(<span class="keyword">this</span>,getString(R.string.app_name)))</span><br><span class="line">        <span class="comment">// 创建指定地址的媒体对象</span></span><br><span class="line">        <span class="keyword">val</span> mediaItem = MediaItem.Builder().setUri(uir).build()</span><br><span class="line">        <span class="comment">// 基于工厂对象和媒体对象创建媒体来源</span></span><br><span class="line">        <span class="keyword">val</span> mediaSource = ProgressiveMediaSource.Factory(factory)</span><br><span class="line">            .createMediaSource(mediaItem)</span><br><span class="line">        <span class="comment">// 语言要填null，否则中文会乱码。selectionFlags要填Format.NO_VALUE，否则看不到字幕</span></span><br><span class="line">        <span class="comment">// 创建指定地址的字幕对象。ExoPlayer只支持srt字幕，不支持ass字幕</span></span><br><span class="line">        <span class="keyword">val</span> subtitleItem = MediaItem.Subtitle(subtitleUri,MimeTypes.APPLICATION_SUBRIP,<span class="literal">null</span>,Format.NO_VALUE)</span><br><span class="line">        <span class="comment">// 基于工厂对象和字幕对象创建字幕来源</span></span><br><span class="line">        <span class="keyword">val</span> subtitleSource = SingleSampleMediaSource.Factory(factory)</span><br><span class="line">            .createMediaSource(subtitleItem, C.TIME_UNSET)</span><br><span class="line">        <span class="comment">// 合并媒体来源与字幕来源</span></span><br><span class="line">        <span class="keyword">val</span> mergingMediaSource = MergingMediaSource(mediaSource,subtitleSource)</span><br><span class="line">        <span class="comment">// 设置播放器的媒体来源</span></span><br><span class="line">        mPlayer.setMediaSource(mergingMediaSource)</span><br><span class="line">        mPlayer.prepare()</span><br><span class="line">        mPlayer.play()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onPause</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onPause()</span><br><span class="line">        <span class="comment">// 暂停页面时保存当前的播放进度</span></span><br><span class="line">        <span class="keyword">if</span> (mPlayer.isPlaying)&#123;</span><br><span class="line">            <span class="comment">//获得播放器当前的播放位置</span></span><br><span class="line">            mCurrentPosition = mPlayer.currentPosition</span><br><span class="line">            <span class="comment">//播放器暂停播放</span></span><br><span class="line">            mPlayer.pause()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onResume</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onResume()</span><br><span class="line">        <span class="comment">// 恢复页面时立即从上次断点开始播放视频</span></span><br><span class="line">        <span class="keyword">if</span> (mCurrentPosition &gt; <span class="number">0</span> &amp;&amp; !mPlayer.isPlaying)&#123;</span><br><span class="line">            <span class="comment">//找到指定位置</span></span><br><span class="line">            mPlayer.seekTo(mCurrentPosition)</span><br><span class="line">        &#125;</span><br><span class="line">        mPlayer.play()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDestroy</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onDestroy()</span><br><span class="line">        mPlayer.release()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onActivityResult</span><span class="params">(requestCode: <span class="type">Int</span>, resultCode: <span class="type">Int</span>, <span class="keyword">data</span>: <span class="type">Intent</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onActivityResult(requestCode, resultCode, <span class="keyword">data</span>)</span><br><span class="line">        <span class="keyword">if</span> (resultCode == RESULT_OK &amp;&amp; requestCode == chooseCode)&#123;</span><br><span class="line">            <span class="keyword">if</span>(intent.<span class="keyword">data</span> != <span class="literal">null</span>)&#123;</span><br><span class="line">                <span class="comment">// 播放视频</span></span><br><span class="line">                playVideo(intent.<span class="keyword">data</span>!!)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">WelcomeSelectedListener</span>:<span class="type">AdapterView.OnItemSelectedListener&#123;</span></span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?, view: <span class="type">View</span>?, position: <span class="type">Int</span>, id: <span class="type">Long</span>)</span></span> &#123;</span><br><span class="line">            playVideo(Uri.parse(urlArray[position]))</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onNothingSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?)</span></span> &#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/3.png" alt></p>
+<p>​        回到活动页面的代码，再调用播放器视图的 setPlayer 方法，设置已经创建好的播放器对象，然后才能让播放器进行播控操作。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置播放器视图的播放器对象</span></span><br><span class="line">pvContent.player = mPlayer</span><br></pre></td></tr></table></figure>
+
+<p>以上代码把 PlayerView 与 ExoPlayer 关联起来，后续的视频播放过程分成以下几个步骤：</p>
+<ol>
+<li>创建指定视频格式的工厂对象。如果待播放视频来自网络，则使用 DefaultHttpDataSourceFactory 类构建格式工厂；如果待播放视频来自本地，则使用 DefaultDataSourceFactory 类构建格式工厂。</li>
+<li>创建指定 URI 地址的媒体对象 MediaItem。</li>
+<li>基于格式工厂和媒体对象创建媒体来源 MediaSource。</li>
+<li>设置播放器对象的媒体来源以及其他的播控操作。</li>
+</ol>
+<p>其中第 4 步的操作都与 ExoPlayer 有关，它的常见方法分别说明如下：</p>
+<ul>
+<li><strong>setMediaSource</strong>：设置播放器的媒体来源。</li>
+<li><strong>addListener</strong>：给播放器添加事件监听器。需要重写监听器接口 Player.EventListener 的 onPlaybackStateChanged 方法，根据状态参数判断事件类型。(取值说明见下表 )</li>
+</ul>
+<p><img src="/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/4.png" alt></p>
+<ul>
+<li><strong>prepare</strong>：播放器准备就绪。</li>
+<li><strong>play</strong>：播放器开始播放。</li>
+<li><strong>seekTo</strong>：拖动当前进度到指定位置。</li>
+<li><strong>isPlaying</strong>：判断播放器是否正在播放。</li>
+<li><strong>getCurrentPosition</strong>：获得播放器当前的播放位置。</li>
+<li><strong>pause</strong>：播放器暂停播放。</li>
+<li><strong>stop</strong>：播放器停止播放。</li>
+<li><strong>release</strong>：释放播放器资源。</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 播放视频</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">playVideo</span><span class="params">(uri:<span class="type">Uri</span>)</span></span>&#123;</span><br><span class="line">    <span class="comment">// 创建指定视频格式的工厂对象</span></span><br><span class="line">    <span class="keyword">val</span> factory:DataSource.Factory = <span class="keyword">if</span> (uri.toString().startsWith(<span class="string">"http"</span>))&#123; <span class="comment">// HTTP在线视频</span></span><br><span class="line">        DefaultHttpDataSource.Factory()</span><br><span class="line">        .setUserAgent(Util.getUserAgent(<span class="keyword">this</span>,getString(R.string.app_name)))</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123; <span class="comment">// 本地存储卡视频</span></span><br><span class="line">        DefaultDataSourceFactory(<span class="keyword">this</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 创建指定地址的媒体对象</span></span><br><span class="line">    <span class="keyword">val</span> videoItem = MediaItem.Builder().setUri(uri).build()</span><br><span class="line">    <span class="comment">// 基于工厂对象和媒体对象创建媒体来源</span></span><br><span class="line">    <span class="keyword">val</span> mediaSource = ProgressiveMediaSource.Factory(factory)</span><br><span class="line">    .createMediaSource(videoItem)</span><br><span class="line">    <span class="comment">// 设置播放器的媒体来源</span></span><br><span class="line">    mPlayer.setMediaSource(mediaSource)</span><br><span class="line">    <span class="comment">// 给播放器添加事件监听器</span></span><br><span class="line">    mPlayer.addListener(<span class="keyword">object</span> :Player.Listener&#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onPlaybackStateChanged</span><span class="params">(state: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">            <span class="keyword">when</span>(state)&#123;</span><br><span class="line">                Player.STATE_BUFFERING -&gt; android.util.Log.d(TAG,<span class="string">"视频正在缓冲"</span>)</span><br><span class="line">                Player.STATE_READY -&gt; android.util.Log.d(TAG,<span class="string">"视频准备就绪"</span>)</span><br><span class="line">                Player.STATE_ENDED -&gt; android.util.Log.d(TAG,<span class="string">"视频播放完毕"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    mPlayer.prepare()</span><br><span class="line">    mPlayer.play()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="截取视频的某帧"><a href="#截取视频的某帧" class="headerlink" title="截取视频的某帧"></a>截取视频的某帧</h2><h3 id="截取视频的某帧-1"><a href="#截取视频的某帧-1" class="headerlink" title="截取视频的某帧"></a>截取视频的某帧</h3><p>​        不管是系统相册还是视频网站，在某个视频尚未播放的时候都会显示一张预览图片，该图片通常是视频的某个画面。Android 从视频中截取某帧画面，用到了媒体检索工具 <strong>MediaMetadataRetriever</strong>，它的常见方法分别说明如下：</p>
+<ul>
+<li>setDataSource：将指定 URI 设置为媒体数据源。</li>
+<li>extractMetadata：获得视频的播放时长。</li>
+<li>getFrameAtIndex：获取指定索引的帧图。</li>
+<li>getFrameAtTime：获取指定时间的帧图，时间单位为微秒。</li>
+<li>release：释放媒体资源。</li>
+</ul>
+<p>截取一张图片，这里的媒体资源需要是本地的资源，否则报错：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取视频文件中的某帧图片。pos为毫秒时间</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Bitmap <span class="title">getOneFrame</span><span class="params">(Context ctx, Uri uri, <span class="keyword">int</span> pos)</span> </span>&#123;</span><br><span class="line">        MediaMetadataRetriever retriever = <span class="keyword">new</span> MediaMetadataRetriever();</span><br><span class="line">        retriever.setDataSource(ctx, uri); <span class="comment">// 将指定Uri设置为媒体数据源</span></span><br><span class="line"><span class="comment">//        // 获得视频的播放时长</span></span><br><span class="line"><span class="comment">//        String duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);</span></span><br><span class="line"><span class="comment">//        Log.d(TAG, "duration="+duration);</span></span><br><span class="line">        <span class="comment">// 获取指定时间的帧图，注意getFrameAtTime方法的时间单位是微秒</span></span><br><span class="line">        Bitmap bitmap = retriever.getFrameAtTime((<span class="keyword">long</span>)(pos * <span class="number">1000</span>));</span><br><span class="line">        Log.d(TAG, <span class="string">"getWidth="</span>+bitmap.getWidth()+<span class="string">", getHeight="</span>+bitmap.getHeight());;</span><br><span class="line">        <span class="keyword">return</span> bitmap;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>截取多张图片：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取视频文件中的图片帧列表。beginPos为毫秒时间，count为待获取的帧数量</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;String&gt; <span class="title">getFrameList</span><span class="params">(Context ctx, Uri uri, <span class="keyword">int</span> beginPos, <span class="keyword">int</span> count)</span> </span>&#123;</span><br><span class="line">        String videoPath = uri.toString();</span><br><span class="line">        String videoName = videoPath.substring(videoPath.lastIndexOf(<span class="string">"/"</span>)+<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span> (videoName.contains(<span class="string">"."</span>)) &#123;</span><br><span class="line">            videoName = videoName.substring(<span class="number">0</span>, videoName.lastIndexOf(<span class="string">"."</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        Log.d(TAG, <span class="string">"videoName="</span>+videoName);</span><br><span class="line">        List&lt;String&gt; pathList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        MediaMetadataRetriever retriever = <span class="keyword">new</span> MediaMetadataRetriever();</span><br><span class="line">        retriever.setDataSource(ctx, uri); <span class="comment">// 将指定Uri设置为媒体数据源</span></span><br><span class="line">        <span class="comment">// 获得视频的播放时长</span></span><br><span class="line">        String duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);</span><br><span class="line">        Log.d(TAG, <span class="string">"duration="</span>+duration);</span><br><span class="line">        <span class="keyword">int</span> dura_int = Integer.parseInt(duration)/<span class="number">1000</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;dura_int-beginPos/<span class="number">1000</span> &amp;&amp; i&lt;count; i++) &#123; <span class="comment">// 最多只取前多少帧</span></span><br><span class="line">            String path = String.format(<span class="string">"%s/%s_%d.jpg"</span>,</span><br><span class="line">                    ctx.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString(), videoName, i);</span><br><span class="line">            <span class="keyword">if</span> (beginPos!=<span class="number">0</span> || !<span class="keyword">new</span> File(path).exists()) &#123;</span><br><span class="line">                <span class="comment">// 获取指定时间的帧图，注意getFrameAtTime方法的时间单位是微秒</span></span><br><span class="line">                Bitmap frame = retriever.getFrameAtTime(beginPos*<span class="number">1000</span> + i*<span class="number">1000</span>*<span class="number">1000</span>);</span><br><span class="line">                <span class="keyword">int</span> ratio = frame.getWidth()/<span class="number">500</span>+<span class="number">1</span>;</span><br><span class="line">                Bitmap small = BitmapUtil.getScaleBitmap(frame, <span class="number">1.0</span>/ratio);</span><br><span class="line">                BitmapUtil.saveImage(path, small); <span class="comment">// 把位图保存为图片文件</span></span><br><span class="line">            &#125;</span><br><span class="line">            pathList.add(path);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> pathList;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>完整工具类代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SuppressLint</span>(<span class="string">"DefaultLocale"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MediaUtil</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> String TAG = <span class="string">"MediaUtil"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 格式化播放时长（mm:ss）</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">formatDuration</span><span class="params">(<span class="keyword">int</span> milliseconds)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> seconds = milliseconds / <span class="number">1000</span>;</span><br><span class="line">        <span class="keyword">int</span> hour = seconds / <span class="number">3600</span>;</span><br><span class="line">        <span class="keyword">int</span> minute = seconds / <span class="number">60</span>;</span><br><span class="line">        <span class="keyword">int</span> second = seconds % <span class="number">60</span>;</span><br><span class="line">        String str;</span><br><span class="line">        <span class="keyword">if</span> (hour &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            str = String.format(<span class="string">"%02d:%02d:%02d"</span>, hour, minute, second);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            str = String.format(<span class="string">"%02d:%02d"</span>, minute, second);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> str;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获得音视频文件的缓存路径</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getRecordFilePath</span><span class="params">(Context context, String dir_name, String extend_name)</span> </span>&#123;</span><br><span class="line">        String path = <span class="string">""</span>;</span><br><span class="line">        File recordDir = <span class="keyword">new</span> File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + <span class="string">"/"</span> + dir_name + <span class="string">"/"</span>);</span><br><span class="line">        <span class="keyword">if</span> (!recordDir.exists()) &#123;</span><br><span class="line">            recordDir.mkdirs();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            File recordFile = File.createTempFile(DateUtil.getNowDateTime(), extend_name, recordDir);</span><br><span class="line">            path = recordFile.getAbsolutePath();</span><br><span class="line">            Log.d(TAG, <span class="string">"dir_name="</span> + dir_name + <span class="string">", extend_name="</span> + extend_name + <span class="string">", path="</span> + path);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> path;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取视频文件中的某帧图片。pos为毫秒时间</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Bitmap <span class="title">getOneFrame</span><span class="params">(Context ctx, Uri uri, <span class="keyword">int</span> pos)</span> </span>&#123;</span><br><span class="line">        MediaMetadataRetriever retriever = <span class="keyword">new</span> MediaMetadataRetriever();</span><br><span class="line">        retriever.setDataSource(ctx, uri); <span class="comment">// 将指定Uri设置为媒体数据源</span></span><br><span class="line"><span class="comment">//        // 获得视频的播放时长</span></span><br><span class="line"><span class="comment">//        String duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);</span></span><br><span class="line"><span class="comment">//        Log.d(TAG, "duration="+duration);</span></span><br><span class="line">        <span class="comment">// 获取指定时间的帧图，注意getFrameAtTime方法的时间单位是微秒</span></span><br><span class="line">        Bitmap bitmap = retriever.getFrameAtTime((<span class="keyword">long</span>)(pos * <span class="number">1000</span>));</span><br><span class="line">        Log.d(TAG, <span class="string">"getWidth="</span>+bitmap.getWidth()+<span class="string">", getHeight="</span>+bitmap.getHeight());;</span><br><span class="line">        <span class="keyword">return</span> bitmap;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取视频文件中的图片帧列表。beginPos为毫秒时间，count为待获取的帧数量</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;String&gt; <span class="title">getFrameList</span><span class="params">(Context ctx, Uri uri, <span class="keyword">int</span> beginPos, <span class="keyword">int</span> count)</span> </span>&#123;</span><br><span class="line">        String videoPath = uri.toString();</span><br><span class="line">        String videoName = videoPath.substring(videoPath.lastIndexOf(<span class="string">"/"</span>)+<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span> (videoName.contains(<span class="string">"."</span>)) &#123;</span><br><span class="line">            videoName = videoName.substring(<span class="number">0</span>, videoName.lastIndexOf(<span class="string">"."</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        Log.d(TAG, <span class="string">"videoName="</span>+videoName);</span><br><span class="line">        List&lt;String&gt; pathList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        MediaMetadataRetriever retriever = <span class="keyword">new</span> MediaMetadataRetriever();</span><br><span class="line">        retriever.setDataSource(ctx, uri); <span class="comment">// 将指定Uri设置为媒体数据源</span></span><br><span class="line">        <span class="comment">// 获得视频的播放时长</span></span><br><span class="line">        String duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);</span><br><span class="line">        Log.d(TAG, <span class="string">"duration="</span>+duration);</span><br><span class="line">        <span class="keyword">int</span> dura_int = Integer.parseInt(duration)/<span class="number">1000</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;dura_int-beginPos/<span class="number">1000</span> &amp;&amp; i&lt;count; i++) &#123; <span class="comment">// 最多只取前多少帧</span></span><br><span class="line">            String path = String.format(<span class="string">"%s/%s_%d.jpg"</span>,</span><br><span class="line">                    ctx.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString(), videoName, i);</span><br><span class="line">            <span class="keyword">if</span> (beginPos!=<span class="number">0</span> || !<span class="keyword">new</span> File(path).exists()) &#123;</span><br><span class="line">                <span class="comment">// 获取指定时间的帧图，注意getFrameAtTime方法的时间单位是微秒</span></span><br><span class="line">                Bitmap frame = retriever.getFrameAtTime(beginPos*<span class="number">1000</span> + i*<span class="number">1000</span>*<span class="number">1000</span>);</span><br><span class="line">                <span class="keyword">int</span> ratio = frame.getWidth()/<span class="number">500</span>+<span class="number">1</span>;</span><br><span class="line">                Bitmap small = BitmapUtil.getScaleBitmap(frame, <span class="number">1.0</span>/ratio);</span><br><span class="line">                BitmapUtil.saveImage(path, small); <span class="comment">// 把位图保存为图片文件</span></span><br><span class="line">            &#125;</span><br><span class="line">            pathList.add(path);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> pathList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 把指定Uri的视频复制一份到内部存储空间，并返回存储路径</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">copyVideoFromUri</span><span class="params">(Context ctx, Uri uri)</span> </span>&#123;</span><br><span class="line">        Log.d(TAG, <span class="string">"copyVideoFromUri uri="</span>+uri.toString());</span><br><span class="line">        String videoPath = String.format(<span class="string">"%s/%s.mp4"</span>,</span><br><span class="line">                ctx.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString(),</span><br><span class="line">                DateUtil.getNowDateTime());</span><br><span class="line">        <span class="comment">// 打开指定uri获得输入流对象，利用缓存输入和输出流复制文件</span></span><br><span class="line">        <span class="keyword">try</span> (InputStream is = ctx.getContentResolver().openInputStream(uri);</span><br><span class="line">             BufferedInputStream bis = <span class="keyword">new</span> BufferedInputStream(is);</span><br><span class="line">             BufferedOutputStream bos = <span class="keyword">new</span> BufferedOutputStream(<span class="keyword">new</span> FileOutputStream(videoPath))) &#123;</span><br><span class="line">            <span class="comment">// 分配长度为文件大小的字节数组。available方法返回当前位置后面的剩余部分大小</span></span><br><span class="line">            <span class="keyword">byte</span>[] bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[bis.available()];</span><br><span class="line">            bis.read(bytes); <span class="comment">// 从缓存输入流中读取字节数组</span></span><br><span class="line">            bos.write(bytes); <span class="comment">// 把字节数组写入缓存输出流</span></span><br><span class="line">            Log.d(TAG, <span class="string">"文件复制完成，源文件大小="</span>+bytes.length+<span class="string">"，新文件大小="</span>+bytes.length);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> videoPath;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/8.png" alt></p>
+<h3 id="自定义悬浮窗"><a href="#自定义悬浮窗" class="headerlink" title="自定义悬浮窗"></a>自定义悬浮窗</h3><p>​        <strong>每个活动页面都是一个窗口，许多窗口对象需要一个管家来打理，这个管家被称作窗口管理器（WindowManager）。</strong>在手机屏幕上新增或删除页面窗口都可以归结为 WindowManager 的操作，下面是该管理类的常用方法：</p>
+<ul>
+<li>getDefaultDisplay：获取默认的显示屏信息。通常可用该方法获取屏幕分辨率。</li>
+<li>addView：往窗口添加视图，第二个输入参数为 WindowManager.LayoutParams 对象。</li>
+<li>updateViewLayout：更新指定视图的布局参数，第二个输入参数为 WindowManager.LayoutParams 对象。</li>
+<li>removeView：从窗口移除指定视图。</li>
+</ul>
+<p>下面是窗口布局参数 WindowManager.LayoutParams 的常用属性：</p>
+<ul>
+<li>alpha：窗口的透明度，取值为 0.0 到 1.0（0.0 表示全透明，1.0 表示不透明）。</li>
+<li>gravity：内部视图的对齐方式。取值说明同 View 类的 setGravity 方法。</li>
+<li>x 和 y：分别表示窗口左上角的横坐标和纵坐标。</li>
+<li>width 和 height：分别表示窗口的宽度和高度。</li>
+<li>format：窗口的像素点格式。取值见 PixelFormat 类中的常量定义，一般取值 PixelFormat.RGBA_8888。</li>
+<li>type：窗口的显示类型，常用的显示类型的取值说明见表 。</li>
+</ul>
+<p><img src="/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/5.png" alt></p>
+<ul>
+<li>flags：窗口的行为准则，对于悬浮窗来说，一般设置为 FLAG_NOT_FOCUSABLE。常用的窗口标志位的取值说明见下表。</li>
+</ul>
+<p><img src="/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/6.png" alt></p>
+<p>​        自定义的悬浮窗有点类似对话框，它们都是独立于活动页面的窗口，但是悬浮窗又有一些与众不同的特性，例如：</p>
+<ol>
+<li>悬浮窗允许拖动，对话框不允许拖动。</li>
+<li>悬浮窗不妨碍用户触摸窗外的区域，对话框不让用户操作窗外的控件。</li>
+<li>悬浮窗独立于活动页面，当页面退出后，悬浮窗仍停留在屏幕上；对话框与活动页面是共存关系，一旦退出页面那么对话框就消失了。</li>
+</ol>
+<p>​       基于悬浮窗的以上特性，若要实现窗口的悬浮效果，就不能仅仅调用 WindowManager 的 addView 方法，而要做一系列的自定义处理，具体步骤说明如下：</p>
+<ol>
+<li><p>在 AndroidManifest.xml 中声明系统窗口权限，即增加下面这行权限配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">！--</span> 悬浮窗 <span class="attr">--</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">「android.permission.SYSTEM_ALERT_WINDOW」</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>自定义的悬浮窗控件需要设置触摸监听器，根据用户的手势动作相应调整窗口位置，以实现悬浮窗的拖动功能。</p>
+</li>
+<li><p>合理设置悬浮窗的窗口参数，主要是把窗口参数的显示类型设置为 TYPE_APPLICATION_OVERLAY。另外，还要设置标志位为 FLAG_NOT_FOCUSABLE。</p>
+</li>
+<li><p>在构造悬浮窗实例时，要传入应用实例 Application 的上下文对象，这是为了保证即使退出活动页面，也不会关闭悬浮窗。因为应用对象在 App 运行过程中始终存在，而活动对象只在打开页面时有效；一旦退出页面，那么活动对象的上下文就会立刻被回收（这导致依赖于该上下文的悬浮窗也一块被回收了）。</p>
+</li>
+</ol>
+<p>FloatWindow悬浮窗自定义view:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SuppressLint</span>(<span class="string">"ClickableViewAccessibility"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FloatWindow</span> <span class="keyword">extends</span> <span class="title">View</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> String TAG = <span class="string">"FloatWindow"</span>;</span><br><span class="line">    <span class="keyword">private</span> Context mContext; <span class="comment">// 声明一个上下文对象</span></span><br><span class="line">    <span class="keyword">private</span> WindowManager wm; <span class="comment">// 声明一个窗口管理器对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> WindowManager.LayoutParams wmParams; <span class="comment">// 悬浮窗的布局参数</span></span><br><span class="line">    <span class="keyword">public</span> View mContentView; <span class="comment">// 声明一个内容视图对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">float</span> mScreenX, mScreenY; <span class="comment">// 触摸点在屏幕上的横纵坐标</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">float</span> mLastX, mLastY; <span class="comment">// 上次触摸点的横纵坐标</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">float</span> mDownX, mDownY; <span class="comment">// 按下点的横纵坐标</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> isShowing = <span class="keyword">false</span>; <span class="comment">// 是否正在显示</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FloatWindow</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context);</span><br><span class="line">        <span class="comment">// 从系统服务中获取窗口管理器，后续将通过该管理器添加悬浮窗</span></span><br><span class="line">        wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);</span><br><span class="line">        <span class="keyword">if</span> (wmParams == <span class="keyword">null</span>) &#123;</span><br><span class="line">            wmParams = <span class="keyword">new</span> WindowManager.LayoutParams();</span><br><span class="line">        &#125;</span><br><span class="line">        mContext = context;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置悬浮窗的内容布局</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setLayout</span><span class="params">(<span class="keyword">int</span> layoutId)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 从指定资源编号的布局文件中获取内容视图对象</span></span><br><span class="line">        mContentView = LayoutInflater.from(mContext).inflate(layoutId, <span class="keyword">null</span>);</span><br><span class="line">        <span class="comment">// 接管悬浮窗的触摸事件，使之即可随手势拖动，又可处理点击动作</span></span><br><span class="line">        mContentView.setOnTouchListener((v, event) -&gt; &#123;</span><br><span class="line">            mScreenX = event.getRawX();</span><br><span class="line">            mScreenY = event.getRawY();</span><br><span class="line">            <span class="keyword">if</span> (event.getAction() == MotionEvent.ACTION_DOWN) &#123; <span class="comment">// 手指按下</span></span><br><span class="line">                mDownX = mScreenX;</span><br><span class="line">                mDownY = mScreenY;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (event.getAction() == MotionEvent.ACTION_MOVE) &#123; <span class="comment">// 手指移动</span></span><br><span class="line">                updateViewPosition(); <span class="comment">// 更新视图的位置</span></span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (event.getAction() == MotionEvent.ACTION_UP) &#123; <span class="comment">// 手指松开</span></span><br><span class="line">                updateViewPosition(); <span class="comment">// 更新视图的位置</span></span><br><span class="line">                <span class="keyword">if</span> (Math.abs(mScreenX-mDownX)&lt;<span class="number">3</span> &amp;&amp; Math.abs(mScreenY-mDownY)&lt;<span class="number">3</span>) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (mListener != <span class="keyword">null</span>) &#123; <span class="comment">// 响应悬浮窗的点击事件</span></span><br><span class="line">                        mListener.onFloatClick(v);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            mLastX = mScreenX;</span><br><span class="line">            mLastY = mScreenY;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 更新悬浮窗的视图位置</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">updateViewPosition</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 此处不能直接转为整型，因为小数部分会被截掉，重复多次后就会造成偏移越来越大</span></span><br><span class="line">        wmParams.x = Math.round(wmParams.x + mScreenX - mLastX);</span><br><span class="line">        wmParams.y = Math.round(wmParams.y + mScreenY - mLastY);</span><br><span class="line">        wm.updateViewLayout(mContentView, wmParams); <span class="comment">// 更新内容视图的布局参数</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 显示悬浮窗</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">(<span class="keyword">int</span> gravity)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mContentView != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.O) &#123;</span><br><span class="line">                <span class="comment">// 注意TYPE_SYSTEM_ALERT从Android8.0开始被舍弃了</span></span><br><span class="line">                wmParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123; <span class="comment">// 从Android8.0开始悬浮窗要使用TYPE_APPLICATION_OVERLAY</span></span><br><span class="line">                wmParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;</span><br><span class="line">            &#125;</span><br><span class="line">            wmParams.format = PixelFormat.RGBA_8888;</span><br><span class="line">            wmParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;</span><br><span class="line">            wmParams.alpha = <span class="number">1.0f</span>; <span class="comment">// 1.0为完全不透明，0.0为完全透明</span></span><br><span class="line">            wmParams.gravity = gravity; <span class="comment">// 指定悬浮窗的对齐方式</span></span><br><span class="line">            wmParams.x = <span class="number">0</span>;</span><br><span class="line">            wmParams.y = <span class="number">0</span>;</span><br><span class="line">            <span class="comment">// 设置悬浮窗的宽度和高度为自适应</span></span><br><span class="line">            wmParams.width = WindowManager.LayoutParams.WRAP_CONTENT;</span><br><span class="line">            wmParams.height = WindowManager.LayoutParams.WRAP_CONTENT;</span><br><span class="line">            <span class="comment">// 添加自定义的窗口布局，然后屏幕上就能看到悬浮窗了</span></span><br><span class="line">            wm.addView(mContentView, wmParams);</span><br><span class="line">            isShowing = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭悬浮窗</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mContentView != <span class="keyword">null</span>) &#123;</span><br><span class="line">            wm.removeView(mContentView); <span class="comment">// 移除自定义的窗口布局</span></span><br><span class="line">            isShowing = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断悬浮窗是否打开</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isShow</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> isShowing;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> FloatClickListener mListener; <span class="comment">// 声明一个悬浮窗的点击监听器对象</span></span><br><span class="line">    <span class="comment">// 设置悬浮窗的点击监听器</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setOnFloatListener</span><span class="params">(FloatClickListener listener)</span> </span>&#123;</span><br><span class="line">        mListener = listener;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义一个悬浮窗的点击监听器接口，用于触发点击行为</span></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">FloatClickListener</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">onFloatClick</span><span class="params">(View v)</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="对屏幕画面截图"><a href="#对屏幕画面截图" class="headerlink" title="对屏幕画面截图"></a>对屏幕画面截图</h3><p>​        悬浮窗总是浮在其他页面（包括桌面）之上，这个特性非常适用于屏幕捕捉的场合，比如截图和录屏。屏幕捕捉的功能由媒体投影管理器 MediaProjectionManager 实现，该管理器的对象从系统服务 MEDIA_PROJECTION_SERVICE 中获得。<strong>对于具体的屏幕捕捉操作，还要调用媒体投影管理器对象的 getMediaProjection 方法，从而获取 MediaProjection 媒体投影对象。</strong>MediaProjection 主要有两个方法，说明如下：</p>
+<ul>
+<li>createVirtualDisplay：创建虚拟显示层。可分别指定它的名称、宽高、密度、标志、渲染表面等。其中，标志参数通常取值 DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR，渲染表面则按照截图和录屏两种方式分别取值。</li>
+<li>stop：停止投影。</li>
+</ul>
+<p>​        捕捉屏幕之时，需要创建一个虚拟显示对象作为投影预览层，它就是 createVirtualDisplay 方法返回的 VirtualDisplay 对象，createVirtualDisplay 方法的第六个输入参数为 Surface 类型，截屏与录屏需要分别传入对应的表面对象。如果当前为截屏操作，则调用 ImageReader 对象的 getSurface 方法获得渲染表面；如果当前为录屏操作，则调用 MediaCodec 对象的 createInputSurface 方法获得渲染表面。</p>
+<p>​        从 Android 10 开始，屏幕捕捉（媒体投影操作）必须在前台服务中执行，为此修改 AndroidManifest.xml，增加以下的悬浮窗权限和前台服务权限的相关配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">！--</span> 悬浮窗 <span class="attr">--</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">「android.permission.SYSTEM_ALERT_WINDOW」</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">！--</span> 允许前台服务（<span class="attr">Android</span> <span class="attr">9.0</span> 之后需要） <span class="attr">--</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">「android.permission.FOREGROUND_SERVICE」</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>还要给截屏服务添加值为 mediaProjection 的 foregroundServiceType 属性</strong>，修改后的服务配置示例如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">service</span></span></span><br><span class="line"><span class="tag">         <span class="attr">android:name</span>=<span class="string">".service.CaptureService"</span></span></span><br><span class="line"><span class="tag">         <span class="attr">android:enabled</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">         <span class="attr">android:exported</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">         <span class="attr">android:foregroundServiceType</span>=<span class="string">"mediaProjection"</span></span></span><br><span class="line"><span class="tag">         /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在活动代码中启动截屏服务时需要增加三个分支的判断：</p>
+<ol>
+<li>如果是首次截屏，则需弹出授权截图的对话框，请用户同意截屏操作。用户同意截屏的话，还要判断是否开启了悬浮窗权限，如果尚未开启就要跳到悬浮窗权限的设置页面，等待用户手工开启权限。</li>
+<li>如果不是首次截屏，且系统版本为 Android 9 或更低版本，就调用 startService 方法按照普通方式启动后台的截屏服务。</li>
+<li>如果不是首次截屏，且系统版本为 Android 10 或更高版本，就调用 startForegroundService 方法启动前台的截图服务。</li>
+</ol>
+<p>ScreenCaptureActivity.kt代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ScreenCaptureActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityScreenCaptureBinding</span>&gt;</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 声明一个媒体投影管理器对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> manager:MediaProjectionManager</span><br><span class="line">    <span class="comment">// 媒体投影授权的请求代码</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> REQUEST_PROJECTION = <span class="number">100</span></span><br><span class="line">    <span class="comment">// 结果意图</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mResultIntent:Intent? = <span class="literal">null</span></span><br><span class="line">    <span class="comment">// 结果代码</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mResultCode = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityScreenCaptureBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        btnStartCapture.setOnClickListener &#123;</span><br><span class="line">            <span class="comment">//停止录屏服务</span></span><br><span class="line">            stopService(Intent(<span class="keyword">this</span><span class="symbol">@ScreenCaptureActivity</span>,RecordService::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>))</span></span><br><span class="line">            <span class="comment">//开启截图服务</span></span><br><span class="line">            startCaptureService()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 初始化媒体投影</span></span><br><span class="line">        initMediaProjection()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化媒体投影</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">initMediaProjection</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">// 从系统服务中获取媒体投影管理器</span></span><br><span class="line">        manager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) <span class="keyword">as</span> MediaProjectionManager</span><br><span class="line">        <span class="comment">// 从全局变量中获取结果意图</span></span><br><span class="line">        mResultIntent = MainApplication.getInstance().mResultIntent</span><br><span class="line">        <span class="comment">// 从全局变量中获取结果代码</span></span><br><span class="line">        mResultCode = MainApplication.getInstance().mResultCode</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 启动截图服务</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">startCaptureService</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">// 不是首次截图或录屏</span></span><br><span class="line">        <span class="keyword">if</span>(mResultIntent!= <span class="literal">null</span> &amp;&amp; mResultCode != <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="comment">//版本为 Android 9 或更低版本,就调用 startService 方法按照普通方式启动后台的截屏服务。</span></span><br><span class="line">            <span class="keyword">if</span> (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.Q)&#123;</span><br><span class="line">                startService(Intent(<span class="keyword">this</span>,CaptureService::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>))</span></span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="comment">// 启动前台的截图服务（从Android10开始，媒体投影操作必须在前台服务中运行）</span></span><br><span class="line">                startForegroundService(Intent(<span class="keyword">this</span>,CaptureService::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>))</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;<span class="comment">// 是首次截图或录屏</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 弹出授权截图的对话框</span></span><br><span class="line">                startActivityForResult(manager.createScreenCaptureIntent(),REQUEST_PROJECTION)</span><br><span class="line">            &#125; <span class="keyword">catch</span> (e:Exception)&#123;</span><br><span class="line">                e.printStackTrace()</span><br><span class="line">                Toast.makeText(<span class="keyword">this</span>,<span class="string">"当前系统不支持截屏功能"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 从授权截图的对话框返回时触发</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onActivityResult</span><span class="params">(requestCode: <span class="type">Int</span>, resultCode: <span class="type">Int</span>, <span class="keyword">data</span>: <span class="type">Intent</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onActivityResult(requestCode, resultCode, <span class="keyword">data</span>)</span><br><span class="line">        <span class="keyword">if</span> (requestCode == REQUEST_PROJECTION &amp;&amp; resultCode == RESULT_OK)&#123;<span class="comment">// 允许授权</span></span><br><span class="line">            <span class="comment">// AppOpsManager.OP_SYSTEM_ALERT_WINDOW是隐藏变量（值为24），不能直接引用</span></span><br><span class="line">            <span class="keyword">if</span> (!AuthorityUtil.checkOp(<span class="keyword">this</span>,<span class="number">24</span>))&#123; <span class="comment">// 未开启悬浮窗权限</span></span><br><span class="line">                Toast.makeText(<span class="keyword">this</span>,<span class="string">"截屏功能需要开启悬浮窗权限"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">                <span class="comment">// 跳到悬浮窗权限的设置页面</span></span><br><span class="line">                AuthorityUtil.requestAlertWindowPermission(<span class="keyword">this</span>)</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;<span class="comment">// 已开启悬浮窗权限</span></span><br><span class="line">                mResultCode = resultCode</span><br><span class="line">                mResultIntent = <span class="keyword">data</span></span><br><span class="line">                <span class="comment">// 下面把结果代码、结果意图等等信息保存到全局变量中</span></span><br><span class="line">                MainApplication.getInstance().mResultCode = resultCode</span><br><span class="line">                MainApplication.getInstance().mResultIntent = <span class="keyword">data</span></span><br><span class="line">                MainApplication.getInstance().manager = manager</span><br><span class="line">                <span class="comment">//启动截图服务</span></span><br><span class="line">                startCaptureService()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>CaptureService代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CaptureService</span> : <span class="type">Service</span></span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 声明一个媒体投影管理器对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> mediaManager:MediaProjectionManager</span><br><span class="line">    <span class="comment">// 声明一个媒体投影对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mp:MediaProjection? = <span class="literal">null</span></span><br><span class="line">    <span class="comment">// 声明一个图像读取器对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> mImageReader:ImageReader</span><br><span class="line">    <span class="comment">// 文件路径</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> imagePath = <span class="string">""</span></span><br><span class="line">    <span class="comment">// 屏幕宽度，屏幕高度，每英寸的像素数</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mScreenWidth = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mScreenHeight = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mScreenDensity = <span class="number">0</span></span><br><span class="line">    <span class="comment">// 声明一个虚拟显示层对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mVirtualDisplay:VirtualDisplay? = <span class="literal">null</span></span><br><span class="line">    <span class="comment">// 声明一个悬浮窗对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mFloatWindow:FloatWindow? = <span class="literal">null</span></span><br><span class="line">    <span class="comment">// App的应用单例</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> myApp:MainApplication</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mHandler = Handler(Looper.getMainLooper())</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onBind</span><span class="params">(intent: <span class="type">Intent</span>)</span></span>: IBinder? &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@SuppressLint(<span class="meta-string">"WrongConstant"</span>)</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate()</span><br><span class="line">        myApp = MainApplication.getInstance()</span><br><span class="line">        mediaManager = myApp.manager!!</span><br><span class="line">        mScreenWidth = Utils.getScreenWidth(<span class="keyword">this</span>)</span><br><span class="line">        mScreenHeight = Utils.getScreenHeight(<span class="keyword">this</span>)</span><br><span class="line">        <span class="comment">// 获得屏幕每英寸中的像素数</span></span><br><span class="line">        mScreenDensity = Utils.getScreenDensityDpi(<span class="keyword">this</span>)</span><br><span class="line">        <span class="comment">// 根据屏幕宽高创建一个新的图像读取器</span></span><br><span class="line">        mImageReader = ImageReader.newInstance(mScreenWidth,mScreenHeight,PixelFormat.RGBA_8888,<span class="number">2</span>)</span><br><span class="line">        <span class="keyword">if</span> (mFloatWindow == <span class="literal">null</span>)&#123;</span><br><span class="line">            <span class="comment">// 创建一个新的悬浮窗</span></span><br><span class="line">            mFloatWindow = FloatWindow(myApp)</span><br><span class="line">            <span class="comment">// 设置悬浮窗的布局内容</span></span><br><span class="line">            mFloatWindow?.setLayout(R.layout.float_capture)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 设置悬浮窗的点击监听器</span></span><br><span class="line">        mFloatWindow?.setOnFloatListener &#123;</span><br><span class="line">            <span class="comment">// 准备屏幕</span></span><br><span class="line">            mHandler.post(mStartVirtual)</span><br><span class="line">            <span class="comment">// 延迟500毫秒后截屏</span></span><br><span class="line">            mHandler.postDelayed(mCapture,<span class="number">500</span>)</span><br><span class="line">            <span class="comment">// 延迟1000毫秒后释放屏幕</span></span><br><span class="line">            mHandler.postDelayed(mStopVirtual,<span class="number">1000</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDestroy</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onDestroy()</span><br><span class="line">        <span class="keyword">if</span> (mFloatWindow != <span class="literal">null</span> &amp;&amp; mFloatWindow!!.isShow)&#123;</span><br><span class="line">            mFloatWindow?.close()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (mp != <span class="literal">null</span>)&#123;</span><br><span class="line">            <span class="comment">// 停止媒体投影</span></span><br><span class="line">            mp?.stop()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 绑定前台服务。要先创建通知渠道，创建代码见MainApplication.java</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">bindForegroundService</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">// 创建一个通知消息的建造器</span></span><br><span class="line">        <span class="keyword">var</span> builder = Notification.Builder(<span class="keyword">this</span>)</span><br><span class="line">        <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.O)&#123;</span><br><span class="line">            <span class="comment">// Android 8.0开始必须给每个通知分配对应的渠道</span></span><br><span class="line">            builder = Notification.Builder(<span class="keyword">this</span>,getString(R.string.app_name))</span><br><span class="line">        &#125;</span><br><span class="line">        builder.setAutoCancel(<span class="literal">false</span>) <span class="comment">// 点击通知栏后是否自动清除该通知</span></span><br><span class="line">            .setSmallIcon(R.mipmap.ic_launcher) <span class="comment">// 设置应用名称左边的小图标</span></span><br><span class="line">            .setContentTitle(getString(R.string.app_name)) <span class="comment">// 设置通知栏里面的标题文本</span></span><br><span class="line">            .setContentText(<span class="string">"截屏服务"</span>) <span class="comment">// 设置通知栏里面的内容文本</span></span><br><span class="line">        <span class="keyword">val</span> notify = builder.build() <span class="comment">// 根据通知建造器构建一个通知对象</span></span><br><span class="line">        startForeground(<span class="number">1</span>,notify) <span class="comment">// 把服务推送到前台的通知栏</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义一个屏幕截取任务</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mCapture = Thread&#123;</span><br><span class="line">        <span class="comment">// 生成截图文件的保存路径</span></span><br><span class="line">        imagePath = <span class="string">"<span class="subst">$&#123;getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()&#125;</span>/<span class="subst">$&#123;DateUtil.getNowDateTime()&#125;</span>.png"</span></span><br><span class="line">        Log.d(<span class="string">"CaptureService"</span>,<span class="string">"imagePath = <span class="variable">$imagePath</span>"</span>)</span><br><span class="line">        <span class="comment">// 从图像读取器中获取最近的一个Image对象</span></span><br><span class="line">        <span class="keyword">val</span> image = mImageReader.acquireLatestImage()</span><br><span class="line">        <span class="comment">// 把Image对象转换成位图对象</span></span><br><span class="line">        <span class="keyword">val</span> bitmap = BitmapUtil.getBitmap(image)</span><br><span class="line">        <span class="comment">// 把位图对象保存为图片文件</span></span><br><span class="line">        BitmapUtil.saveImage(imagePath,bitmap)</span><br><span class="line">        <span class="comment">// 通知相册来了张新图片</span></span><br><span class="line"></span><br><span class="line">        BitmapUtil.notifyPhotoAlbum(<span class="keyword">this</span>,imagePath)</span><br><span class="line">        Toast.makeText(<span class="keyword">this</span>,<span class="string">"截图成功：<span class="subst">$&#123;imagePath&#125;</span>"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义一个屏幕释放任务</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mStopVirtual = Thread&#123;</span><br><span class="line">        <span class="comment">// 完成截图后再恢复悬浮窗</span></span><br><span class="line">        mFloatWindow!!.mContentView.visibility = View.VISIBLE</span><br><span class="line">        <span class="keyword">if</span> (mVirtualDisplay != <span class="literal">null</span>)&#123;</span><br><span class="line">            <span class="comment">// 释放虚拟显示层资源</span></span><br><span class="line">            mVirtualDisplay?.release()</span><br><span class="line">            mVirtualDisplay = <span class="literal">null</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 显示缩略图窗口</span></span><br><span class="line">        showThumbnail()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义一个屏幕准备任务</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mStartVirtual = Thread&#123;</span><br><span class="line">        <span class="comment">// 截图过程中先隐藏悬浮窗</span></span><br><span class="line">        mFloatWindow!!.mContentView.visibility = View.GONE</span><br><span class="line">        <span class="keyword">if</span> (mp == <span class="literal">null</span>)&#123;</span><br><span class="line">            <span class="comment">// 根据结果代码和结果意图，从媒体投影管理器中获取一个媒体投影对象</span></span><br><span class="line">            mp = mediaManager.getMediaProjection(myApp.mResultCode,myApp.mResultIntent!!)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 根据屏幕宽高创建一个虚拟显示层</span></span><br><span class="line">        mVirtualDisplay = mp?.createVirtualDisplay(<span class="string">"capture_screen"</span>,mScreenWidth,mScreenHeight,</span><br><span class="line">        mScreenDensity,DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,mImageReader.surface,<span class="literal">null</span>,<span class="literal">null</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 显示缩略图窗口</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">showThumbnail</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">// 创建一个新的悬浮窗</span></span><br><span class="line">        <span class="keyword">val</span> thumb = FloatWindow(MainApplication.context)</span><br><span class="line">        thumb.setLayout(R.layout.float_thumb)</span><br><span class="line">        <span class="keyword">val</span> ivThumb = thumb.mContentView.findViewById&lt;ImageView&gt;(R.id.iv_thumb)</span><br><span class="line">        thumb.setOnFloatListener &#123;</span><br><span class="line">            <span class="keyword">val</span> intent = Intent(Intent.ACTION_VIEW)</span><br><span class="line">            intent.type = <span class="string">"vnd.android.cursor.dir/image"</span></span><br><span class="line">            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK</span><br><span class="line">            startActivity(intent)</span><br><span class="line">            mHandler.post&#123;thumb.close()&#125;</span><br><span class="line">        &#125;</span><br><span class="line">        thumb.show(Gravity.RIGHT or Gravity.BOTTOM)</span><br><span class="line">        <span class="comment">// 设置图像视图的路径对象</span></span><br><span class="line">        ivThumb.setImageURI(Uri.parse(imagePath))</span><br><span class="line">        mHandler.postDelayed(&#123;thumb.close()&#125;,<span class="number">2000</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onStartCommand</span><span class="params">(intent: <span class="type">Intent</span>?, flags: <span class="type">Int</span>, startId: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (mFloatWindow != <span class="literal">null</span> &amp;&amp; !mFloatWindow!!.isShow)&#123;</span><br><span class="line">            <span class="comment">//显示悬浮窗</span></span><br><span class="line">            mFloatWindow?.show(Gravity.LEFT or Gravity.TOP)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 绑定前台服务（从Android10开始，媒体投影操作必须在前台服务中运行）</span></span><br><span class="line">        <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.Q)&#123;</span><br><span class="line">            bindForegroundService()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onStartCommand(intent, flags, startId)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        注意，截屏服务要判断系统版本，如果是 Android 10 或更高版本，就要调用 startForeground 方法，把截屏服务推送到前台的通知栏。接着按照下列步骤执行截屏操作：</p>
+<ol>
+<li>调用媒体投影管理器的 getMediaProjection 方法，获取一个新的媒体投影对象。</li>
+<li>调用媒体投影对象的 createVirtualDisplay 方法，根据屏幕宽高与图像读取器的表面对象创建一个虚拟显示层。</li>
+<li>调用图像读取器的 acquireLatestImage 方法，获得最近的一个 Image 对象，并将其转成位图对象，再保存为图片文件。</li>
+</ol>
+<p><img src="/2022/07/15/%E5%BD%B1%E5%83%8F%E8%AE%B0%E5%BD%95/7.png" alt></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/07/13/Android%E7%9B%B4%E6%92%AD%E8%8A%82%E7%9B%AE%E6%A1%88%E4%BE%8B/" rel="prev" title="Android直播节目案例">
+      <i class="fa fa-chevron-left"></i> Android直播节目案例
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/08/02/UDP%E4%B8%8ETCP%E5%85%A5%E9%97%A8/" rel="next" title="UDP与TCP入门">
+      UDP与TCP入门 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SurfaceView表面视图"><span class="nav-number">1.</span> <span class="nav-text">SurfaceView表面视图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TextureView纹理视图"><span class="nav-number">2.</span> <span class="nav-text">TextureView纹理视图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二代相机"><span class="nav-number">3.</span> <span class="nav-text">二代相机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用Camera2拍照"><span class="nav-number">3.1.</span> <span class="nav-text">使用Camera2拍照</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#相机管理器CameraManager"><span class="nav-number">3.1.1.</span> <span class="nav-text">相机管理器CameraManager</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#相机设备CameraDevice"><span class="nav-number">3.1.2.</span> <span class="nav-text">相机设备CameraDevice</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#相机拍照会话CameraCaptureSession"><span class="nav-number">3.1.3.</span> <span class="nav-text">相机拍照会话CameraCaptureSession</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#图像读取器ImageReader"><span class="nav-number">3.1.4.</span> <span class="nav-text">图像读取器ImageReader</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用Camera2录像"><span class="nav-number">3.2.</span> <span class="nav-text">使用Camera2录像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ExoPlayer"><span class="nav-number">4.</span> <span class="nav-text">ExoPlayer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#截取视频的某帧"><span class="nav-number">5.</span> <span class="nav-text">截取视频的某帧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#截取视频的某帧-1"><span class="nav-number">5.1.</span> <span class="nav-text">截取视频的某帧</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义悬浮窗"><span class="nav-number">5.2.</span> <span class="nav-text">自定义悬浮窗</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对屏幕画面截图"><span class="nav-number">5.3.</span> <span class="nav-text">对屏幕画面截图</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

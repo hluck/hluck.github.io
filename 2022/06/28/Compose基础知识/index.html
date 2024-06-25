@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="​        无需修改任何 XML 布局，也不需要使用布局编辑器。相反，您只需调用可组合函数来定义所需的元素，Compose 编译器即会完成后面的所有工作。 可组合函数​        Jetpack Compose 是围绕可组合函数构建的。以程序化方式定义应用的界面，只需描述应用界面的外观并提供数据依赖项，而不必关注界面的构建过程（初始化元素，将其附加到父项等）。如需创建可组合函数，只需将">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Compose基础知识">
+<meta property="og:url" content="https://hluck.github.io/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="​        无需修改任何 XML 布局，也不需要使用布局编辑器。相反，您只需调用可组合函数来定义所需的元素，Compose 编译器即会完成后面的所有工作。 可组合函数​        Jetpack Compose 是围绕可组合函数构建的。以程序化方式定义应用的界面，只需描述应用界面的外观并提供数据依赖项，而不必关注界面的构建过程（初始化元素，将其附加到父项等）。如需创建可组合函数，只需将">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/3.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/4.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/5.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/6.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/7.png">
+<meta property="article:published_time" content="2022-06-28T03:29:58.553Z">
+<meta property="article:modified_time" content="2022-07-03T11:59:34.903Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Compose基础知识 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Compose基础知识
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-28 11:29:58" itemprop="dateCreated datePublished" datetime="2022-06-28T11:29:58+08:00">2022-06-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-03 19:59:34" itemprop="dateModified" datetime="2022-07-03T19:59:34+08:00">2022-07-03</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>16k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>14 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>​        无需修改任何 XML 布局，也不需要使用布局编辑器。相反，您只需调用可组合函数来定义所需的元素，Compose 编译器即会完成后面的所有工作。</p>
+<h2 id="可组合函数"><a href="#可组合函数" class="headerlink" title="可组合函数"></a>可组合函数</h2><p>​        Jetpack Compose 是围绕可组合函数构建的。以程序化方式定义应用的界面，只需描述应用界面的外观并提供数据依赖项，而不必关注界面的构建过程（初始化元素，将其附加到父项等）。如需创建可组合函数，只需将 <code>@Composable</code> 注解添加到函数名称中即可。</p>
+<p><strong>添加文本元素</strong></p>
+<p>​        通过以下方法创建应用：选择 <strong>New Project</strong>，然后在 <strong>Phone and Tablet</strong> 类别下，选择 <strong>Empty Compose Activity</strong>。 将应用命名为 <strong>ComposeTutorial</strong>，然后点击 <strong>Finish</strong>。默认模板已包含一些 Compose 元素，但在此教程中，您要逐步进行构建。</p>
+<ul>
+<li><p>首先，通过在 <code>onCreate</code> 方法内添加文本元素，让系统显示“Hello world!”文本。可以通过定义内容块并调用 <a href="https://developer.android.google.cn/reference/kotlin/androidx/compose/material/package-summary#Text(kotlin.String,androidx.compose.ui.Modifier,androidx.compose.ui.graphics.Color,androidx.compose.ui.unit.TextUnit,androidx.compose.ui.text.font.FontStyle,androidx.compose.ui.text.font.FontWeight,androidx.compose.ui.text.font.FontFamily,androidx.compose.ui.unit.TextUnit,androidx.compose.ui.text.style.TextDecoration,androidx.compose.ui.text.style.TextAlign,androidx.compose.ui.unit.TextUnit,androidx.compose.ui.text.style.TextOverflow,kotlin.Boolean,kotlin.Int,kotlin.Function1,androidx.compose.ui.text.TextStyle)" target="_blank" rel="noopener"><code>Text</code></a> 可组合函数来实现此目的。<code>setContent</code> 块定义了 activity 的布局，我们会在其中调用可组合函数。可组合函数只能从其他可组合函数调用。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> android.os.Bundle</span><br><span class="line"><span class="keyword">import</span> androidx.activity.ComponentActivity</span><br><span class="line"><span class="keyword">import</span> androidx.activity.compose.setContent</span><br><span class="line"><span class="keyword">import</span> androidx.compose.material.Text</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">ComponentActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        setContent &#123;</span><br><span class="line">            Text(<span class="string">"Hello world!"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<a id="more"></a></li>
+</ul>
+<p><strong>定义可组合函数</strong></p>
+<p>​        如需使函数成为可组合函数，请添加 <code>@Composable</code> 注解。</p>
+<p>​        借助 <code>@Preview</code> 注解，您可以在 Android Studio 中预览可组合函数，而无需构建应用并将其安装到 Android 设备或模拟器中。该注解必须用于不接受参数的可组合函数。因此，无法直接预览 <code>MessageCard</code> 函数，而是需要创建另一个名为 <code>PreviewMessageCard</code> 的函数，由该函数使用适当的参数调用 <code>MessageCard</code>。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">import</span> androidx.compose.ui.tooling.preview.Preview</span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">MessageCard</span><span class="params">(name: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">    Text(text = <span class="string">"Hello <span class="variable">$name</span>!"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Preview</span></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">PreviewMessageCard</span><span class="params">()</span></span> &#123;</span><br><span class="line">    MessageCard(<span class="string">"Android"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="布局"><a href="#布局" class="headerlink" title="布局"></a>布局</h2><p>使用 Column</p>
+<p><a href="https://developer.android.google.cn/reference/kotlin/androidx/compose/foundation/layout/package-summary#Column(androidx.compose.ui.Modifier,androidx.compose.foundation.layout.Arrangement.Vertical,androidx.compose.ui.Alignment.Horizontal,kotlin.Function1)(androidx.compose.ui.Modifier,androidx.compose.foundation.layout.Arrangement.Vertical,androidx.compose.ui.Alignment.Horizontal,kotlin.Function1)" target="_blank" rel="noopener"><code>Column</code></a> 函数可垂直排列元素。使用 <a href="https://developer.android.google.cn/reference/kotlin/androidx/compose/foundation/layout/package-summary#Row(androidx.compose.ui.Modifier,androidx.compose.foundation.layout.Arrangement.Horizontal,androidx.compose.ui.Alignment.Vertical,kotlin.Function1)(androidx.compose.ui.Modifier,androidx.compose.foundation.layout.Arrangement.Horizontal,androidx.compose.ui.Alignment.Vertical,kotlin.Function1)" target="_blank" rel="noopener"><code>Row</code></a> 水平排列项。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">import</span> androidx.compose.foundation.Image</span><br><span class="line"><span class="keyword">import</span> androidx.compose.foundation.layout.Row</span><br><span class="line"><span class="keyword">import</span> androidx.compose.ui.res.painterResource</span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">MessageCard</span><span class="params">(msg: <span class="type">Message</span>)</span></span> &#123;</span><br><span class="line">    Row &#123;</span><br><span class="line">        Image(</span><br><span class="line">            painter = painterResource(R.drawable.profile_picture),</span><br><span class="line">            contentDescription = <span class="string">"Contact profile picture"</span>,</span><br><span class="line">        )</span><br><span class="line">    </span><br><span class="line">       Column &#123;</span><br><span class="line">            Text(text = msg.author)</span><br><span class="line">            Text(text = msg.body)</span><br><span class="line">        &#125;</span><br><span class="line">  </span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>配置布局</p>
+<p>​        为了装饰或配置可组合项，Compose 使用了<strong>修饰符</strong>Modifier。通过修饰符，您可以更改可组合项的大小、布局、外观，还可以添加高级互动，例如使元素可点击。您可以将这些修饰符链接起来，以创建更丰富的可组合项。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">import</span> androidx.compose.foundation.layout.Spacer</span><br><span class="line"><span class="keyword">import</span> androidx.compose.foundation.layout.height</span><br><span class="line"><span class="keyword">import</span> androidx.compose.foundation.layout.padding</span><br><span class="line"><span class="keyword">import</span> androidx.compose.foundation.layout.size</span><br><span class="line"><span class="keyword">import</span> androidx.compose.foundation.layout.width</span><br><span class="line"><span class="keyword">import</span> androidx.compose.foundation.shape.CircleShape</span><br><span class="line"><span class="keyword">import</span> androidx.compose.ui.Modifier</span><br><span class="line"><span class="keyword">import</span> androidx.compose.ui.draw.clip</span><br><span class="line"><span class="keyword">import</span> androidx.compose.ui.unit.dp</span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">MessageCard</span><span class="params">(msg: <span class="type">Message</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// Add padding around our message</span></span><br><span class="line">    Row(modifier = Modifier.padding(all = <span class="number">8</span>.dp)) &#123;</span><br><span class="line">        Image(</span><br><span class="line">            painter = painterResource(R.drawable.profile_picture),</span><br><span class="line">            contentDescription = <span class="string">"Contact profile picture"</span>,</span><br><span class="line">            modifier = Modifier</span><br><span class="line">                <span class="comment">// Set image size to 40 dp</span></span><br><span class="line">                .size(<span class="number">40</span>.dp)</span><br><span class="line">                <span class="comment">// Clip image to be shaped as a circle</span></span><br><span class="line">                .clip(CircleShape)</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Add a horizontal space between the image and the column</span></span><br><span class="line">        Spacer(modifier = Modifier.width(<span class="number">8</span>.dp))</span><br><span class="line"></span><br><span class="line">        Column &#123;</span><br><span class="line">            Text(text = msg.author)</span><br><span class="line">            <span class="comment">// Add a vertical space between the author and message texts</span></span><br><span class="line">            Spacer(modifier = Modifier.height(<span class="number">4</span>.dp))</span><br><span class="line">            Text(text = msg.body)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Material-Design"><a href="#Material-Design" class="headerlink" title="Material Design"></a>Material Design</h2><p>使用 Material Design:</p>
+<ul>
+<li>首先，使用在您的项目中创建的 Material 主题 <code>ComposeTutorialTheme</code> 封装 <code>MessageCard</code> 函数。 要同时在 <code>@Preview</code> 和 <code>setContent</code> 函数中执行此操作。这样一来，可组合项即可集成应用主题中定义的样式，从而在整个应用中确保一致性。</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">ComponentActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        setContent &#123;</span><br><span class="line">            ComposeTutorialTheme &#123;</span><br><span class="line">                MessageCard(Message(<span class="string">"Android"</span>, <span class="string">"Jetpack Compose"</span>))</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Preview</span></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">PreviewMessageCard</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ComposeTutorialTheme &#123;</span><br><span class="line">        MessageCard(</span><br><span class="line">            msg = Message(<span class="string">"Colleague"</span>, <span class="string">"Take a look at Jetpack Compose, it's great!"</span>)</span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Material Design 是围绕三大要素构建的：<code>Color</code>、<code>Typography</code>、<code>Shape</code>。</p>
+<h3 id="Color"><a href="#Color" class="headerlink" title="Color"></a>Color</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">ComponentActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        <span class="comment">//setContent 块定义了 activity 的布局</span></span><br><span class="line">        setContent &#123;</span><br><span class="line">            DefaultPreview()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">Message</span></span>(<span class="keyword">val</span> author:String,<span class="keyword">val</span> body:String)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">MessageCard</span><span class="params">(msg: <span class="type">Message</span>)</span></span>&#123;</span><br><span class="line">    Row(modifier = Modifier.padding(<span class="number">8</span>.dp)) &#123;</span><br><span class="line">        Image(painter = painterResource(id = R.drawable.smile),</span><br><span class="line">            contentDescription = <span class="string">"Contact profile picture"</span>,</span><br><span class="line">            modifier = Modifier</span><br><span class="line">                .size(<span class="number">40</span>.dp)</span><br><span class="line">                .clip(CircleShape)</span><br><span class="line">                .border(<span class="number">1.5</span>.dp,MaterialTheme.colors.secondary, CircleShape)</span><br><span class="line">        )</span><br><span class="line">        Spacer(modifier = Modifier.width(<span class="number">8</span>.dp))</span><br><span class="line">        Column() &#123;</span><br><span class="line">            Text(</span><br><span class="line">                text = msg.author,</span><br><span class="line">                color = MaterialTheme.colors.secondaryVariant</span><br><span class="line">            )</span><br><span class="line">            Spacer(modifier = Modifier.width(<span class="number">4</span>.dp))</span><br><span class="line">            Text(text = msg.body)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Preview(showBackground = true)</span></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">DefaultPreview</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ComposeTutorialTheme() &#123;</span><br><span class="line">        MessageCard(msg = Message(<span class="string">"Android"</span>,<span class="string">"Jetpack Compose"</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/1.png" alt></p>
+<h3 id="Typography"><a href="#Typography" class="headerlink" title="Typography"></a>Typography</h3><p><code>MaterialTheme</code> 中提供了 Material Typography 样式，只需将其添加到 <code>Text</code> 可组合项中即可。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">ComponentActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        <span class="comment">//setContent 块定义了 activity 的布局</span></span><br><span class="line">        setContent &#123;</span><br><span class="line">            DefaultPreview()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">Message</span></span>(<span class="keyword">val</span> author:String,<span class="keyword">val</span> body:String)</span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">MessageCard</span><span class="params">(msg: <span class="type">Message</span>)</span></span>&#123;</span><br><span class="line">    Row(modifier = Modifier.padding(<span class="number">8</span>.dp)) &#123;</span><br><span class="line">        Image(painter = painterResource(id = R.drawable.smile),</span><br><span class="line">            contentDescription = <span class="string">"Contact profile picture"</span>,</span><br><span class="line">            modifier = Modifier</span><br><span class="line">                .size(<span class="number">40</span>.dp)</span><br><span class="line">                .clip(CircleShape)</span><br><span class="line">                .border(<span class="number">1.5</span>.dp,MaterialTheme.colors.secondary, CircleShape)</span><br><span class="line"></span><br><span class="line">        )</span><br><span class="line">        Spacer(modifier = Modifier.width(<span class="number">8</span>.dp))</span><br><span class="line">        Column() &#123;</span><br><span class="line">            Text(</span><br><span class="line">                text = msg.author,</span><br><span class="line">                color = MaterialTheme.colors.secondaryVariant,</span><br><span class="line">                style = MaterialTheme.typography.subtitle2</span><br><span class="line">            )</span><br><span class="line">            Spacer(modifier = Modifier.width(<span class="number">4</span>.dp))</span><br><span class="line">            Text(</span><br><span class="line">                text = msg.body,</span><br><span class="line">                style = MaterialTheme.typography.body2</span><br><span class="line">                )</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Preview(showBackground = true)</span></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">DefaultPreview</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ComposeTutorialTheme() &#123;</span><br><span class="line">        MessageCard(msg = Message(<span class="string">"Android"</span>,<span class="string">"Jetpack Compose"</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/2.png" alt></p>
+<h3 id="Shape"><a href="#Shape" class="headerlink" title="Shape"></a>Shape</h3><p>​        通过 <code>Shape</code>，我们可以添加最后的“点睛之笔”。首先，将消息正文封装在 <a href="https://developer.android.google.cn/reference/kotlin/androidx/compose/material/package-summary#Surface(androidx.compose.ui.Modifier,androidx.compose.ui.graphics.Shape,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color,androidx.compose.foundation.BorderStroke,androidx.compose.ui.unit.Dp,kotlin.Function0)" target="_blank" rel="noopener"><code>Surface</code></a> 可组合项中。这样即可自定义消息正文的形状和高度。此外，还要为消息添加内边距，以改进布局。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">ComponentActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        <span class="comment">//setContent 块定义了 activity 的布局</span></span><br><span class="line">        setContent &#123;</span><br><span class="line">            DefaultPreview()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">Message</span></span>(<span class="keyword">val</span> author:String,<span class="keyword">val</span> body:String)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">MessageCard</span><span class="params">(msg: <span class="type">Message</span>)</span></span>&#123;</span><br><span class="line">    Row(modifier = Modifier.padding(<span class="number">8</span>.dp)) &#123;</span><br><span class="line">        Image(painter = painterResource(id = R.drawable.smile),</span><br><span class="line">            contentDescription = <span class="string">"Contact profile picture"</span>,</span><br><span class="line">            modifier = Modifier</span><br><span class="line">                .size(<span class="number">40</span>.dp)</span><br><span class="line">                .clip(CircleShape)</span><br><span class="line">                .border(<span class="number">1.5</span>.dp, MaterialTheme.colors.secondary, CircleShape)</span><br><span class="line">        )</span><br><span class="line">        Spacer(modifier = Modifier.width(<span class="number">8</span>.dp))</span><br><span class="line">        Column() &#123;</span><br><span class="line">            Text(</span><br><span class="line">                text = msg.author,</span><br><span class="line">                color = MaterialTheme.colors.secondaryVariant,</span><br><span class="line">                style = MaterialTheme.typography.subtitle2</span><br><span class="line">            )</span><br><span class="line">            Spacer(modifier = Modifier.width(<span class="number">4</span>.dp))</span><br><span class="line">            Surface(shape = MaterialTheme.shapes.medium,elevation = <span class="number">1</span>.dp) &#123;</span><br><span class="line">                Text(</span><br><span class="line">                    text = msg.body,</span><br><span class="line">                    modifier = Modifier.padding(all = <span class="number">4</span>.dp),</span><br><span class="line">                    style = MaterialTheme.typography.body2</span><br><span class="line">                )</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Preview(showBackground = true)</span></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">DefaultPreview</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ComposeTutorialTheme() &#123;</span><br><span class="line">        MessageCard(msg = Message(<span class="string">"Android"</span>,<span class="string">"Jetpack Compose"</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/3.png" alt></p>
+<h3 id="启用深色主题"><a href="#启用深色主题" class="headerlink" title="启用深色主题"></a>启用深色主题</h3><p>​        可以启用<a href="https://developer.android.google.cn/guide/topics/ui/look-and-feel/darktheme" target="_blank" rel="noopener">深色主题</a>（或夜间模式），以避免显示屏过亮（尤其是在夜间），或者只是节省设备电量。由于支持 Material Design，Jetpack Compose 默认能够处理深色主题。使用 Material Design 颜色、文本和背景时，系统会自动适应深色背景。</p>
+<p>您可以在文件中以单独函数的形式创建多个预览，也可以向同一个函数中添加多个注解。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">import</span> android.content.res.Configuration</span><br><span class="line"></span><br><span class="line"><span class="meta">@Preview(name = <span class="meta-string">"Light Mode"</span>)</span></span><br><span class="line"><span class="meta">@Preview(</span></span><br><span class="line"><span class="meta">    uiMode = Configuration.UI_MODE_NIGHT_YES,</span></span><br><span class="line"><span class="meta">    showBackground = true,</span></span><br><span class="line"><span class="meta">    name = <span class="meta-string">"Dark Mode"</span></span></span><br><span class="line"><span class="meta">)</span></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">PreviewMessageCard</span><span class="params">()</span></span> &#123;</span><br><span class="line">   ComposeTutorialTheme &#123;</span><br><span class="line">       MessageCard(</span><br><span class="line">           msg = Message(<span class="string">"Colleague"</span>, <span class="string">"Hey, take a look at Jetpack Compose, it's great!"</span>)</span><br><span class="line">       )</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/4.png" alt></p>
+<p>浅色和深色主题的颜色选项是在由 IDE 生成的 <code>Theme.kt</code> 文件中定义的。</p>
+<h2 id="列表和动画"><a href="#列表和动画" class="headerlink" title="列表和动画"></a>列表和动画</h2><h3 id="创建消息列表"><a href="#创建消息列表" class="headerlink" title="创建消息列表"></a>创建消息列表</h3><p>​        只包含一条消息的聊天会略显孤单，因此请更改对话，使其包含多条消息。您需要创建一个可显示多条消息的 <code>Conversation</code> 函数。对于此用例，请使用 Compose 的 <a href="https://developer.android.google.cn/reference/kotlin/androidx/compose/foundation/lazy/package-summary#LazyColumn(androidx.compose.ui.Modifier,androidx.compose.foundation.lazy.LazyListState,androidx.compose.foundation.layout.PaddingValues,kotlin.Boolean,androidx.compose.foundation.layout.Arrangement.Vertical,androidx.compose.ui.Alignment.Horizontal,androidx.compose.foundation.gestures.FlingBehavior,kotlin.Boolean,kotlin.Function1)" target="_blank" rel="noopener"><code>LazyColumn</code></a> 和 <a href="https://developer.android.google.cn/reference/kotlin/androidx/compose/foundation/lazy/package-summary#LazyRow(androidx.compose.ui.Modifier,androidx.compose.foundation.lazy.LazyListState,androidx.compose.foundation.layout.PaddingValues,kotlin.Boolean,androidx.compose.foundation.layout.Arrangement.Horizontal,androidx.compose.ui.Alignment.Vertical,androidx.compose.foundation.gestures.FlingBehavior,kotlin.Boolean,kotlin.Function1)" target="_blank" rel="noopener"><code>LazyRow</code></a>。这些可组合项只会呈现屏幕上显示的元素，因此，对于较长的列表，使用它们会非常高效。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">ComponentActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        <span class="comment">//setContent 块定义了 activity 的布局</span></span><br><span class="line">        setContent &#123;</span><br><span class="line">            PreviewConversation()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">Message</span></span>(<span class="keyword">val</span> author:String,<span class="keyword">val</span> body:String)</span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">MessageCard</span><span class="params">(msg: <span class="type">Message</span>)</span></span>&#123;</span><br><span class="line">    Row(modifier = Modifier.padding(<span class="number">8</span>.dp)) &#123;</span><br><span class="line">        Image(painter = painterResource(id = R.drawable.smile),</span><br><span class="line">            contentDescription = <span class="string">"Contact profile picture"</span>,</span><br><span class="line">            modifier = Modifier</span><br><span class="line">                .size(<span class="number">40</span>.dp)</span><br><span class="line">                .clip(CircleShape)</span><br><span class="line">                .border(<span class="number">1.5</span>.dp, MaterialTheme.colors.secondary, CircleShape)</span><br><span class="line">        )</span><br><span class="line">        Spacer(modifier = Modifier.width(<span class="number">8</span>.dp))</span><br><span class="line">        Column &#123;</span><br><span class="line">            Text(</span><br><span class="line">                text = msg.author,</span><br><span class="line">                color = MaterialTheme.colors.secondaryVariant,</span><br><span class="line">                style = MaterialTheme.typography.subtitle2</span><br><span class="line">            )</span><br><span class="line">            Spacer(modifier = Modifier.width(<span class="number">4</span>.dp))</span><br><span class="line">            Surface(shape = MaterialTheme.shapes.medium,elevation = <span class="number">1</span>.dp) &#123;</span><br><span class="line">                Text(</span><br><span class="line">                    text = msg.body,</span><br><span class="line">                    modifier = Modifier.padding(all = <span class="number">4</span>.dp),</span><br><span class="line">                    style = MaterialTheme.typography.body2</span><br><span class="line">                )</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Preview(name = <span class="meta-string">"Light Mode"</span>,showBackground = true)</span></span><br><span class="line"><span class="meta">@Preview(</span></span><br><span class="line"><span class="meta">    name = <span class="meta-string">"Dark Mode"</span>,</span></span><br><span class="line"><span class="meta">    uiMode = UI_MODE_NIGHT_YES,</span></span><br><span class="line"><span class="meta">    showBackground = true</span></span><br><span class="line"><span class="meta">)</span></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">DefaultPreview</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ComposeTutorialTheme() &#123;</span><br><span class="line">        MessageCard(msg = Message(<span class="string">"Android"</span>,<span class="string">"Jetpack Compose"</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">Conversation</span><span class="params">(msgs:<span class="type">List</span>&lt;<span class="type">Message</span>&gt;)</span></span>&#123;</span><br><span class="line">    LazyColumn&#123;</span><br><span class="line">        items(msgs)&#123;</span><br><span class="line">            MessageCard(msg = it)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Preview</span></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">PreviewConversation</span><span class="params">()</span></span>&#123;</span><br><span class="line">    ComposeTutorialTheme &#123;</span><br><span class="line">        Conversation(listOf(</span><br><span class="line">                Message(<span class="string">"Android"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Kotlin"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose,"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Hey, take a look at Jetpack Compose, it's great!,Hey, take a look at Jetpack Compose, it's great!,Hey, take a look at Jetpack Compose, it's great!"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Hey, take a look at Jetpack Compose, it's great!"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Hey, take a look at Jetpack Compose, it's great!"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">        ))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">Greeting</span><span class="params">(name: <span class="type">String</span>)</span></span>&#123;</span><br><span class="line">    Text(text = <span class="string">"Hello <span class="variable">$name</span>"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        在此代码段中，您可以看到 <code>LazyColumn</code> 包含一个 <code>items</code> 子项。它接受 <code>List</code> 作为参数，并且其 lambda 会收到我们命名为 <code>message</code> 的参数（可以随意为其命名），它是 <code>Message</code> 的实例。简而言之，系统会针对提供的 <code>List</code> 的每个项调用此 lambda。</p>
+<p><img src="/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/5.png" alt></p>
+<h3 id="在展开消息时显示动画效果"><a href="#在展开消息时显示动画效果" class="headerlink" title="在展开消息时显示动画效果"></a>在展开消息时显示动画效果</h3><p>​        添加展开消息以显示更多内容的功能，同时为内容大小和背景颜色添加动画效果。为了存储此本地界面状态，您需要跟踪消息是否已展开。为了跟踪这种状态变化，您必须使用 <code>remember</code> 和 <code>mutableStateOf</code> 函数。</p>
+<p>​        添加展开消息以显示更多内容的功能，同时为内容大小和背景颜色添加动画效果。为了存储此本地界面状态，您需要跟踪消息是否已展开。为了跟踪这种状态变化，您必须使用 <code>remember</code> 和 <code>mutableStateOf</code> 函数。</p>
+<p>​        可组合函数可以使用 <code>remember</code> 将本地状态存储在内存中，并跟踪传递给 <code>mutableStateOf</code> 的值的变化。该值更新时，系统会自动重新绘制使用此状态的可组合项（及其子项）。这称为<a href="https://developer.android.google.cn/jetpack/compose/mental-model#recomposition" target="_blank" rel="noopener">重组</a>。</p>
+<p>​        通过使用 Compose 的状态 API（如 <code>remember</code> 和 <code>mutableStateOf</code>），系统会在状态发生任何变化时自动更新界面。</p>
+<p><strong>注意</strong>：您需要添加以下导入内容才能正确使用 <code>by</code>。按 Alt+Enter 键或 Option+Enter 键即可添加这些内容。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> androidx.compose.runtime.getValue </span><br><span class="line"><span class="keyword">import</span> androidx.compose.runtime.setValue</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">ComponentActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        <span class="comment">//setContent 块定义了 activity 的布局</span></span><br><span class="line">        setContent &#123;</span><br><span class="line">            PreviewConversation()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">Message</span></span>(<span class="keyword">val</span> author:String,<span class="keyword">val</span> body:String)</span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">MessageCard</span><span class="params">(msg: <span class="type">Message</span>)</span></span>&#123;</span><br><span class="line">    Row(modifier = Modifier.padding(<span class="number">8</span>.dp)) &#123;</span><br><span class="line">        Image(painter = painterResource(id = R.drawable.smile),</span><br><span class="line">            contentDescription = <span class="string">"Contact profile picture"</span>,</span><br><span class="line">            modifier = Modifier</span><br><span class="line">                .size(<span class="number">40</span>.dp)</span><br><span class="line">                .clip(CircleShape)</span><br><span class="line">                .border(<span class="number">1.5</span>.dp, MaterialTheme.colors.secondary, CircleShape)</span><br><span class="line">        )</span><br><span class="line">        Spacer(modifier = Modifier.width(<span class="number">8</span>.dp))</span><br><span class="line"></span><br><span class="line">        <span class="comment">//我们跟踪消息是否在此扩展</span></span><br><span class="line">        <span class="keyword">var</span> isExpanded <span class="keyword">by</span> remember &#123;</span><br><span class="line">            mutableStateOf(<span class="literal">false</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//当单击这个Column时，可以切换isExpanded变量</span></span><br><span class="line">        Column(modifier = Modifier.clickable &#123; isExpanded = !isExpanded &#125;) &#123;</span><br><span class="line">            Text(</span><br><span class="line">                text = msg.author,</span><br><span class="line">                color = MaterialTheme.colors.secondaryVariant,</span><br><span class="line">                style = MaterialTheme.typography.subtitle2</span><br><span class="line">            )</span><br><span class="line">            Spacer(modifier = Modifier.width(<span class="number">4</span>.dp))</span><br><span class="line">            Surface(shape = MaterialTheme.shapes.medium,elevation = <span class="number">1</span>.dp) &#123;</span><br><span class="line">                Text(</span><br><span class="line">                    text = msg.body,</span><br><span class="line">                    modifier = Modifier.padding(all = <span class="number">4</span>.dp),</span><br><span class="line">                    <span class="comment">//如果消息被展开，我们将显示其所有内容</span></span><br><span class="line">                    <span class="comment">//否则只显示第一行</span></span><br><span class="line">                    maxLines = <span class="keyword">if</span> (isExpanded) <span class="built_in">Int</span>.MAX_VALUE <span class="keyword">else</span> <span class="number">1</span>,</span><br><span class="line">                    style = MaterialTheme.typography.body2</span><br><span class="line">                )</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Preview(name = <span class="meta-string">"Light Mode"</span>,showBackground = true)</span></span><br><span class="line"><span class="meta">@Preview(</span></span><br><span class="line"><span class="meta">    name = <span class="meta-string">"Dark Mode"</span>,</span></span><br><span class="line"><span class="meta">    uiMode = UI_MODE_NIGHT_YES,</span></span><br><span class="line"><span class="meta">    showBackground = true</span></span><br><span class="line"><span class="meta">)</span></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">DefaultPreview</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ComposeTutorialTheme() &#123;</span><br><span class="line">        MessageCard(msg = Message(<span class="string">"Android"</span>,<span class="string">"Jetpack Compose"</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">Conversation</span><span class="params">(msgs:<span class="type">List</span>&lt;<span class="type">Message</span>&gt;)</span></span>&#123;</span><br><span class="line">    LazyColumn&#123;</span><br><span class="line">        items(msgs)&#123;</span><br><span class="line">            MessageCard(msg = it)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Preview</span></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">PreviewConversation</span><span class="params">()</span></span>&#123;</span><br><span class="line">    ComposeTutorialTheme &#123;</span><br><span class="line">        Conversation(listOf(</span><br><span class="line">                Message(<span class="string">"Android"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Kotlin"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose,"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Hey, take a look at Jetpack Compose, it's great!,Hey, take a look at Jetpack Compose, it's great!,Hey, take a look at Jetpack Compose, it's great!"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Hey, take a look at Jetpack Compose, it's great!"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Hey, take a look at Jetpack Compose, it's great!"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">        ))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">Greeting</span><span class="params">(name: <span class="type">String</span>)</span></span>&#123;</span><br><span class="line">    Text(text = <span class="string">"Hello <span class="variable">$name</span>"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/6.png" alt></p>
+<p>​        现在，您可以根据 <code>isExpanded</code> 更改点击消息时的消息内容的背景。您将使用 <code>clickable</code> 修饰符来处理可组合项上的点击事件。您会为背景颜色添加动画效果，使其值逐步从 <code>MaterialTheme.colors.surface</code> 更改为 <code>MaterialTheme.colors.primary</code>（反之亦然），而不只是切换 <code>Surface</code> 的背景颜色。为此，您将使用 <code>animateColorAsState</code> 函数。最后，您将使用 <code>animateContentSize</code> 修饰符顺畅地为消息容器大小添加动画效果：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">ComponentActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        <span class="comment">//setContent 块定义了 activity 的布局</span></span><br><span class="line">        setContent &#123;</span><br><span class="line">            PreviewConversation()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">Message</span></span>(<span class="keyword">val</span> author:String,<span class="keyword">val</span> body:String)</span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">MessageCard</span><span class="params">(msg: <span class="type">Message</span>)</span></span>&#123;</span><br><span class="line">    Row(modifier = Modifier.padding(<span class="number">8</span>.dp)) &#123;</span><br><span class="line">        Image(painter = painterResource(id = R.drawable.smile),</span><br><span class="line">            contentDescription = <span class="string">"Contact profile picture"</span>,</span><br><span class="line">            modifier = Modifier</span><br><span class="line">                .size(<span class="number">40</span>.dp)</span><br><span class="line">                .clip(CircleShape)</span><br><span class="line">                .border(<span class="number">1.5</span>.dp, MaterialTheme.colors.secondary, CircleShape)</span><br><span class="line">        )</span><br><span class="line">        Spacer(modifier = Modifier.width(<span class="number">8</span>.dp))</span><br><span class="line"></span><br><span class="line">        <span class="comment">//我们跟踪消息是否在此扩展</span></span><br><span class="line">        <span class="keyword">var</span> isExpanded <span class="keyword">by</span> remember &#123;</span><br><span class="line">            mutableStateOf(<span class="literal">false</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//surfaceColor将从一种颜色逐渐更新到另一种颜色</span></span><br><span class="line">        <span class="keyword">val</span> surfaceColor <span class="keyword">by</span> animateColorAsState(<span class="keyword">if</span> (isExpanded) MaterialTheme.colors.primary <span class="keyword">else</span> MaterialTheme.colors.surface)</span><br><span class="line"></span><br><span class="line">        <span class="comment">//当单击这个Column时，可以切换isExpanded变量</span></span><br><span class="line">        Column(modifier = Modifier.clickable &#123; isExpanded = !isExpanded &#125;) &#123;</span><br><span class="line">            Text(</span><br><span class="line">                text = msg.author,</span><br><span class="line">                color = MaterialTheme.colors.secondaryVariant,</span><br><span class="line">                style = MaterialTheme.typography.subtitle2</span><br><span class="line">            )</span><br><span class="line">            Spacer(modifier = Modifier.width(<span class="number">4</span>.dp))</span><br><span class="line">            Surface(</span><br><span class="line">                shape = MaterialTheme.shapes.medium,</span><br><span class="line">                elevation = <span class="number">1</span>.dp,</span><br><span class="line">                <span class="comment">//从原色到表面色，颜色会逐渐变化</span></span><br><span class="line">                color = surfaceColor,</span><br><span class="line">                <span class="comment">//animateContentSize将逐渐改变Surface的大小</span></span><br><span class="line">                modifier = Modifier.animateContentSize().padding(<span class="number">1</span>.dp)</span><br><span class="line">            ) &#123;</span><br><span class="line">                Text(</span><br><span class="line">                    text = msg.body,</span><br><span class="line">                    modifier = Modifier.padding(all = <span class="number">4</span>.dp),</span><br><span class="line">                    <span class="comment">//如果消息被展开，我们将显示其所有内容</span></span><br><span class="line">                    <span class="comment">//否则只显示第一行</span></span><br><span class="line">                    maxLines = <span class="keyword">if</span> (isExpanded) <span class="built_in">Int</span>.MAX_VALUE <span class="keyword">else</span> <span class="number">1</span>,</span><br><span class="line">                    style = MaterialTheme.typography.body2</span><br><span class="line">                )</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Preview(name = <span class="meta-string">"Light Mode"</span>,showBackground = true)</span></span><br><span class="line"><span class="meta">@Preview(</span></span><br><span class="line"><span class="meta">    name = <span class="meta-string">"Dark Mode"</span>,</span></span><br><span class="line"><span class="meta">    uiMode = UI_MODE_NIGHT_YES,</span></span><br><span class="line"><span class="meta">    showBackground = true</span></span><br><span class="line"><span class="meta">)</span></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">DefaultPreview</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ComposeTutorialTheme() &#123;</span><br><span class="line">        MessageCard(msg = Message(<span class="string">"Android"</span>,<span class="string">"Jetpack Compose"</span>))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">Conversation</span><span class="params">(msgs:<span class="type">List</span>&lt;<span class="type">Message</span>&gt;)</span></span>&#123;</span><br><span class="line">    LazyColumn&#123;</span><br><span class="line">        items(msgs)&#123;</span><br><span class="line">            MessageCard(msg = it)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Preview</span></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">PreviewConversation</span><span class="params">()</span></span>&#123;</span><br><span class="line">    ComposeTutorialTheme &#123;</span><br><span class="line">        Conversation(listOf(</span><br><span class="line">                Message(<span class="string">"Android"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Kotlin"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose,"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Hey, take a look at Jetpack Compose, it's great!,Hey, take a look at Jetpack Compose, it's great!,Hey, take a look at Jetpack Compose, it's great!"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Hey, take a look at Jetpack Compose, it's great!"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Hey, take a look at Jetpack Compose, it's great!"</span>),</span><br><span class="line">                Message(<span class="string">"Hello"</span>,<span class="string">"Jetpack Compose"</span>),</span><br><span class="line">        ))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">Greeting</span><span class="params">(name: <span class="type">String</span>)</span></span>&#123;</span><br><span class="line">    Text(text = <span class="string">"Hello <span class="variable">$name</span>"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/7.png" alt></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/" rel="prev" title="自定义控件">
+      <i class="fa fa-chevron-left"></i> 自定义控件
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/28/Compose%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3/" rel="next" title="Compose编程思想">
+      Compose编程思想 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#可组合函数"><span class="nav-number">1.</span> <span class="nav-text">可组合函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#布局"><span class="nav-number">2.</span> <span class="nav-text">布局</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Material-Design"><span class="nav-number">3.</span> <span class="nav-text">Material Design</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Color"><span class="nav-number">3.1.</span> <span class="nav-text">Color</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Typography"><span class="nav-number">3.2.</span> <span class="nav-text">Typography</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Shape"><span class="nav-number">3.3.</span> <span class="nav-text">Shape</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启用深色主题"><span class="nav-number">3.4.</span> <span class="nav-text">启用深色主题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#列表和动画"><span class="nav-number">4.</span> <span class="nav-text">列表和动画</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建消息列表"><span class="nav-number">4.1.</span> <span class="nav-text">创建消息列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在展开消息时显示动画效果"><span class="nav-number">4.2.</span> <span class="nav-text">在展开消息时显示动画效果</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

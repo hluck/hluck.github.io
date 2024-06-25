@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1.Mysql的运算符 读者的身份证号，姓名，电话，余额,查看读者信息表中，余额不足200的读者信息。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL运算符与函数">
+<meta property="og:url" content="https://hluck.github.io/2020/04/30/MySQL%E8%BF%90%E7%AE%97%E7%AC%A6%E4%B8%8E%E5%87%BD%E6%95%B0/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="1.Mysql的运算符 读者的身份证号，姓名，电话，余额,查看读者信息表中，余额不足200的读者信息。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-30T10:43:04.932Z">
+<meta property="article:modified_time" content="2020-04-30T11:09:19.269Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="初识MySql">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://hluck.github.io/2020/04/30/MySQL%E8%BF%90%E7%AE%97%E7%AC%A6%E4%B8%8E%E5%87%BD%E6%95%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MySQL运算符与函数 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2020/04/30/MySQL%E8%BF%90%E7%AE%97%E7%AC%A6%E4%B8%8E%E5%87%BD%E6%95%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL运算符与函数
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-04-30 18:43:04 / 修改时间：19:09:19" itemprop="dateCreated datePublished" datetime="2020-04-30T18:43:04+08:00">2020-04-30</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1-Mysql的运算符"><a href="#1-Mysql的运算符" class="headerlink" title="1.Mysql的运算符"></a>1.Mysql的运算符</h3><ul>
+<li><p>读者的身份证号，姓名，电话，余额,查看读者信息表中，余额不足200的读者信息。</p>
+<a id="more"></a>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select card_id,name,tel,balance from readerinfo where balance-<span class="number">200</span>&lt;=<span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>1、查看读者信息表中，余额大于200的读者信息。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from readerinfo where balance&gt;<span class="number">200</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>2.查看读者信息表中，余额不等于200的读者信息。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from readerinfo where balance&lt;&gt;<span class="number">200</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>3、查看读者信息表中，年龄不为空的读者信息。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from readerinfo where age is not <span class="keyword">null</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>4、查看读者信息表中，余额在350到450之间的读者信息。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from readerinfo where balance between <span class="number">350</span> and <span class="number">450</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>5、查看读者信息表，获取”张飞 ” , ”李月”, “王鹏”这几个读者的信息。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * <span class="function">from readerinfo where name <span class="title">in</span><span class="params">(<span class="string">'张飞'</span>,<span class="string">'李月'</span>,<span class="string">'王鹏'</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看读者信息表，名字是两个字的，姓张的读者。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from readerinfo where name like <span class="string">'张_'</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>7、查询手机号以”135”开头的读者信息。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from readerinfo where tel like <span class="string">'135%'</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>1、查询图书信息表，查询书的价格大于50并且库存小于5的图书信息。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from bookinfo where price&gt;<span class="number">50</span> and store&lt;<span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>2、查询图书信息表，查询书的价格大于80或者出版社为’机械工业出版社’的。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from bookinfo where price&gt;<span class="number">80</span> or press=<span class="string">'机械工业出版社'</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>3、查询图书信息表，查询书的价格不在50到100之间的图书信息。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from bookinfo where price not between <span class="number">50</span> and <span class="number">100</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<h3 id="2-Mysql的数值函数"><a href="#2-Mysql的数值函数" class="headerlink" title="2.Mysql的数值函数"></a>2.Mysql的数值函数</h3><ul>
+<li><p>返回大于28.55的最小整数值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">ceil</span><span class="params">(<span class="number">28.55</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>返回小于28.55的最大整数值</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">floor</span><span class="params">(<span class="number">28.55</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>四舍五入</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">round</span><span class="params">(<span class="number">28.55</span>)</span></span>;</span><br><span class="line"><span class="function">select <span class="title">round</span><span class="params">(<span class="number">28.55</span>,<span class="number">1</span>)</span>,<span class="title">round</span><span class="params">(<span class="number">28.55</span>,<span class="number">0</span>)</span>,<span class="title">round</span><span class="params">(<span class="number">28.55</span>,<span class="number">-1</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>截断函数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">truncate</span><span class="params">(<span class="number">28.55</span>,<span class="number">1</span>)</span>,<span class="title">truncate</span><span class="params">(<span class="number">28.55</span>,<span class="number">0</span>)</span>,<span class="title">truncate</span><span class="params">(<span class="number">28.55</span>,<span class="number">-1</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>取模</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">mod</span><span class="params">(<span class="number">11</span>,<span class="number">2</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>现需要对图书的价格进行粗略统计，要求查看图书信息表中的图书编号，书名，四舍五入书的价格到整数位。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select book_id,book_name,price,round(price) from bookinfo;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查询图书编号为偶数的图书信息</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * <span class="function">from bookinfo where <span class="title">mod</span><span class="params">(book_id,<span class="number">2</span>)</span></span>=<span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="3-Mysql的字符函数"><a href="#3-Mysql的字符函数" class="headerlink" title="3.Mysql的字符函数"></a>3.Mysql的字符函数</h3><ul>
+<li><p>字符串连接</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">concat</span><span class="params">(<span class="string">'hello'</span>,<span class="string">'world'</span>)</span></span>;</span><br><span class="line"><span class="function">select <span class="title">concat_ws</span><span class="params">(<span class="string">'_'</span>,<span class="string">'hello'</span>,<span class="string">'world'</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function">select <span class="title">concat_ws</span><span class="params">(<span class="string">'-'</span>,book_id,book_name,store)</span> from bookinfo</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>字母转换大小写</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">lower</span><span class="params">(<span class="string">'Hello World'</span>)</span></span>;</span><br><span class="line"><span class="function">select <span class="title">upper</span><span class="params">(<span class="string">'Hello World'</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">select book_id,book_name,lower(book_name)from bookinfo;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>求长度</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">length</span><span class="params">(<span class="string">'hello'</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除空格</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">ltrim</span><span class="params">(<span class="string">' hello '</span>)</span>,<span class="title">length</span><span class="params">(ltrim(<span class="string">' hello '</span>)</span>)</span>;</span><br><span class="line"><span class="function">select <span class="title">rtrim</span><span class="params">(<span class="string">' hello '</span>)</span>,<span class="title">length</span><span class="params">(rtrim(<span class="string">' hello '</span>)</span>)</span>;</span><br><span class="line"><span class="function">select <span class="title">trim</span><span class="params">(<span class="string">' hello '</span>)</span>,<span class="title">length</span><span class="params">(trim(<span class="string">' hello '</span>)</span>)</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>截取字符串</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">substring</span><span class="params">(<span class="string">'hello world'</span>,<span class="number">1</span>,<span class="number">5</span>)</span></span>;</span><br><span class="line"><span class="function">select <span class="title">substring</span><span class="params">(<span class="string">'hello world'</span>,<span class="number">-5</span>,<span class="number">2</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取指定长度的字符串</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">left</span><span class="params">(<span class="string">'hello world'</span>,<span class="number">5</span>)</span></span>;</span><br><span class="line"><span class="function">select <span class="title">right</span><span class="params">(<span class="string">'hello world'</span>,<span class="number">5</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>替换函数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">replace</span><span class="params">(<span class="string">'hello world'</span>,<span class="string">'world'</span>,<span class="string">'mysql'</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>格式化函数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">format</span><span class="params">(<span class="number">1234.5678</span>,<span class="number">2</span>)</span>,<span class="title">format</span><span class="params">(<span class="number">1234.5</span>,<span class="number">2</span>)</span>,<span class="title">fomat</span><span class="params">(<span class="number">1234.5678</span>,<span class="number">0</span>)</span></span>;</span><br><span class="line">select book_id,book_name,format(price,<span class="number">2</span>)from bookinfo;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="4-Mysql的日期时间函数"><a href="#4-Mysql的日期时间函数" class="headerlink" title="4.Mysql的日期时间函数"></a>4.Mysql的日期时间函数</h3><ul>
+<li><p>查看当前的系统日期</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">curdate</span><span class="params">()</span>+0</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>查看当前的系统时间</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">curtime</span><span class="params">()</span>+0</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>查看当前的系统日期和时间</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">now</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>查看当前的系统日期和时间</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">sysdate</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>日期的加运算</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">date_add</span><span class="params">(<span class="string">'2017-01-01'</span>, interval <span class="number">5</span> month)</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>计算两个日期之间间隔的天数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">datediff</span><span class="params">(<span class="string">'2017-02-10'</span>,<span class="string">'2017-02-01'</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>日期格式化</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">date_format</span><span class="params">(<span class="string">'2017-02-01'</span>, <span class="string">'%Y%m'</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看当前的系统日期</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">curdate</span><span class="params">()</span>+0</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>查看当前的系统时间</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">curtime</span><span class="params">()</span>+0</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>查看当前的系统日期和时间</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">now</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>查看当前的系统日期和时间</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">sysdate</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>日期的加运算</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">date_add</span><span class="params">(<span class="string">'2017-01-01'</span>, interval <span class="number">5</span> month)</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>计算两个日期之间间隔的天数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">datediff</span><span class="params">(<span class="string">'2017-02-10'</span>,<span class="string">'2017-02-01'</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>日期格式化</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">date_format</span><span class="params">(<span class="string">'2017-02-01'</span>, <span class="string">'%Y%m'</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<p>/*<br>需求一：<br>身份证号为’ 210210199901013333’的用户，今天借了一本图书编号为’ 20150301’的图书，完成下列业务需求：<br>1、向借阅信息表中插入借书信息，注意借书日期和还书日期。<br>2、更新图书信息表的库存。<br>3、更新读者信息表的余额。*/</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">insert into borrowinfo <span class="title">values</span><span class="params">(<span class="number">20150301</span>,<span class="string">'210210199901013333'</span>,curdate()</span>,<span class="title">date_add</span><span class="params">(curdate()</span>,interval 1 month),'否')</span>;</span><br><span class="line"></span><br><span class="line">select * from borrowinfo;</span><br><span class="line"></span><br><span class="line">select * from bookinfo where book_id = <span class="number">20150301</span>;</span><br><span class="line">update bookinfo set store = store -<span class="number">1</span> where book_id = <span class="number">20150301</span>;</span><br><span class="line"></span><br><span class="line">select * from readerinfo where card_id = <span class="string">'210210199901013333'</span>;</span><br><span class="line">select price from bookinfo where book_id = <span class="number">20150301</span>;</span><br><span class="line">update readerinfo set balance = balance - <span class="number">69</span> * <span class="number">0.05</span> where card_id = <span class="string">'210210199901013333'</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>/*<br>需求二：<br>查看图书信息表的信息，要求出版日期’如201702’ 这样的形式显示。<br>*/</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select book_id,book_category_id,book_name,author,price,press,date_format(pubdate,<span class="string">'%Y-%m'</span>),store from bookinfo;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-聚合函数"><a href="#5-聚合函数" class="headerlink" title="5.聚合函数"></a>5.聚合函数</h3><ul>
+<li><p>1、求图书信息表中，所有图书的平均价格。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">avg</span><span class="params">(price)</span> from bookinfo</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>2、求图书信息表中，所有图书的总价格。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">sum</span><span class="params">(price)</span> from bookinfo</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>3、求图书信息表中的最大库存。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">max</span><span class="params">(store)</span> from bookinfo</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>4、求图书信息表中的最小库存。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">min</span><span class="params">(store)</span> from bookinfo</span>;</span><br></pre></td></tr></table></figure>
+
+<p>s</p>
+</li>
+<li><p>5、求图书信息表中有多少种图书。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">count</span><span class="params">(*)</span> from bookinfo</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>6、按类别进行分组, 查询每种类别下有多少种图书以及每种类别图书的库存总和。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select book_category_id as <span class="string">'图书类别'</span>,count(book_id) as <span class="string">'图书种类'</span>, sum(store) as <span class="string">'库存总和'</span> from bookinfo group by book_category_id;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="6-信息函数与加密函数"><a href="#6-信息函数与加密函数" class="headerlink" title="6.信息函数与加密函数"></a>6.信息函数与加密函数</h3><ul>
+<li><p>系统信息函数 </p>
+<ul>
+<li><p>查看当前MySQL服务器版本的版本号</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">version</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>查看MySQL服务器当前连接的次数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">connection_id</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>查看当前的数据库名</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">schema</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>查看当前登录的用户名</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">user</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>加密函数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">select <span class="title">md5</span><span class="params">(<span class="string">'test'</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">create table <span class="title">myuser</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">	username varchar(<span class="number">10</span>)</span>,</span></span><br><span class="line"><span class="function">	password <span class="title">varchar</span><span class="params">(<span class="number">35</span>)</span></span></span><br><span class="line"><span class="function">)</span>;</span><br><span class="line"></span><br><span class="line"><span class="function">insert into myuser <span class="title">values</span><span class="params">(<span class="string">'user1'</span>,md5(<span class="string">'pwd1'</span>)</span>)</span>;</span><br><span class="line"></span><br><span class="line">select * from myuser;</span><br><span class="line"></span><br><span class="line">select * from myuser where username = <span class="string">'user1'</span> and password = md5(<span class="string">'pwd1'</span>);</span><br><span class="line"></span><br><span class="line"><span class="function">select <span class="title">password</span><span class="params">(<span class="string">'rootpwd'</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">set password = password(<span class="string">'rootpwd'</span>);</span><br><span class="line"></span><br><span class="line">select user,authentication_string from mysql.user;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%88%9D%E8%AF%86MySql/" rel="tag"># 初识MySql</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/30/MySql%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B/" rel="prev" title="MySql存储过程">
+      <i class="fa fa-chevron-left"></i> MySql存储过程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/30/Mysql%E5%AD%90%E6%9F%A5%E8%AF%A2/" rel="next" title="Mysql子查询">
+      Mysql子查询 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Mysql的运算符"><span class="nav-number">1.</span> <span class="nav-text">1.Mysql的运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Mysql的数值函数"><span class="nav-number">2.</span> <span class="nav-text">2.Mysql的数值函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Mysql的字符函数"><span class="nav-number">3.</span> <span class="nav-text">3.Mysql的字符函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Mysql的日期时间函数"><span class="nav-number">4.</span> <span class="nav-text">4.Mysql的日期时间函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-聚合函数"><span class="nav-number">5.</span> <span class="nav-text">5.聚合函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-信息函数与加密函数"><span class="nav-number">6.</span> <span class="nav-text">6.信息函数与加密函数</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

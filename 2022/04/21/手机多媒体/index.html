@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="使用通知​        通知（notification）是Android系统中比较有特色的一个功能，当某个应用程序希望向用户发出一些提示信息，而该应用程序又不在前台运行时，就可以借助通知来实现。发出一条通知后，手机最上方的状态栏中会显示一个通知的图标，下拉状态栏后可以看到通知的详细内容。 创建通知渠道Android 8.0系统引入了通知渠道这个概念。 ​        就是每条通知都要属于一个对">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手机多媒体">
+<meta property="og:url" content="https://hluck.github.io/2022/04/21/%E6%89%8B%E6%9C%BA%E5%A4%9A%E5%AA%92%E4%BD%93/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="使用通知​        通知（notification）是Android系统中比较有特色的一个功能，当某个应用程序希望向用户发出一些提示信息，而该应用程序又不在前台运行时，就可以借助通知来实现。发出一条通知后，手机最上方的状态栏中会显示一个通知的图标，下拉状态栏后可以看到通知的详细内容。 创建通知渠道Android 8.0系统引入了通知渠道这个概念。 ​        就是每条通知都要属于一个对">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/04/21/%E6%89%8B%E6%9C%BA%E5%A4%9A%E5%AA%92%E4%BD%93/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/04/21/%E6%89%8B%E6%9C%BA%E5%A4%9A%E5%AA%92%E4%BD%93/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/04/21/%E6%89%8B%E6%9C%BA%E5%A4%9A%E5%AA%92%E4%BD%93/3.png">
+<meta property="og:image" content="https://hluck.github.io/2022/04/21/%E6%89%8B%E6%9C%BA%E5%A4%9A%E5%AA%92%E4%BD%93/4.png">
+<meta property="article:published_time" content="2022-04-21T08:06:14.969Z">
+<meta property="article:modified_time" content="2022-04-25T14:09:35.493Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/04/21/%E6%89%8B%E6%9C%BA%E5%A4%9A%E5%AA%92%E4%BD%93/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/04/21/%E6%89%8B%E6%9C%BA%E5%A4%9A%E5%AA%92%E4%BD%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>手机多媒体 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/04/21/%E6%89%8B%E6%9C%BA%E5%A4%9A%E5%AA%92%E4%BD%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          手机多媒体
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-04-21 16:06:14" itemprop="dateCreated datePublished" datetime="2022-04-21T16:06:14+08:00">2022-04-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-04-25 22:09:35" itemprop="dateModified" datetime="2022-04-25T22:09:35+08:00">2022-04-25</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>23k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>21 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="使用通知"><a href="#使用通知" class="headerlink" title="使用通知"></a>使用通知</h2><p>​        通知（notification）是Android系统中比较有特色的一个功能，当某个应用程序希望向用户发出一些提示信息，而该应用程序又不在前台运行时，就可以借助通知来实现。发出一条通知后，手机最上方的状态栏中会显示一个通知的图标，下拉状态栏后可以看到通知的详细内容。</p>
+<h3 id="创建通知渠道"><a href="#创建通知渠道" class="headerlink" title="创建通知渠道"></a>创建通知渠道</h3><p>Android 8.0系统引入了通知渠道这个概念。</p>
+<p>​        <strong>就是每条通知都要属于一个对应的渠道。</strong>每个应用程序都可以自由地创建当前应用拥有哪些通知渠道，但是这些通知渠道的控制权是掌握在用户手上的。</p>
+<p>应用程序如果想要发出通知，也必须创建自己的通知渠道才行。</p>
+<ol>
+<li><p>首先需要一个NotificationManager对通知进行管理，可以通过调用Context的getSystemService()方法获取。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//接收一个字符串参数用于确定获取系统的哪个服务，这里我们传入Context.NOTIFICATION_SERVICE即可。</span></span><br><span class="line"><span class="keyword">val</span> manager = getSystemService(Context.NOTIFICATION_SERVICE) <span class="keyword">as</span> NotificationManager</span><br></pre></td></tr></table></figure>
+<a id="more"></a></li>
+<li><p>接下来要使用NotificationChannel类构建一个<strong>通知渠道</strong>，并调用NotificationManager的createNotificationChannel()方法完成创建。</p>
+<p>由于NotificationChannel类和createNotificationChannel()方法都是Android 8.0系统中新增的API，因此我们在使用的时候还需要进行版本判断才可以，写法如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> manager = getSystemService(Context.NOTIFICATION_SERVICE) <span class="keyword">as</span> NotificationManager</span><br><span class="line"><span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.O)&#123;</span><br><span class="line">    <span class="comment">//这3个参数:渠道ID、渠道名称以及重要等级</span></span><br><span class="line">    <span class="keyword">val</span> channel = NotificationChannel(channelId,channelName,importance)</span><br><span class="line">    manager.createNotificationChannel(channel)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>渠道ID可以随便定义，只要保证全局唯一性就可以。</li>
+<li>渠道名称是给用户看的，需要可以清楚地表达这个渠道的用途。</li>
+<li>通知的重要等级主要有IMPORTANCE_HIGH、IMPORTANCE_DEFAULT、IMPORTANCE_LOW、IMPORTANCE_MIN这几种，对应的重要程度依次从高到低。这里只是初始状态下的重要等级，用户可以随时手动更改某个通知渠道的重要等级。</li>
+</ul>
+</li>
+</ol>
+<h3 id="通知的基本用法"><a href="#通知的基本用法" class="headerlink" title="通知的基本用法"></a>通知的基本用法</h3><ol>
+<li><p>首先需要使用一个Builder构造器来创建Notification对象，AndroidX库中提供了一个NotificationCompat类，使用这个类的构造器创建Notification对象，就可以保证我们的程序在所有Android系统版本上都能正常工作了，代码如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//第一个参数是context；第二个参数是渠道ID</span></span><br><span class="line"><span class="keyword">val</span> notification = NotificationCompat.Builder(context,channelId).build()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>上述代码只是创建了一个空的Notification对象，并没有什么实际作用，我们可以在最终的build()方法之前连缀任意多的设置方法来创建一个丰富的Notification对象，先来看一些最基本的设置：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> notification = NotificationCompat.Builder(context,channelId)</span><br><span class="line">		     <span class="comment">//指定通知的标题内容</span></span><br><span class="line">               .setContentTitle(<span class="string">"CONTENT TITLE"</span>)</span><br><span class="line">		    <span class="comment">//指定通知的正文内容</span></span><br><span class="line">               .setContentText(<span class="string">"CONTENT TEXT"</span>)</span><br><span class="line">		    <span class="comment">//设置通知的小图标，注意，</span></span><br><span class="line">		    <span class="comment">//只能使用纯alpha图层的图片进行设置，小图标会显示在系统状态栏上。</span></span><br><span class="line">               .setSmallIcon(R.drawable.small_icon)</span><br><span class="line">			<span class="comment">//设置通知的大图标</span></span><br><span class="line">               .setLargeIcon(BitmapFactory.decodeResource(resources,R.drawable.large_icon))</span><br><span class="line">               .build()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>以上工作都完成之后，只需要调用NotificationManager的notify()方法就可以让通知显示出来了。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//第一个参数是id，要保证为每个通知指定的id都是不同的;第二个参数则是Notification对象</span></span><br><span class="line">manager.notify(<span class="number">1</span>,notification)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建通知的每一个步骤都分析完了,新建一个NotificationTest项目，并修改activity_main.xml中的代码，如下所示：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">tools:context</span>=<span class="string">".MainActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/sendNotice"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"Send Notice"</span></span></span><br><span class="line"><span class="tag">        /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>接下来修改MainActivity中的代码，如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line">    <span class="meta">@SuppressLint(<span class="meta-string">"ServiceCast"</span>)</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line">        <span class="comment">//需要一个NotificationManager对通知进行管理</span></span><br><span class="line">        <span class="keyword">val</span> manager = getSystemService(Context.NOTIFICATION_SERVICE) <span class="keyword">as</span> NotificationManager</span><br><span class="line">        <span class="comment">//构建一个通知渠道</span></span><br><span class="line">        <span class="keyword">if</span>(Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.O)&#123;</span><br><span class="line">            <span class="comment">////这3个参数:渠道ID、渠道名称以及重要等级</span></span><br><span class="line">            <span class="keyword">val</span> channel = NotificationChannel(<span class="string">"normal"</span>,<span class="string">"Normal"</span>,NotificationManager.IMPORTANCE_DEFAULT)</span><br><span class="line">                manager.createNotificationChannel(channel)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        binding.sendNotice.setOnClickListener &#123;</span><br><span class="line">            <span class="comment">//第一个参数是context，第二个参数是渠道ID</span></span><br><span class="line">            <span class="keyword">val</span> notification = NotificationCompat.Builder(<span class="keyword">this</span>,<span class="string">"normal"</span>)</span><br><span class="line">                .setContentTitle(<span class="string">"通知标题"</span>)</span><br><span class="line">                .setContentText(<span class="string">"通知内容"</span>)</span><br><span class="line">            	<span class="comment">//只能使用纯alpha图层的图片进行设置</span></span><br><span class="line">                .setSmallIcon(R.drawable.small)</span><br><span class="line">                .setLargeIcon(BitmapFactory.decodeResource(resources,R.drawable.large))</span><br><span class="line">                .build()</span><br><span class="line">            <span class="comment">//参数是id，要保证为每个通知指定的id都是不同的;第二个参数则是Notification对象</span></span><br><span class="line">            manager.notify(<span class="number">1</span>,notification)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至于图片，新建一个drawable-xxhdpi目录，将图片放入即可。</p>
+</li>
+</ol>
+<p><img src="/2022/04/21/%E6%89%8B%E6%9C%BA%E5%A4%9A%E5%AA%92%E4%BD%93/1.png" alt></p>
+<p>其实要想实现<strong>通知的点击效果</strong>，我们还需要在代码中进行相应的设置，这就涉及了一个新的概念——<strong>PendingIntent</strong>。可以把PendingIntent简单地理解为延迟执行的Intent。</p>
+<p>PendingIntent的用法同样很简单，它主要提供了几个静态方法用于获取PendingIntent的实例，可以根据需求来选择是使用<strong>getActivity()方法、getBroadcast()方法，还是getService()方法。</strong>这几个方法所接收的参数都是相同的：</p>
+<ol>
+<li>第一个参数依旧是Context</li>
+<li>第二个参数一般用不到，传入0即可</li>
+<li>第三个参数是一个Intent对象，我们可以通过这个对象构建出PendingIntent的“意图”</li>
+<li>第四个参数用于确定PendingIntent的行为，有FLAG_ONE_SHOT、FLAG_NO_CREATE、FLAG_CANCEL_CURRENT和FLAG_UPDATE_CURRENT这4种值可选，每种值的具体含义可以查看文档，通常情况下这个参数传入0就可以了。</li>
+</ol>
+<p>NotificationCompat.Builder。这个构造器还可以连缀一个setContentIntent()方法，接收的参数正是一个PendingIntent对象。</p>
+<ol start="6">
+<li><p>优化一下NotificationTest项目，给刚才的通知加上点击功能，让用户点击它的时候可以启动另一个Activity。新建NotificationActivity。然后修改activity_notification.xml中的代码，如下所示：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">RelativeLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">tools:context</span>=<span class="string">".NotificationActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_centerInParent</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:textSize</span>=<span class="string">"24sp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"This is notification layout"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">RelativeLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>下面我们修改MainActivity中的代码，给通知加入点击功能，如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> intent = Intent(<span class="keyword">this</span>,NotificationActivity::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>)</span></span><br><span class="line">        <span class="keyword">val</span> pi = PendingIntent.getActivity(<span class="keyword">this</span>,<span class="number">0</span>,intent,<span class="number">0</span>)</span><br><span class="line">        binding.sendNotice.setOnClickListener &#123;</span><br><span class="line">            <span class="keyword">val</span> notification = NotificationCompat.Builder(<span class="keyword">this</span>,<span class="string">"normal"</span>)</span><br><span class="line">                .setContentTitle(<span class="string">"通知标题"</span>)</span><br><span class="line">                .setContentText(<span class="string">"通知内容"</span>)</span><br><span class="line">                .setSmallIcon(R.drawable.small)</span><br><span class="line">            	<span class="comment">//加入点击功能跳转</span></span><br><span class="line">                .setContentIntent(pi)</span><br><span class="line">                .setLargeIcon(BitmapFactory.decodeResource(resources,R.drawable.large))</span><br><span class="line">                .build()</span><br><span class="line">            <span class="comment">//参数是id，要保证为每个通知指定的id都是不同的;第二个参数则是Notification对象</span></span><br><span class="line">            manager.notify(<span class="number">1</span>,notification)</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果我们没有在代码中对该通知进行取消，它就会一直显示在系统的状态栏上。</p>
+<p>解决的方法有两种：</p>
+<ul>
+<li>一种是在NotificationCompat.Builder中再连缀一个setAutoCancel()方法，</li>
+<li>一种是显式地调用NotificationManager的cancel()方法将它取消。</li>
+</ul>
+</li>
+</ol>
+<p>第一种方法写法如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">binding.sendNotice.setOnClickListener &#123;</span><br><span class="line">           <span class="keyword">val</span> notification = NotificationCompat.Builder(<span class="keyword">this</span>,<span class="string">"normal"</span>)</span><br><span class="line">               .setContentTitle(<span class="string">"通知标题"</span>)</span><br><span class="line">               .setContentText(<span class="string">"通知内容"</span>)</span><br><span class="line">               .setSmallIcon(R.drawable.small)</span><br><span class="line">               .setContentIntent(pi)</span><br><span class="line">               .setLargeIcon(BitmapFactory.decodeResource(resources,R.drawable.large))</span><br><span class="line">               .setAutoCancel(<span class="literal">true</span>)</span><br><span class="line">               .build()</span><br></pre></td></tr></table></figure>
+
+<p>第二种方法写法如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NotificationActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        setContentView(R.layout.activity_notification)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">val</span> manager = getSystemService(Context.NOTIFICATION_SERVICE) <span class="keyword">as</span> NotificationManager</span><br><span class="line">        <span class="comment">//当时我们给这条通知设置的id就是1。</span></span><br><span class="line">        <span class="comment">// 因此，如果你想取消哪条通知，在cancel()方法中传入该通知的id就行了。</span></span><br><span class="line">        manager.cancel(<span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="通知的进阶技巧"><a href="#通知的进阶技巧" class="headerlink" title="通知的进阶技巧"></a>通知的进阶技巧</h3><p>通知内容如果设置成很长是无法完整显示的，多余的部分会用省略号代替。但是如果你真的非常需要在通知当中显示一段长文字，Android也是支持的，通过setStyle()方法就可以做到，具体写法如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> notification = NotificationCompat.Builder(<span class="keyword">this</span>,<span class="string">"normal"</span>)</span><br><span class="line">                .setContentTitle(<span class="string">"通知标题"</span>)</span><br><span class="line">				<span class="comment">//NotificationCompat.BigTextStyle对象，这个对象就是用于封装长文字信息的</span></span><br><span class="line">                .setStyle(NotificationCompat.BigTextStyle().bigText(<span class="string">"Learn how to build notifications,send and sync data,and user voice actions."</span>))</span><br><span class="line">                .setSmallIcon(R.drawable.small)</span><br><span class="line">                .setContentIntent(pi)</span><br><span class="line">                .setLargeIcon(BitmapFactory.decodeResource(resources,R.drawable.large))</span><br><span class="line">                .setAutoCancel(<span class="literal">true</span>)</span><br><span class="line">                .build()</span><br></pre></td></tr></table></figure>
+
+<p>​    setStyle()方法替代setContentText()方法。在setStyle()方法中，我们创建了一个NotificationCompat.BigTextStyle对象，这个对象就是用于封装长文字信息的，只要调用它的bigText()方法并将文字内容传入就可以了。</p>
+<p>除了显示长文字之外，通知里还可以显示一张大图片，具体用法是基本相似的：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">binding.sendNotice.setOnClickListener &#123;</span><br><span class="line">            <span class="keyword">val</span> notification = NotificationCompat.Builder(<span class="keyword">this</span>,<span class="string">"normal"</span>)</span><br><span class="line">                .setContentTitle(<span class="string">"通知标题"</span>)</span><br><span class="line">                .setStyle(NotificationCompat.BigPictureStyle().bigPicture(BitmapFactory.decodeResource(resources,R.drawable.large)))</span><br><span class="line">                .setSmallIcon(R.drawable.small)</span><br><span class="line">                .setContentIntent(pi)</span><br><span class="line">    			<span class="comment">//BitmapFactory的decodeResource()方法将图片解析成Bitmap对象</span></span><br><span class="line">                .setLargeIcon(BitmapFactory.decodeResource(resources,R.drawable.large))</span><br><span class="line">                .setAutoCancel(<span class="literal">true</span>)</span><br><span class="line">                .build()</span><br><span class="line">            <span class="comment">//参数是id，要保证为每个通知指定的id都是不同的;第二个参数则是Notification对象</span></span><br><span class="line">            manager.notify(<span class="number">1</span>,notification)</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        <strong>通知渠道的重要等级越高，发出的通知就越容易获得用户的注意</strong>。比如高重要等级的通知渠道发出的通知可以弹出横幅、发出声音，而低重要等级的通知渠道发出的通知不仅可能会在某些情况下被隐藏，而且可能会被改变显示的顺序，将其排在更重要的通知之后。但需要注意的是，开发者只能在创建通知渠道的时候为它指定初始的重要等级，如果用户不认可这个重要等级的话，可以随时进行修改。开发者对此无权再进行调整和变更，因为<strong>通知渠道一旦创建就不能再通过代码修改了。</strong></p>
+<p>无法修改之前创建的通知渠道，那么我们就只好再创建一个新的通知渠道来测试了。修改MainActivity中的代码，如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line">    <span class="meta">@SuppressLint(<span class="meta-string">"ServiceCast"</span>)</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line">        <span class="comment">//需要一个NotificationManager对通知进行管理</span></span><br><span class="line">        <span class="keyword">val</span> manager = getSystemService(Context.NOTIFICATION_SERVICE) <span class="keyword">as</span> NotificationManager</span><br><span class="line">        <span class="comment">//构建一个通知渠道</span></span><br><span class="line">        <span class="keyword">if</span>(Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.O)&#123;</span><br><span class="line">            <span class="comment">////这3个参数:渠道ID、渠道名称以及重要等级</span></span><br><span class="line">            <span class="keyword">val</span> channel = NotificationChannel(<span class="string">"important"</span>,<span class="string">"Important"</span>,NotificationManager.IMPORTANCE_HIGH)</span><br><span class="line">                manager.createNotificationChannel(channel)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">val</span> intent = Intent(<span class="keyword">this</span>,NotificationActivity::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>)</span></span><br><span class="line">        <span class="keyword">val</span> pi = PendingIntent.getActivity(<span class="keyword">this</span>,<span class="number">0</span>,intent,<span class="number">0</span>)</span><br><span class="line">        binding.sendNotice.setOnClickListener &#123;</span><br><span class="line">            <span class="keyword">val</span> notification = NotificationCompat.Builder(<span class="keyword">this</span>,<span class="string">"important"</span>)</span><br><span class="line">                .setContentTitle(<span class="string">"通知标题"</span>)</span><br><span class="line">                .setStyle(NotificationCompat.BigPictureStyle().bigPicture(BitmapFactory.decodeResource(resources,R.drawable.large)))</span><br><span class="line">                .setSmallIcon(R.drawable.small)</span><br><span class="line">                .setContentIntent(pi)</span><br><span class="line">                .setLargeIcon(BitmapFactory.decodeResource(resources,R.drawable.large))</span><br><span class="line">                .setAutoCancel(<span class="literal">true</span>)</span><br><span class="line">                .build()</span><br><span class="line">            <span class="comment">//参数是id，要保证为每个通知指定的id都是不同的;第二个参数则是Notification对象</span></span><br><span class="line">            manager.notify(<span class="number">1</span>,notification)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​       重要等级设置成了“高”，表示这是一条非常重要的通知；这次的通知不是在系统状态栏显示一个小图标了，而是弹出了一个横幅，并附带了通知的详细内容，表示这是一条非常重要的通知。</p>
+<h2 id="调用摄像头和相册"><a href="#调用摄像头和相册" class="headerlink" title="调用摄像头和相册"></a>调用摄像头和相册</h2><p>现在很多应用会要求用户上传一张图片作为头像，这时打开摄像头拍张照是最简单快捷的。</p>
+<h3 id="调用摄像头拍照"><a href="#调用摄像头拍照" class="headerlink" title="调用摄像头拍照"></a>调用摄像头拍照</h3><p>下面就让我们通过一个例子学习一下，如何才能在应用程序里调用手机的摄像头进行拍照。</p>
+<ol>
+<li><p>新建一个CameraAlbumTest项目，然后修改activity_main.xml中的代码，如下所示：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">tools:context</span>=<span class="string">".MainActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/takePhoto"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"Take Photo"</span></span></span><br><span class="line"><span class="tag">        /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ImageView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/imageView"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_gravity</span>=<span class="string">"center_horizontal"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后开始编写调用摄像头的具体逻辑，修改MainActivity中的代码，如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line"></span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> imgUri:Uri</span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> outputImg:File</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line">		<span class="comment">//1.点击事件里开始处理调用摄像头的逻辑</span></span><br><span class="line">        binding.takePhoto.setOnClickListener &#123;</span><br><span class="line">            <span class="comment">//创建File对象，用于存储拍照的图片</span></span><br><span class="line">            <span class="comment">//getExternalCacheDir()方法可以得到关联缓存目录</span></span><br><span class="line">            <span class="comment">//具体的路径是/sdcard/Android/data/&lt;package name&gt;/cache。</span></span><br><span class="line">            outputImg = File(externalCacheDir,<span class="string">"output_image.jpg"</span>)</span><br><span class="line">            <span class="keyword">if</span> (outputImg.exists())&#123;</span><br><span class="line">                outputImg.delete()</span><br><span class="line">            &#125;</span><br><span class="line">            outputImg.createNewFile()</span><br><span class="line">            imgUri = <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.N)&#123;</span><br><span class="line">                FileProvider.getUriForFile(<span class="keyword">this</span>,<span class="string">"com.example.cameraalbumtest.fileprovider"</span>,outputImg)</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                Uri.fromFile(outputImg)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//启动相机程序</span></span><br><span class="line">            <span class="keyword">val</span> intent = Intent(<span class="string">"android.media.action.IMAGE_CAPTURE"</span>)</span><br><span class="line">            <span class="comment">//指定图片的输出地址，这里填入刚刚得到的Uri对象</span></span><br><span class="line">            intent.putExtra(MediaStore.EXTRA_OUTPUT,imgUri)</span><br><span class="line"></span><br><span class="line">            <span class="comment">//加载跳转方式</span></span><br><span class="line">            launcherActivity.launch(intent)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * startActivityForResult()过时了</span></span><br><span class="line"><span class="comment">     * 使用原本的startActivityForResult的功能,需要注册一个ForActivityResult：</span></span><br><span class="line"><span class="comment">     * 完全移除了对onActivityResult()方法的重写，</span></span><br><span class="line"><span class="comment">     * 而是调用registerForActivityResult()方法来注册一个对Activity结果的监听。</span></span><br><span class="line"><span class="comment">     * 第一个参数是一种Contract类型，由于我们是希望从另外一个Activity中请求数据，</span></span><br><span class="line"><span class="comment">     * 因此这里使用了StartActivityForResult这种Contract。</span></span><br><span class="line"><span class="comment">     * 第二个参数是一个Lambda表达式，当有结果返回时则会回调到这里，然后我们在这里获取并处理数据即可。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> launcherActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult())&#123;</span><br><span class="line">        <span class="comment">//此处进行数据接收</span></span><br><span class="line">        <span class="keyword">if</span> (it.resultCode == RESULT_OK)&#123;</span><br><span class="line">            <span class="comment">//成功,发现拍照成功，</span></span><br><span class="line">            <span class="comment">//将output_image.jpg这张照片解析成Bitmap对象</span></span><br><span class="line">            <span class="keyword">val</span> bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(imgUri))</span><br><span class="line">            binding.imageView.setImageBitmap(rotateIfRequired(bitmap))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">rotateIfRequired</span><span class="params">(bitmap: <span class="type">Bitmap</span>)</span></span>: Bitmap&#123;</span><br><span class="line">        <span class="keyword">val</span> exif = ExifInterface(outputImg.path)</span><br><span class="line">        <span class="keyword">val</span> orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,ExifInterface.ORIENTATION_NORMAL)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">when</span>(orientation)&#123;</span><br><span class="line">            ExifInterface.ORIENTATION_ROTATE_90 -&gt; rotateBitmap(bitmap,<span class="number">90</span>)</span><br><span class="line">            ExifInterface.ORIENTATION_ROTATE_180 -&gt; rotateBitmap(bitmap,<span class="number">180</span>)</span><br><span class="line">            ExifInterface.ORIENTATION_ROTATE_270 -&gt; rotateBitmap(bitmap,<span class="number">270</span>)</span><br><span class="line">            <span class="keyword">else</span> -&gt; bitmap</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">rotateBitmap</span><span class="params">(bitmap: <span class="type">Bitmap</span>, degree: <span class="type">Int</span>)</span></span>: Bitmap &#123;</span><br><span class="line">        <span class="keyword">val</span> matrix = Matrix()</span><br><span class="line">        matrix.postRotate(degree.toFloat())</span><br><span class="line">        <span class="keyword">val</span> rotatedBitmap = Bitmap.createBitmap(bitmap,<span class="number">0</span>,<span class="number">0</span>,bitmap.width,bitmap.height,matrix,<span class="literal">true</span>)</span><br><span class="line">        <span class="comment">//将不再需要的Bitmap对象回收</span></span><br><span class="line">        bitmap.recycle()</span><br><span class="line">        <span class="keyword">return</span> rotatedBitmap</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        getExternalCacheDir()方法可以得到关联缓存目录，具体的路径是/sdcard/Android/data/&lt; package name&gt;/cache。那么为什么要使用应用关联缓存目录来存放图片呢？因为从Android 6.0系统开始，读写SD卡被列为了危险权限，如果将图片存放在SD卡的任何其他目录，都要进行运行时权限处理才行，而使用应用关联目录则可以跳过这一步。</p>
+<p>从Android 10.0系统开始，公有的SD卡目录已经不再允许被应用程序直接访问了，而是要使用作用域存储才行。</p>
+<p>​        接着会进行一个判断，如果运行设备的系统版本低于Android 7.0，就调用Uri的fromFile()方法将File对象转换成Uri对象，这个Uri对象标识着output_image.jpg这张图片的本地真实路径。否则，就调用FileProvider的getUriForFile()方法将File对象转换成一个封装过的Uri对象。</p>
+<p>getUriForFile()方法接收3个参数：</p>
+<ul>
+<li>第一个参数要求传入Context对象</li>
+<li>第二个参数可以是任意唯一的字符串</li>
+<li>第三个参数则是File对象</li>
+</ul>
+<p>之所以要进行这样一层转换，是因为从Android 7.0系统开始，直接使用本地真实路径的Uri被认为是不安全的，会抛出一个FileUriExposedException异常。而FileProvider则是一种特殊的ContentProvider，它使用了和ContentProvider类似的机制来对数据进行保护，可以选择性地将封装过的Uri共享给外部，从而提高了应用的安全性。</p>
+<p>​        注意调用照相机程序去拍照有可能会在一些手机上发生照片旋转的情况。这是因为这些手机认为打开摄像头进行拍摄时手机就应该是横屏的，因此回到竖屏的情况下就会发生90度的旋转。为此，这里我们又加上了判断图片方向的代码，如果发现图片需要进行旋转，那么就先将图片旋转相应的角度，然后再显示到界面上。</p>
+</li>
+<li><p>AndroidManifest.xml中进行注册ContentProvider，代码如下所示：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">manifest</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">package</span>=<span class="string">"com.example.cameraalbumtest"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">application</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:allowBackup</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:icon</span>=<span class="string">"@mipmap/ic_launcher"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:label</span>=<span class="string">"@string/app_name"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:roundIcon</span>=<span class="string">"@mipmap/ic_launcher_round"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:supportsRtl</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:theme</span>=<span class="string">"@style/Theme.CameraAlbumTest"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">activity</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:name</span>=<span class="string">".MainActivity"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:exported</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">                <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">provider</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:authorities</span>=<span class="string">"com.example.cameraalbumtest.fileprovider"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:name</span>=<span class="string">"androidx.core.content.FileProvider"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:exported</span>=<span class="string">"false"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:grantUriPermissions</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:name</span>=<span class="string">"android.support.FILE_PROVIDER_PATHS"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:resource</span>=<span class="string">"@xml/file_paths"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">provider</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">application</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>右击res目录→New→Directory，创建一个xml目录，接着右击xml目录→New→File，创建一个file_paths.xml文件。然后修改file_paths.xml文件中的内容，如下所示：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8" ?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">paths</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">external-path</span></span></span><br><span class="line"><span class="tag">        <span class="attr">name</span>=<span class="string">"my_images"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">path</span>=<span class="string">"/"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">paths</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>path属性的值表示共享的具体路径。这里使用一个单斜线表示将整个SD卡进行共享，当然也可以仅共享存放output_image.jpg这张图片的路径。</p>
+</li>
+</ol>
+<h2 id="从相册中选择图片"><a href="#从相册中选择图片" class="headerlink" title="从相册中选择图片"></a>从相册中选择图片</h2><ol>
+<li><p>编辑activity_main.xml文件，在布局中添加一个按钮，用于从相册中选择图片，代码如下所示：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">tools:context</span>=<span class="string">".MainActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/takePhoto"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"Take Photo"</span></span></span><br><span class="line"><span class="tag">        /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/fromAlbum"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"From Album"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ImageView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/imageView"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_gravity</span>=<span class="string">"center_horizontal"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后修改MainActivity中的代码，加入从相册选择图片的逻辑，代码如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> imgUri:Uri</span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> outputImg:File</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line"></span><br><span class="line">        binding.takePhoto.setOnClickListener &#123;</span><br><span class="line">            <span class="comment">//创建File对象，用于存储拍照的图片</span></span><br><span class="line">            outputImg = File(externalCacheDir,<span class="string">"output_image.jpg"</span>)</span><br><span class="line">            <span class="keyword">if</span> (outputImg.exists())&#123;</span><br><span class="line">                outputImg.delete()</span><br><span class="line">            &#125;</span><br><span class="line">            outputImg.createNewFile()</span><br><span class="line">            imgUri = <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.N)&#123;</span><br><span class="line">                FileProvider.getUriForFile(<span class="keyword">this</span>,<span class="string">"com.example.cameraalbumtest.fileprovider"</span>,outputImg)</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                Uri.fromFile(outputImg)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//启动相机程序</span></span><br><span class="line">            <span class="keyword">val</span> intent = Intent(<span class="string">"android.media.action.IMAGE_CAPTURE"</span>)</span><br><span class="line">            intent.putExtra(MediaStore.EXTRA_OUTPUT,imgUri)</span><br><span class="line"></span><br><span class="line">            <span class="comment">//加载跳转方式</span></span><br><span class="line">            launcherActivity.launch(intent)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        binding.fromAlbum.setOnClickListener &#123;</span><br><span class="line">            <span class="comment">//打开文件选择器</span></span><br><span class="line">            <span class="comment">//ACTION_OPEN_DOCUMENT表示打开系统的文件选择器</span></span><br><span class="line">            <span class="keyword">val</span> intent = Intent(Intent.ACTION_OPEN_DOCUMENT)</span><br><span class="line">            intent.addCategory(Intent.CATEGORY_OPENABLE)</span><br><span class="line">            <span class="comment">//指定只显示图片</span></span><br><span class="line">            intent.type = <span class="string">"image/*"</span></span><br><span class="line">            albumsLauncher.launch(intent)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * startActivityForResult()过时了</span></span><br><span class="line"><span class="comment">     * 使用原本的startActivityForResult的功能,需要注册一个ForActivityResult：</span></span><br><span class="line"><span class="comment">     * 完全移除了对onActivityResult()方法的重写，</span></span><br><span class="line"><span class="comment">     * 而是调用registerForActivityResult()方法来注册一个对Activity结果的监听。</span></span><br><span class="line"><span class="comment">     * 第一个参数是一种Contract类型，由于我们是希望从另外一个Activity中请求数据，</span></span><br><span class="line"><span class="comment">     * 因此这里使用了StartActivityForResult这种Contract。</span></span><br><span class="line"><span class="comment">     * 第二个参数是一个Lambda表达式，当有结果返回时则会回调到这里，然后我们在这里获取并处理数据即可。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> launcherActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult())&#123;</span><br><span class="line">        <span class="comment">//此处进行数据接收</span></span><br><span class="line">        <span class="keyword">if</span> (it.resultCode == RESULT_OK)&#123;</span><br><span class="line">            <span class="comment">//成功,将拍摄的照片显示出来</span></span><br><span class="line">            <span class="keyword">val</span> bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(imgUri))</span><br><span class="line">            binding.imageView.setImageBitmap(rotateIfRequired(bitmap))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> albumsLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult())&#123;</span><br><span class="line">        <span class="keyword">if</span> (it.resultCode == Activity.RESULT_OK &amp;&amp; it.<span class="keyword">data</span> != <span class="literal">null</span>)&#123;</span><br><span class="line">            it.<span class="keyword">data</span>?.<span class="keyword">data</span>.let &#123;</span><br><span class="line">                <span class="comment">//将选择的图片显示</span></span><br><span class="line">                <span class="comment">//将Uri转换成Bitmap对象</span></span><br><span class="line">                <span class="keyword">val</span> bitmap = it?.let &#123; it1 -&gt; getBitmapFromUri(it1) &#125;</span><br><span class="line">                binding.imageView.setImageBitmap(bitmap)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">rotateIfRequired</span><span class="params">(bitmap: <span class="type">Bitmap</span>)</span></span>: Bitmap&#123;</span><br><span class="line">        <span class="keyword">val</span> exif = ExifInterface(outputImg.path)</span><br><span class="line">        <span class="keyword">val</span> orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,ExifInterface.ORIENTATION_NORMAL)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">when</span>(orientation)&#123;</span><br><span class="line">            ExifInterface.ORIENTATION_ROTATE_90 -&gt; rotateBitmap(bitmap,<span class="number">90</span>)</span><br><span class="line">            ExifInterface.ORIENTATION_ROTATE_180 -&gt; rotateBitmap(bitmap,<span class="number">180</span>)</span><br><span class="line">            ExifInterface.ORIENTATION_ROTATE_270 -&gt; rotateBitmap(bitmap,<span class="number">270</span>)</span><br><span class="line">            <span class="keyword">else</span> -&gt; bitmap</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">rotateBitmap</span><span class="params">(bitmap: <span class="type">Bitmap</span>, degree: <span class="type">Int</span>)</span></span>: Bitmap &#123;</span><br><span class="line">        <span class="keyword">val</span> matrix = Matrix()</span><br><span class="line">        matrix.postRotate(degree.toFloat())</span><br><span class="line">        <span class="keyword">val</span> rotatedBitmap = Bitmap.createBitmap(bitmap,<span class="number">0</span>,<span class="number">0</span>,bitmap.width,bitmap.height,matrix,<span class="literal">true</span>)</span><br><span class="line">        <span class="comment">//将不再需要的Bitmap对象回收</span></span><br><span class="line">        bitmap.recycle()</span><br><span class="line">        <span class="keyword">return</span> rotatedBitmap</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">getBitmapFromUri</span><span class="params">(uri:<span class="type">Uri</span>)</span></span> = contentResolver</span><br><span class="line">        .openFileDescriptor(uri,<span class="string">"r"</span>)?.use &#123;</span><br><span class="line">        BitmapFactory.decodeFileDescriptor(it.fileDescriptor)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<h2 id="播放多媒体文件"><a href="#播放多媒体文件" class="headerlink" title="播放多媒体文件"></a>播放多媒体文件</h2><p>Android在播放音频和视频方面做了相当不错的支持，它提供了一套较为完整的API，使得开发者可以很轻松地编写出一个简易的音频或视频播放器。</p>
+<h3 id="播放音频"><a href="#播放音频" class="headerlink" title="播放音频"></a>播放音频</h3><p><strong>在Android中播放音频文件一般是使用MediaPlayer类实现的</strong>，它对多种格式的音频文件提供了非常全面的控制方法，从而使播放音乐的工作变得十分简单。</p>
+<p><img src="/2022/04/21/%E6%89%8B%E6%9C%BA%E5%A4%9A%E5%AA%92%E4%BD%93/2.png" alt></p>
+<p>MediaPlayer的工作流程：</p>
+<ol>
+<li><p>先需要创建一个MediaPlayer对象</p>
+</li>
+<li><p>然后调用setDataSource()方法设置音频文件的路径</p>
+</li>
+<li><p>再调用prepare()方法使MediaPlayer进入准备状态</p>
+</li>
+<li><p>接下来调用start()方法就可以开始播放音频，调用pause()方法就会暂停播放，调用reset()方法就会停止播放。</p>
+</li>
+<li><p>新建一个PlayAudioTest项目，然后修改activity_main.xml中的代码，如下所示：</p>
+</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">tools:context</span>=<span class="string">".MainActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/play"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"Play"</span></span></span><br><span class="line"><span class="tag">        /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/pause"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"Pause"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/stop"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"Stop"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​        Android Studio允许我们在项目工程中创建一个assets目录，并在这个目录下存放任意文件和子目录，这些文件和子目录在项目打包时会一并被打包到安装文件中，然后我们在程序中就可以<strong>借助AssetManager这个类提供的接口对assets目录下的文件进行读取。</strong></p>
+<ol start="2">
+<li>右击app/src/main→New→Directory，在弹出的对话框中输入“assets”,将音频文件放入：</li>
+</ol>
+<p><img src="/2022/04/21/%E6%89%8B%E6%9C%BA%E5%A4%9A%E5%AA%92%E4%BD%93/3.png" alt></p>
+<ol start="3">
+<li>然后修改MainActivity中的代码，如下所示：</li>
+</ol>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mediaPlayer = MediaPlayer()</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line">        initMediaPlayer()</span><br><span class="line">        binding.play.setOnClickListener &#123;</span><br><span class="line">            Log.d(<span class="string">"main"</span>,<span class="string">"play"</span>)</span><br><span class="line">            <span class="keyword">if</span> (!mediaPlayer.isPlaying)&#123;</span><br><span class="line">                <span class="comment">//开始播放</span></span><br><span class="line">                mediaPlayer.start()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        binding.pause.setOnClickListener &#123;</span><br><span class="line">            <span class="keyword">if</span> (mediaPlayer.isPlaying)&#123;</span><br><span class="line">                <span class="comment">//暂停播放</span></span><br><span class="line">                mediaPlayer.pause()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        binding.stop.setOnClickListener &#123;</span><br><span class="line">            <span class="keyword">if</span> (mediaPlayer.isPlaying)&#123;</span><br><span class="line">                <span class="comment">//停止播放,重置为刚刚创建的状态</span></span><br><span class="line">                mediaPlayer.reset()</span><br><span class="line">                initMediaPlayer()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">initMediaPlayer</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> assetManager = assets</span><br><span class="line">        <span class="keyword">val</span> fd = assetManager.openFd(<span class="string">"music.mp3"</span>)</span><br><span class="line">        mediaPlayer.setDataSource(fd.fileDescriptor,fd.startOffset,fd.length)</span><br><span class="line">        mediaPlayer.prepare()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDestroy</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onDestroy()</span><br><span class="line">        mediaPlayer.stop()</span><br><span class="line">        mediaPlayer.release()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样一个简易版的音乐播放器就完成了.</p>
+<h3 id="播放视频"><a href="#播放视频" class="headerlink" title="播放视频"></a>播放视频</h3><p>播放视频文件其实并不比播放音频文件复杂，主要是使用<strong>VideoView</strong>类来实现的。</p>
+<p><img src="/2022/04/21/%E6%89%8B%E6%9C%BA%E5%A4%9A%E5%AA%92%E4%BD%93/4.png" alt></p>
+<ol>
+<li><p>新建PlayVideoTest项目，然后修改activity_main.xml中的代码，如下所示：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">tools:context</span>=<span class="string">".MainActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/play"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">"Play"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/pause"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">"Play"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/replay"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">"rePlay"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">VideoView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/videoView"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>现在右击app/src/main/res→New→Directory，在弹出的对话框中输入“raw”，完成raw目录的创建,并把要播放的视频资源放在里面.</p>
+</li>
+<li><p>然后修改MainActivity中的代码，如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">val</span> uri = Uri.parse(<span class="string">"android.resource://<span class="variable">$packageName</span>/<span class="subst">$&#123;R.raw.video&#125;</span>"</span>)</span><br><span class="line">        binding.videoView.setVideoURI(uri)</span><br><span class="line">        binding.play.setOnClickListener &#123;</span><br><span class="line">            <span class="keyword">if</span> (!binding.videoView.isPlaying)&#123;</span><br><span class="line">                binding.videoView.start()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        binding.pause.setOnClickListener &#123;</span><br><span class="line">            <span class="keyword">if</span> (binding.videoView.isPlaying)&#123;</span><br><span class="line">                binding.videoView.pause()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        binding.replay.setOnClickListener &#123;</span><br><span class="line">            <span class="keyword">if</span> (binding.videoView.isPlaying)&#123;</span><br><span class="line">                binding.videoView.resume()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDestroy</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onDestroy()</span><br><span class="line">        <span class="comment">//将VideoView所占用的资源释放掉。</span></span><br><span class="line">        binding.videoView.<span class="keyword">suspend</span>()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/20/ContentProvider/" rel="prev" title="ContentProvider">
+      <i class="fa fa-chevron-left"></i> ContentProvider
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/24/Service/" rel="next" title="Service">
+      Service <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用通知"><span class="nav-number">1.</span> <span class="nav-text">使用通知</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建通知渠道"><span class="nav-number">1.1.</span> <span class="nav-text">创建通知渠道</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通知的基本用法"><span class="nav-number">1.2.</span> <span class="nav-text">通知的基本用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通知的进阶技巧"><span class="nav-number">1.3.</span> <span class="nav-text">通知的进阶技巧</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#调用摄像头和相册"><span class="nav-number">2.</span> <span class="nav-text">调用摄像头和相册</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#调用摄像头拍照"><span class="nav-number">2.1.</span> <span class="nav-text">调用摄像头拍照</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从相册中选择图片"><span class="nav-number">3.</span> <span class="nav-text">从相册中选择图片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#播放多媒体文件"><span class="nav-number">4.</span> <span class="nav-text">播放多媒体文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#播放音频"><span class="nav-number">4.1.</span> <span class="nav-text">播放音频</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#播放视频"><span class="nav-number">4.2.</span> <span class="nav-text">播放视频</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

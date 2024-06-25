@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1.后端1.1 SysUserRole12345678910111213141516171819202122232425262728package hluck.me.pochi.pojo;import lombok.Data;import java.io.Serializable;&#x2F;** * @author 余一 * @Description 用户角色 * @date 2021&#x2F;5&#x2F;10 19:5">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RBAC用户角色">
+<meta property="og:url" content="https://hluck.github.io/2021/05/11/RBAC%E7%94%A8%E6%88%B7%E8%A7%92%E8%89%B2/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="1.后端1.1 SysUserRole12345678910111213141516171819202122232425262728package hluck.me.pochi.pojo;import lombok.Data;import java.io.Serializable;&#x2F;** * @author 余一 * @Description 用户角色 * @date 2021&#x2F;5&#x2F;10 19:5">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-05-11T07:33:01.101Z">
+<meta property="article:modified_time" content="2021-07-25T09:23:53.278Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="RBAC前后端分离项目">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://hluck.github.io/2021/05/11/RBAC%E7%94%A8%E6%88%B7%E8%A7%92%E8%89%B2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>RBAC用户角色 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2021/05/11/RBAC%E7%94%A8%E6%88%B7%E8%A7%92%E8%89%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RBAC用户角色
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-11 15:33:01" itemprop="dateCreated datePublished" datetime="2021-05-11T15:33:01+08:00">2021-05-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-07-25 17:23:53" itemprop="dateModified" datetime="2021-07-25T17:23:53+08:00">2021-07-25</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>24k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>21 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-后端"><a href="#1-后端" class="headerlink" title="1.后端"></a>1.后端</h2><h3 id="1-1-SysUserRole"><a href="#1-1-SysUserRole" class="headerlink" title="1.1 SysUserRole"></a>1.1 SysUserRole</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.pojo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 用户角色</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/5/10 19:50</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SysUserRole</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 编号</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用户id</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Long userId;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 角色id</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Long roleId;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="1-2-SysUserVo"><a href="#1-2-SysUserVo" class="headerlink" title="1.2 SysUserVo"></a>1.2 SysUserVo</h3><p>因为我们给用户增加了角色功能，因此这里就需要保存用户所属的角色id。我们新建一个vo类来进行保存</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.pojo.vo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysRole;</span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 用户vo</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/5/10 19:55</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SysUserVo</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * id</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用户名</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String username;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 密码</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 微信的OpenId</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String openId;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 邮箱</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String email;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 昵称</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String nickName;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 头像</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String header;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 备注</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String note;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建时间</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String createTime;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 修改时间</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String updateTime;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 登录时间</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String loginTime;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 帐号启用状态：1是  0否</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Integer status;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 角色</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> SysRole sysRole;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3-SysUserController"><a href="#1-3-SysUserController" class="headerlink" title="1.3 SysUserController"></a>1.3 SysUserController</h3><p>修改了实体之后，我们的 <code>getById</code> 方法就需要进行修改了，要返回一个 <code>SysUserVO</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.common.Page;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.common.Result;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.enums.ResultEnum;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysUser;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.vo.SysUserVo;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.vo.TokenVo;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.service.SysUserService;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.utils.ShiroUtils;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.utils.StringUtils;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.SecurityUtils;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.authc.UsernamePasswordToken;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.subject.Subject;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 系统用户controller</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/4/22 16:26</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/sysUser"</span>)</span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SysUserController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> SysUserService userService;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 保存用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sysUser</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PostMapping</span>(<span class="string">"/save"</span>)</span><br><span class="line">    <span class="keyword">public</span> Result&lt;?&gt; save(<span class="meta">@RequestBody</span> SysUserVo sysUser)&#123;</span><br><span class="line">        <span class="comment">//校验参数</span></span><br><span class="line">        <span class="keyword">if</span> (StringUtils.isBlank(sysUser.getUsername())) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(ResultEnum.PARAMS_NULL,<span class="string">"用户名不能为空！"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (StringUtils.isBlank(sysUser.getPassword())) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(ResultEnum.PARAMS_NULL,<span class="string">"密码不能为空！"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        userService.save(sysUser);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(<span class="string">"添加成功"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 修改用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sysUser</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PutMapping</span>(<span class="string">"/update"</span>)</span><br><span class="line">    <span class="keyword">public</span> Result&lt;?&gt; update(<span class="meta">@RequestBody</span> SysUserVo sysUser)&#123;</span><br><span class="line">        userService.update(sysUser);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(<span class="string">"修改成功"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *  删除接口 逻辑删除</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@DeleteMapping</span>(<span class="string">"/delete/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="keyword">public</span> Result&lt;?&gt; delete(<span class="meta">@PathVariable</span> Long id)&#123;</span><br><span class="line">        userService.delete(id);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(<span class="string">"删除成功"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *  启动用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PutMapping</span>(<span class="string">"/enable/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="keyword">public</span> Result&lt;?&gt; enable(<span class="meta">@PathVariable</span> Long id)&#123;</span><br><span class="line">        userService.enable(id);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(<span class="string">"启动成功"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *  禁用用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PutMapping</span>(<span class="string">"/disable/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="keyword">public</span> Result&lt;?&gt; disable(<span class="meta">@PathVariable</span> Long id)&#123;</span><br><span class="line">        userService.disable(id);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(<span class="string">"禁用成功"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 分页查询</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> page</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PostMapping</span>(<span class="string">"/getByPage"</span>)</span><br><span class="line">    <span class="keyword">public</span> Result&lt;Page&lt;SysUser&gt;&gt; getByPage(<span class="meta">@RequestBody</span> Page&lt;SysUser&gt; page)&#123;</span><br><span class="line">        page=userService.getByPage(page);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(page);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据id查询</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/get/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Result&lt;SysUserVo&gt; <span class="title">get</span><span class="params">(@PathVariable Long id)</span></span>&#123;</span><br><span class="line">        SysUserVo sysUser=userService.get(id);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(sysUser);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 登录</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sysUser</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PostMapping</span>(<span class="string">"/login"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Result&lt;TokenVo&gt; <span class="title">login</span><span class="params">(@RequestBody SysUser sysUser)</span></span>&#123;</span><br><span class="line">        <span class="comment">//校验用户名密码</span></span><br><span class="line">        <span class="keyword">if</span> (sysUser == <span class="keyword">null</span> || StringUtils.isBlank(sysUser.getUsername()) || StringUtils.isBlank(sysUser.getPassword()))&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(ResultEnum.LOGIN_PARAM_ERROR);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//使用shiro进行登录</span></span><br><span class="line">        Subject subject = SecurityUtils.getSubject();</span><br><span class="line">        UsernamePasswordToken token = <span class="keyword">new</span> UsernamePasswordToken(sysUser.getUsername(), sysUser.getPassword());</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            subject.login(token);</span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(ResultEnum.LOGIN_PARAM_ERROR);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//登录成功</span></span><br><span class="line">        Serializable sessionId = subject.getSession().getId();</span><br><span class="line">        <span class="comment">//更新登录时间</span></span><br><span class="line">        userService.updateLoginTime(sysUser.getUsername());</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(<span class="keyword">new</span> TokenVo(sessionId));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取登录用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/info"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Result&lt;SysUser&gt; <span class="title">info</span><span class="params">()</span></span>&#123;</span><br><span class="line">        SysUser sysUser = ShiroUtils.getLoginUser();</span><br><span class="line">        sysUser.setPassword(<span class="keyword">null</span>);</span><br><span class="line">        sysUser.setStatus(<span class="keyword">null</span>);</span><br><span class="line">        sysUser.setDeleted(<span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(sysUser);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 退出登录</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/logout"</span>)</span><br><span class="line">    <span class="keyword">public</span> Result&lt;?&gt; logout()&#123;</span><br><span class="line">        Subject subject = SecurityUtils.getSubject();</span><br><span class="line">        subject.logout();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(<span class="string">"退出成功！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-4-SysUserService"><a href="#1-4-SysUserService" class="headerlink" title="1.4 SysUserService"></a>1.4 SysUserService</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.service;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.common.Page;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysUser;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.vo.SysUserVo;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 系统用户service</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/4/22 16:50</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SysUserService</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据用户名更新登录时间</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> username</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">updateLoginTime</span><span class="params">(String username)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据用户名查询用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> username</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">SysUser <span class="title">getByUserName</span><span class="params">(String username)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 添加用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sysUser</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">save</span><span class="params">(SysUserVo sysUser)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 修改用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sysUser</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">update</span><span class="params">(SysUserVo sysUser)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 删除用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">delete</span><span class="params">(Long id)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 启动用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">enable</span><span class="params">(Long id)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 禁用用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">disable</span><span class="params">(Long id)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据id查询用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">SysUserVo <span class="title">get</span><span class="params">(Long id)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 分页查询</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> page</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Page&lt;SysUser&gt; <span class="title">getByPage</span><span class="params">(Page&lt;SysUser&gt; page)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-5-SysUserServiceImpl"><a href="#1-5-SysUserServiceImpl" class="headerlink" title="1.5 SysUserServiceImpl"></a>1.5 SysUserServiceImpl</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.service.impl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.common.Page;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.enums.StateEnum;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.mapper.SysRoleMapper;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.mapper.SysUserMapper;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.mapper.SysUserRoleMapper;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysRole;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysUser;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysUserRole;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.vo.SysUserVo;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.service.SysUserService;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.utils.IdWorker;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.util.CollectionUtils;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.BeanUtils;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Service;</span><br><span class="line"><span class="keyword">import</span> org.springframework.transaction.annotation.Transactional;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.Collectors;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 系统用户service</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/4/22 16:51</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SysUserServiceImpl</span> <span class="keyword">implements</span> <span class="title">SysUserService</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> SysUserMapper sysUserMapper;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> SysUserRoleMapper sysUserRoleMapper;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> IdWorker idWorker;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> SysRoleMapper sysRoleMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateLoginTime</span><span class="params">(String username)</span> </span>&#123;</span><br><span class="line">        sysUserMapper.updateLoginTime(username);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SysUser <span class="title">getByUserName</span><span class="params">(String username)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sysUserMapper.getByUserName(username);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="meta">@Transactional</span>(rollbackFor = Exception<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">    <span class="title">public</span> <span class="title">void</span> <span class="title">save</span>(<span class="title">SysUserVo</span> <span class="title">sysUser</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 拷贝属性</span></span><br><span class="line">        SysUser user = <span class="keyword">new</span> SysUser();</span><br><span class="line">        BeanUtils.copyProperties(sysUser, user);</span><br><span class="line">        <span class="comment">//根据雪花算法插入id</span></span><br><span class="line">        <span class="keyword">long</span> userId = idWorker.nextId();</span><br><span class="line">        user.setId(userId);</span><br><span class="line">       sysUserMapper.save(user);</span><br><span class="line">       <span class="comment">//如果角色id存在，存入用户角色表</span></span><br><span class="line">        <span class="keyword">if</span> (sysUser.getSysRole()!=<span class="keyword">null</span>&amp;&amp; sysUser.getSysRole().getRoleId()!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            SysUserRole sysUserRole = <span class="keyword">new</span> SysUserRole();</span><br><span class="line">            sysUserRole.setUserId(userId);</span><br><span class="line">            sysUserRole.setRoleId(sysUser.getSysRole().getRoleId());</span><br><span class="line">            sysUserRoleMapper.save(sysUserRole);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">(SysUserVo sysUser)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//拷贝属性</span></span><br><span class="line">        SysUser user = <span class="keyword">new</span> SysUser();</span><br><span class="line">        BeanUtils.copyProperties(sysUser,user);</span><br><span class="line">        sysUserMapper.update(sysUser);</span><br><span class="line">        <span class="comment">//先删除再修改</span></span><br><span class="line">        sysUserRoleMapper.deleteByUserId(user.getId());</span><br><span class="line">        <span class="comment">//如果角色id存在，存入用户角色表</span></span><br><span class="line">        <span class="keyword">if</span> (sysUser.getSysRole()!=<span class="keyword">null</span>&amp;&amp; sysUser.getSysRole().getRoleId()!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            SysUserRole sysUserRole = <span class="keyword">new</span> SysUserRole();</span><br><span class="line">            sysUserRole.setUserId(user.getId());</span><br><span class="line">            sysUserRole.setRoleId(sysUser.getSysRole().getRoleId());</span><br><span class="line">            sysUserRoleMapper.save(sysUserRole);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delete</span><span class="params">(Long id)</span> </span>&#123;</span><br><span class="line">        sysUserMapper.delete(id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="meta">@Transactional</span>(rollbackFor = Exception<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">    <span class="title">public</span> <span class="title">void</span> <span class="title">enable</span>(<span class="title">Long</span> <span class="title">id</span>) </span>&#123;</span><br><span class="line">        <span class="comment">//先查再改</span></span><br><span class="line">        SysUser sysUser=sysUserMapper.getById(id);</span><br><span class="line">        sysUser.setStatus(StateEnum.ENABLED.getCode());</span><br><span class="line">        sysUserMapper.updateStatus(sysUser);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="meta">@Transactional</span>(rollbackFor = Exception<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">    <span class="title">public</span> <span class="title">void</span> <span class="title">disable</span>(<span class="title">Long</span> <span class="title">id</span>) </span>&#123;</span><br><span class="line">        <span class="comment">//先查再改</span></span><br><span class="line">        SysUser sysUser = sysUserMapper.getById(id);</span><br><span class="line">        sysUser.setStatus(StateEnum.NOT_ENABLE.getCode());</span><br><span class="line">        sysUserMapper.updateStatus(sysUser);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SysUserVo <span class="title">get</span><span class="params">(Long id)</span> </span>&#123;</span><br><span class="line">        SysUser user = sysUserMapper.getById(id);</span><br><span class="line">        <span class="comment">//拷贝信息</span></span><br><span class="line">        SysUserVo sysUserVo = <span class="keyword">new</span> SysUserVo();</span><br><span class="line">        BeanUtils.copyProperties(user,sysUserVo);</span><br><span class="line">        <span class="comment">//查询角色信息</span></span><br><span class="line">        List&lt;SysUserRole&gt; sysUserRoleList = sysUserRoleMapper.getByUserId(user.getId());</span><br><span class="line">        <span class="keyword">if</span> (!CollectionUtils.isEmpty(sysUserRoleList))&#123;</span><br><span class="line">            <span class="comment">//说明有角色信息,取出角色id</span></span><br><span class="line">            List&lt;Long&gt; roleIds = sysUserRoleList.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());</span><br><span class="line">            <span class="comment">//根据角色ID去查询所有角色信息</span></span><br><span class="line">            List&lt;SysRole&gt; roleList = sysRoleMapper.getByIds(roleIds);</span><br><span class="line">            <span class="keyword">if</span> (!CollectionUtils.isEmpty(roleList))&#123;</span><br><span class="line">                SysRole sysRole = roleList.get(<span class="number">0</span>);</span><br><span class="line">                sysUserVo.setSysRole(sysRole);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            sysUserVo.setSysRole(<span class="keyword">new</span> SysRole());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sysUserVo;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Page&lt;SysUser&gt; <span class="title">getByPage</span><span class="params">(Page&lt;SysUser&gt; page)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//设置默认的当前页和总条数</span></span><br><span class="line">        Integer pageNumber = page.getPageNumber();</span><br><span class="line">        <span class="keyword">if</span> (pageNumber == <span class="keyword">null</span> || pageNumber&lt;<span class="number">1</span>)&#123;</span><br><span class="line">            pageNumber=<span class="number">1</span>;</span><br><span class="line">            page.setPageNumber(pageNumber);</span><br><span class="line">        &#125;</span><br><span class="line">        ArrayList&lt;SysUser&gt; users=sysUserMapper.getByPage(page);</span><br><span class="line">        Integer totalCount=sysUserMapper.countByPage(page);</span><br><span class="line">        page.setList(users);</span><br><span class="line">        page.setTotalCount(totalCount);</span><br><span class="line">        <span class="keyword">return</span> page;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-6-SysRoleMapper"><a href="#1-6-SysRoleMapper" class="headerlink" title="1.6 SysRoleMapper"></a>1.6 SysRoleMapper</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据ID集合查询所有的角色信息</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> roleIds</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">List&lt;SysRole&gt; <span class="title">getByIds</span><span class="params">(List&lt;Long&gt; roleIds)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-7-SysRoleMapper-xml"><a href="#1-7-SysRoleMapper-xml" class="headerlink" title="1.7 SysRoleMapper.xml"></a>1.7 SysRoleMapper.xml</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"getAll"</span> <span class="attr">resultMap</span>=<span class="string">"BaseResultMap"</span>&gt;</span></span><br><span class="line">        select  role_id,role_name from sys_role where deleted = 0</span><br><span class="line">        order by role_sort</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-8-SysUserRoleMapper"><a href="#1-8-SysUserRoleMapper" class="headerlink" title="1.8 SysUserRoleMapper"></a>1.8 SysUserRoleMapper</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.mapper;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysUserRole;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 用户角色mapper</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/5/10 20:55</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SysUserRoleMapper</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 保存用户角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sysUserRole</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">save</span><span class="params">(SysUserRole sysUserRole)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据用户id删除</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">deleteByUserId</span><span class="params">(Long id)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据用户id查询用户角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">List&lt;SysUserRole&gt; <span class="title">getByUserId</span><span class="params">(Long id)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-9-SysUserRoleMapper-xml"><a href="#1-9-SysUserRoleMapper-xml" class="headerlink" title="1.9 SysUserRoleMapper.xml"></a>1.9 SysUserRoleMapper.xml</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">mapper</span> <span class="meta-keyword">PUBLIC</span> <span class="meta-string">"-//mybatis.org//DTD Mapper 3.0//EN"</span> <span class="meta-string">"http://mybatis.org/dtd/mybatis-3-mapper.dtd"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">"hluck.me.pochi.mapper.SysUserRoleMapper"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 通用查询映射结果 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">"BaseResultMap"</span> <span class="attr">type</span>=<span class="string">"hluck.me.pochi.pojo.SysUserRole"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span> <span class="attr">column</span>=<span class="string">"id"</span> <span class="attr">property</span>=<span class="string">"id"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span> <span class="attr">column</span>=<span class="string">"user_id"</span> <span class="attr">property</span>=<span class="string">"userId"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span> <span class="attr">column</span>=<span class="string">"role_id"</span> <span class="attr">property</span>=<span class="string">"roleId"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">insert</span> <span class="attr">id</span>=<span class="string">"save"</span>&gt;</span></span><br><span class="line">        insert into sys_user_role(user_id,role_id) values(#&#123;userId&#125;,#&#123;roleId&#125;)</span><br><span class="line">    <span class="tag">&lt;/<span class="name">insert</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">delete</span> <span class="attr">id</span>=<span class="string">"deleteByUserId"</span>&gt;</span></span><br><span class="line">        delete from sys_user_role where user_id=#&#123;userId&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">delete</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"getByUserId"</span> <span class="attr">resultMap</span>=<span class="string">"BaseResultMap"</span>&gt;</span></span><br><span class="line">        select id,user_id,role_id from sys_user_role where user_id=#&#123;userId&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-10-SysRoleController"><a href="#1-10-SysRoleController" class="headerlink" title="1.10 SysRoleController"></a>1.10 SysRoleController</h3><p>我们在前端需要通过下拉框选择角色，因此需要为角色提供一个查询全部的功能</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 查询所有角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@RequestMapping</span>(value = <span class="string">"/getAll"</span>, method = RequestMethod.GET)</span><br><span class="line">    <span class="keyword">public</span> Result&lt;List&lt;SysRole&gt;&gt; getAll() &#123;</span><br><span class="line">        List&lt;SysRole&gt; list = sysRoleService.getAll();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(list);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-11-SysRoleService"><a href="#1-11-SysRoleService" class="headerlink" title="1.11 SysRoleService"></a>1.11 SysRoleService</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 查询所有角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">List&lt;SysRole&gt; <span class="title">getAll</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-12-SysRoleServiceImpl"><a href="#1-12-SysRoleServiceImpl" class="headerlink" title="1.12 SysRoleServiceImpl"></a>1.12 SysRoleServiceImpl</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> List&lt;SysRole&gt; <span class="title">getAll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> sysRoleMapper.getAll();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-13-SysRoleMapper"><a href="#1-13-SysRoleMapper" class="headerlink" title="1.13 SysRoleMapper"></a>1.13 SysRoleMapper</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 查询所有角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">List&lt;SysRole&gt; <span class="title">getAll</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-14-SysRoleMapper-xml"><a href="#1-14-SysRoleMapper-xml" class="headerlink" title="1.14 SysRoleMapper.xml"></a>1.14 SysRoleMapper.xml</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"getAll"</span> <span class="attr">resultMap</span>=<span class="string">"BaseResultMap"</span>&gt;</span></span><br><span class="line">        select role_id,</span><br><span class="line">               role_name</span><br><span class="line">        from sys_role</span><br><span class="line">        where deleted = 0</span><br><span class="line">        order by role_sort</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-前端"><a href="#2-前端" class="headerlink" title="2.前端"></a>2.前端</h2><h3 id="2-1-API"><a href="#2-1-API" class="headerlink" title="2.1 API"></a>2.1 API</h3><p>用户的API的我们不需要修改，只需要给角色的API增加一个findAll即可</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">findAll() &#123; <span class="comment">// 查询所有</span></span><br><span class="line">    <span class="keyword">return</span> request(&#123;</span><br><span class="line">      url: `/$&#123;group_name&#125;/findAll`,</span><br><span class="line">      method: <span class="string">'get'</span></span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-页面改造"><a href="#2-2-页面改造" class="headerlink" title="2.2 页面改造"></a>2.2 页面改造</h3><p>该功能主要是给用户分配权限，因此要在用户添加和修改中操作。</p>
+<h4 id="sys-user-info-vue"><a href="#sys-user-info-vue" class="headerlink" title="sys-user-info.vue"></a>sys-user-info.vue</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;el-form ref&#x3D;&quot;form&quot; :model&#x3D;&quot;sysUser&quot; label-width&#x3D;&quot;80px&quot; size&#x3D;&quot;small&quot;&gt;</span><br><span class="line">      &lt;el-row&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;24&quot; class&#x3D;&quot;header-container&quot;&gt;</span><br><span class="line">          &lt;el-image</span><br><span class="line">            style&#x3D;&quot;width: 100px; height: 100px&quot;</span><br><span class="line">            :src&#x3D;&quot;sysUser.header&quot;</span><br><span class="line">            fit&#x3D;&quot;fill&quot;</span><br><span class="line">          &#x2F;&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">      &lt;&#x2F;el-row&gt;</span><br><span class="line">      &lt;el-row :gutter&#x3D;&quot;20&quot;&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;8&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;账号&quot;&gt;</span><br><span class="line">            &#123;&#123; sysUser.username &#125;&#125;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;8&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;角色&quot;&gt;</span><br><span class="line">            &#123;&#123; sysUser.sysRole.roleName &#125;&#125;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;8&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;昵称&quot;&gt;</span><br><span class="line">            &#123;&#123; sysUser.nickName &#125;&#125;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">      &lt;&#x2F;el-row&gt;</span><br><span class="line">      &lt;el-row :gutter&#x3D;&quot;20&quot;&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;12&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;邮箱&quot;&gt;</span><br><span class="line">            &#123;&#123; sysUser.email &#125;&#125;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;12&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;启用状态&quot;&gt;</span><br><span class="line">            &#123;&#123; sysUser.status &#x3D;&#x3D;&#x3D; 1 ? &#39;启用&#39;: &#39;未启用&#39; &#125;&#125;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">      &lt;&#x2F;el-row&gt;</span><br><span class="line">      &lt;el-row :gutter&#x3D;&quot;20&quot;&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;12&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;创建时间&quot;&gt;</span><br><span class="line">            &#123;&#123; sysUser.createTime &#125;&#125;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;12&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;更新时间&quot;&gt;</span><br><span class="line">            &#123;&#123; sysUser.updateTime &#125;&#125;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">      &lt;&#x2F;el-row&gt;</span><br><span class="line">      &lt;el-row :gutter&#x3D;&quot;20&quot;&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;24&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;最后登录&quot;&gt;</span><br><span class="line">            &#123;&#123; sysUser.loginTime &#125;&#125;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">      &lt;&#x2F;el-row&gt;</span><br><span class="line">      &lt;el-row :gutter&#x3D;&quot;20&quot;&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;24&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;备注&quot;&gt;</span><br><span class="line">            &#123;&#123; sysUser.note &#125;&#125;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">      &lt;&#x2F;el-row&gt;</span><br><span class="line">    &lt;&#x2F;el-form&gt;</span><br><span class="line"></span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">import sysUserApi from &#39;@&#x2F;api&#x2F;sys-user&#39;</span><br><span class="line">export default &#123;</span><br><span class="line">  props: &#123;</span><br><span class="line">    activeId: &#123;</span><br><span class="line">      type: String,</span><br><span class="line">      default: null</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  data() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      &#x2F;&#x2F; 回显用户信息对象</span><br><span class="line">      sysUser: &#123;</span><br><span class="line">        &#x2F;&#x2F; 角色信息</span><br><span class="line">        sysRole: &#123;&#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  watch: &#123;</span><br><span class="line">    activeId: &#123;</span><br><span class="line">      immediate: true,</span><br><span class="line">      handler: function(newVal, oldVal) &#123;</span><br><span class="line">        this.getById(newVal)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    &#x2F;&#x2F; 根据id查询</span><br><span class="line">    getById(id) &#123;</span><br><span class="line">      sysUserApi.get(id).then(res &#x3D;&gt; &#123;</span><br><span class="line">        this.sysUser &#x3D; res.data</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style scoped&gt;</span><br><span class="line">.header-container &#123;</span><br><span class="line">  text-align: center;</span><br><span class="line">  margin-bottom: 15px;</span><br><span class="line">&#125;</span><br><span class="line">&lt;&#x2F;style&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="sys-user-add"><a href="#sys-user-add" class="headerlink" title="sys-user-add"></a>sys-user-add</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;el-form ref&#x3D;&quot;form&quot; :model&#x3D;&quot;sysUser&quot; :rules&#x3D;&quot;rules&quot; label-width&#x3D;&quot;80px&quot; size&#x3D;&quot;small&quot;&gt;</span><br><span class="line">      &lt;el-row :gutter&#x3D;&quot;20&quot;&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;12&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;账号&quot; prop&#x3D;&quot;username&quot;&gt;</span><br><span class="line">            &lt;el-input v-model&#x3D;&quot;sysUser.username&quot; placeholder&#x3D;&quot;请输入账号&quot; clearable &#x2F;&gt;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;12&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;密码&quot; prop&#x3D;&quot;password&quot;&gt;</span><br><span class="line">            &lt;el-input v-model&#x3D;&quot;sysUser.password&quot; show-password placeholder&#x3D;&quot;请输入密码&quot; clearable &#x2F;&gt;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">      &lt;&#x2F;el-row&gt;</span><br><span class="line">      &lt;el-row :gutter&#x3D;&quot;20&quot;&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;8&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;昵称&quot; prop&#x3D;&quot;nickName&quot;&gt;</span><br><span class="line">            &lt;el-input v-model&#x3D;&quot;sysUser.nickName&quot; placeholder&#x3D;&quot;请输入昵称&quot; clearable &#x2F;&gt;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;8&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;角色&quot;&gt;</span><br><span class="line">            &lt;el-select v-model&#x3D;&quot;sysUser.sysRole.roleId&quot; style&#x3D;&quot;width: 100%&quot; clearable placeholder&#x3D;&quot;请选择角色&quot;&gt;</span><br><span class="line">              &lt;el-option</span><br><span class="line">                v-for&#x3D;&quot;item in roleList&quot;</span><br><span class="line">                :key&#x3D;&quot;item.roleId&quot;</span><br><span class="line">                :label&#x3D;&quot;item.roleName&quot;</span><br><span class="line">                :value&#x3D;&quot;item.roleId&quot;</span><br><span class="line">              &#x2F;&gt;</span><br><span class="line">            &lt;&#x2F;el-select&gt;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;8&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;邮箱&quot;&gt;</span><br><span class="line">            &lt;el-input v-model&#x3D;&quot;sysUser.email&quot; placeholder&#x3D;&quot;请输入邮箱&quot; clearable &#x2F;&gt;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">      &lt;&#x2F;el-row&gt;</span><br><span class="line">      &lt;el-row :gutter&#x3D;&quot;20&quot;&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;24&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;备注&quot;&gt;</span><br><span class="line">            &lt;el-input v-model&#x3D;&quot;sysUser.note&quot; :rows&#x3D;&quot;2&quot; type&#x3D;&quot;textarea&quot; placeholder&#x3D;&quot;请输入备注&quot; clearable &#x2F;&gt;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">      &lt;&#x2F;el-row&gt;</span><br><span class="line"></span><br><span class="line">      &lt;el-form-item&gt;</span><br><span class="line">        &lt;el-button type&#x3D;&quot;primary&quot; @click&#x3D;&quot;add&quot;&gt;添加&lt;&#x2F;el-button&gt;</span><br><span class="line">        &lt;el-button type&#x3D;&quot;warning&quot; @click&#x3D;&quot;sysUser &#x3D; &#123;&#125;&quot;&gt;重置&lt;&#x2F;el-button&gt;</span><br><span class="line">      &lt;&#x2F;el-form-item&gt;</span><br><span class="line">    &lt;&#x2F;el-form&gt;</span><br><span class="line"></span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">import sysUserApi from &#39;@&#x2F;api&#x2F;sys-user&#39;</span><br><span class="line">import sysRoleApi from &#39;@&#x2F;api&#x2F;sys-role&#39;</span><br><span class="line">import md5 from &#39;js-md5&#39;</span><br><span class="line">export default &#123;</span><br><span class="line">  data() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      &#x2F;&#x2F; 用户表单</span><br><span class="line">      sysUser: &#123;</span><br><span class="line">        &#x2F;&#x2F; 角色信息</span><br><span class="line">        sysRole: &#123;&#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F; 角色下拉列表</span><br><span class="line">      roleList: [],</span><br><span class="line">      &#x2F;&#x2F; 表单校验对象</span><br><span class="line">      rules: &#123;</span><br><span class="line">        username: [</span><br><span class="line">          &#123; required: true, message: &#39;请输入用户名&#39;, trigger: &#39;blur&#39; &#125;,</span><br><span class="line">          &#123; min: 5, message: &#39;用户名最短5位&#39;, trigger: &#39;change&#39; &#125;</span><br><span class="line">        ],</span><br><span class="line">        password: [</span><br><span class="line">          &#123; required: true, message: &#39;请输入密码&#39;, trigger: &#39;blur&#39; &#125;,</span><br><span class="line">          &#123; min: 5, message: &#39;密码最短5位&#39;, trigger: &#39;change&#39; &#125;</span><br><span class="line">        ],</span><br><span class="line">        nickName: [</span><br><span class="line">          &#123; required: true, message: &#39;请输入昵称&#39;, trigger: &#39;blur&#39; &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  created() &#123;</span><br><span class="line">    this.getAllRole()</span><br><span class="line">  &#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    &#x2F;&#x2F; 添加</span><br><span class="line">    add() &#123;</span><br><span class="line">      &#x2F;&#x2F; 1.密码要md5加密</span><br><span class="line">      const form &#x3D; &#123; ...this.sysUser &#125;</span><br><span class="line">      form.password &#x3D; md5(form.password)</span><br><span class="line">      &#x2F;&#x2F; 2.表单校验</span><br><span class="line">      sysUserApi.save(form).then(res &#x3D;&gt; &#123;</span><br><span class="line">        this.$message.success(res.msg)</span><br><span class="line">        &#x2F;&#x2F; 关闭对话框，并刷新列表</span><br><span class="line">        this.$emit(&#39;close&#39;)</span><br><span class="line">        this.$emit(&#39;after&#39;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;,</span><br><span class="line">    &#x2F;&#x2F; 查询所有角色</span><br><span class="line">    getAllRole() &#123;</span><br><span class="line">      sysRoleApi.getAll().then(res &#x3D;&gt; &#123;</span><br><span class="line">        this.roleList &#x3D; res.data</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style&gt;</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;style&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="sys-user-update-vue"><a href="#sys-user-update-vue" class="headerlink" title="sys-user-update.vue"></a>sys-user-update.vue</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;el-form ref&#x3D;&quot;form&quot; :model&#x3D;&quot;sysUser&quot; label-width&#x3D;&quot;80px&quot; size&#x3D;&quot;small&quot;&gt;</span><br><span class="line">      &lt;el-row :gutter&#x3D;&quot;20&quot;&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;12&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;账号&quot;&gt;</span><br><span class="line">            &lt;el-input v-model&#x3D;&quot;sysUser.username&quot; readonly placeholder&#x3D;&quot;请输入账号&quot; &#x2F;&gt;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;12&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;角色&quot;&gt;</span><br><span class="line">            &lt;el-select v-model&#x3D;&quot;sysUser.sysRole.roleId&quot; style&#x3D;&quot;width: 100%&quot; clearable placeholder&#x3D;&quot;请选择角色&quot;&gt;</span><br><span class="line">              &lt;el-option</span><br><span class="line">                v-for&#x3D;&quot;item in roleList&quot;</span><br><span class="line">                :key&#x3D;&quot;item.roleId&quot;</span><br><span class="line">                :label&#x3D;&quot;item.roleName&quot;</span><br><span class="line">                :value&#x3D;&quot;item.roleId&quot;</span><br><span class="line">              &#x2F;&gt;</span><br><span class="line">            &lt;&#x2F;el-select&gt;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">      &lt;&#x2F;el-row&gt;</span><br><span class="line">      &lt;el-row :gutter&#x3D;&quot;20&quot;&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;12&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;昵称&quot;&gt;</span><br><span class="line">            &lt;el-input v-model&#x3D;&quot;sysUser.nickName&quot; placeholder&#x3D;&quot;请输入昵称&quot; clearable &#x2F;&gt;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;12&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;邮箱&quot;&gt;</span><br><span class="line">            &lt;el-input v-model&#x3D;&quot;sysUser.email&quot; placeholder&#x3D;&quot;请输入邮箱&quot; clearable &#x2F;&gt;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">      &lt;&#x2F;el-row&gt;</span><br><span class="line">      &lt;el-row :gutter&#x3D;&quot;20&quot;&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;24&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;备注&quot;&gt;</span><br><span class="line">            &lt;el-input v-model&#x3D;&quot;sysUser.note&quot; :rows&#x3D;&quot;2&quot; type&#x3D;&quot;textarea&quot; placeholder&#x3D;&quot;请输入备注&quot; clearable &#x2F;&gt;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">      &lt;&#x2F;el-row&gt;</span><br><span class="line"></span><br><span class="line">      &lt;el-form-item&gt;</span><br><span class="line">        &lt;el-button type&#x3D;&quot;primary&quot; @click&#x3D;&quot;update&quot;&gt;修改&lt;&#x2F;el-button&gt;</span><br><span class="line">        &lt;el-button type&#x3D;&quot;warning&quot; @click&#x3D;&quot;sysUser &#x3D; &#123;&#125;&quot;&gt;重置&lt;&#x2F;el-button&gt;</span><br><span class="line">      &lt;&#x2F;el-form-item&gt;</span><br><span class="line">    &lt;&#x2F;el-form&gt;</span><br><span class="line"></span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">import sysUserApi from &#39;@&#x2F;api&#x2F;sys-user&#39;</span><br><span class="line">import sysRoleApi from &#39;@&#x2F;api&#x2F;sys-role&#39;</span><br><span class="line">export default &#123;</span><br><span class="line">  props: &#123;</span><br><span class="line">    &#x2F;&#x2F; 调用方传来的用户ID</span><br><span class="line">    activeId: &#123;</span><br><span class="line">      type: String,</span><br><span class="line">      default: null</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  data() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      &#x2F;&#x2F; 表单数据</span><br><span class="line">      sysUser: &#123;</span><br><span class="line">        &#x2F;&#x2F; 角色信息</span><br><span class="line">        sysRole: &#123;&#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F; 角色下拉列表</span><br><span class="line">      roleList: []</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  watch: &#123;</span><br><span class="line">    activeId: &#123;</span><br><span class="line">      &#x2F;&#x2F; 该属性作用就是让监听器立即生效</span><br><span class="line">      immediate: true,</span><br><span class="line">      &#x2F;&#x2F; 处理监听器的实际逻辑</span><br><span class="line">      handler: function(newVal, oldVal) &#123;</span><br><span class="line">        this.getById(newVal)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  created() &#123;</span><br><span class="line">    this.getAllRole()</span><br><span class="line">  &#125;,</span><br><span class="line">  methods: &#123;</span><br><span class="line">    &#x2F;&#x2F; 根据id查询用户</span><br><span class="line">    getById(id) &#123;</span><br><span class="line">      sysUserApi.get(id).then(res &#x3D;&gt; &#123;</span><br><span class="line">        this.sysUser &#x3D; res.data</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;,</span><br><span class="line">    &#x2F;&#x2F; 修改用户</span><br><span class="line">    update() &#123;</span><br><span class="line">      sysUserApi.update(this.sysUser).then(res &#x3D;&gt; &#123;</span><br><span class="line">        this.$message.success(res.msg)</span><br><span class="line">        &#x2F;&#x2F; 关闭对话框，并刷新列表</span><br><span class="line">        this.$emit(&#39;close&#39;)</span><br><span class="line">        this.$emit(&#39;after&#39;)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;,</span><br><span class="line">    &#x2F;&#x2F; 查询所有角色</span><br><span class="line">    getAllRole() &#123;</span><br><span class="line">      sysRoleApi.getAll().then(res &#x3D;&gt; &#123;</span><br><span class="line">        this.roleList &#x3D; res.data</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style&gt;</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;style&gt;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/RBAC%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E9%A1%B9%E7%9B%AE/" rel="tag"># RBAC前后端分离项目</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/11/RBAC%E8%A7%92%E8%89%B2%E7%AE%A1%E7%90%86/" rel="prev" title="角色管理">
+      <i class="fa fa-chevron-left"></i> 角色管理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/14/spring/" rel="next" title="Spring">
+      Spring <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-后端"><span class="nav-number">1.</span> <span class="nav-text">1.后端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-SysUserRole"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 SysUserRole</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-SysUserVo"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 SysUserVo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-SysUserController"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 SysUserController</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-SysUserService"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 SysUserService</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-SysUserServiceImpl"><span class="nav-number">1.5.</span> <span class="nav-text">1.5 SysUserServiceImpl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-6-SysRoleMapper"><span class="nav-number">1.6.</span> <span class="nav-text">1.6 SysRoleMapper</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-7-SysRoleMapper-xml"><span class="nav-number">1.7.</span> <span class="nav-text">1.7 SysRoleMapper.xml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-8-SysUserRoleMapper"><span class="nav-number">1.8.</span> <span class="nav-text">1.8 SysUserRoleMapper</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-9-SysUserRoleMapper-xml"><span class="nav-number">1.9.</span> <span class="nav-text">1.9 SysUserRoleMapper.xml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-10-SysRoleController"><span class="nav-number">1.10.</span> <span class="nav-text">1.10 SysRoleController</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-11-SysRoleService"><span class="nav-number">1.11.</span> <span class="nav-text">1.11 SysRoleService</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-12-SysRoleServiceImpl"><span class="nav-number">1.12.</span> <span class="nav-text">1.12 SysRoleServiceImpl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-13-SysRoleMapper"><span class="nav-number">1.13.</span> <span class="nav-text">1.13 SysRoleMapper</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-14-SysRoleMapper-xml"><span class="nav-number">1.14.</span> <span class="nav-text">1.14 SysRoleMapper.xml</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-前端"><span class="nav-number">2.</span> <span class="nav-text">2.前端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-API"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-页面改造"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 页面改造</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#sys-user-info-vue"><span class="nav-number">2.2.1.</span> <span class="nav-text">sys-user-info.vue</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sys-user-add"><span class="nav-number">2.2.2.</span> <span class="nav-text">sys-user-add</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sys-user-update-vue"><span class="nav-number">2.2.3.</span> <span class="nav-text">sys-user-update.vue</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="其他布局相对布局RelativeLayout RelativeLayout下级视图的位置是相对位置，得有具体的参照物才能确定最终位置。 如果不设定下级视图的参照物，那么下级视图默认显示在RelativeLayout内部的左上角。 用于确定视图位置的参照物分两种，一种是与该视图自身平级的视图，另一种是该视图的上级视图（RelativeLayout）。 与参照物对比，相对位置的属性与类型值见下表：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="中级控件">
+<meta property="og:url" content="https://hluck.github.io/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="其他布局相对布局RelativeLayout RelativeLayout下级视图的位置是相对位置，得有具体的参照物才能确定最终位置。 如果不设定下级视图的参照物，那么下级视图默认显示在RelativeLayout内部的左上角。 用于确定视图位置的参照物分两种，一种是与该视图自身平级的视图，另一种是该视图的上级视图（RelativeLayout）。 与参照物对比，相对位置的属性与类型值见下表：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/3.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/4.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/5.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/6.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/7.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/8.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/9.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/10.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/11.png">
+<meta property="article:published_time" content="2022-06-15T08:13:31.942Z">
+<meta property="article:modified_time" content="2022-06-26T06:31:48.946Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/2.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>中级控件 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          中级控件
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-15 16:13:31" itemprop="dateCreated datePublished" datetime="2022-06-15T16:13:31+08:00">2022-06-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-26 14:31:48" itemprop="dateModified" datetime="2022-06-26T14:31:48+08:00">2022-06-26</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>25k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>22 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="其他布局"><a href="#其他布局" class="headerlink" title="其他布局"></a>其他布局</h2><h3 id="相对布局RelativeLayout"><a href="#相对布局RelativeLayout" class="headerlink" title="相对布局RelativeLayout"></a>相对布局RelativeLayout</h3><ul>
+<li>RelativeLayout下级视图的位置是相对位置，<strong>得有具体的参照物才能确定最终位置</strong>。</li>
+<li>如果不设定下级视图的参照物，那么下级视图默认显示在RelativeLayout内部的左上角。</li>
+<li>用于确定视图位置的参照物分两种，一种是与该视图自身平级的视图，另一种是该视图的上级视图（RelativeLayout）。</li>
+<li>与参照物对比，相对位置的属性与类型值见下表：</li>
+</ul>
+<p><img src="/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/2.png" alt></p>
+<a id="more"></a>
+<p>​        代码中定义相对位置用到的是<strong>RelativeLayout.LayoutParams的addRule方法</strong>，该方法的<strong>第一个参数</strong>表示相对位置的类型，具体取值说明见表3-1；<strong>第二个参数</strong>表示参照物视图的ID，即当前视图要参照哪个视图确定自身位置。</p>
+<p>​        下面是在代码中给RelativeLayout动态添加子视图并指定子视图相对位置的代码片段：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RelativeCodeActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityRelativeCodeBinding</span>&gt;</span>(),View.OnClickListener &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityRelativeCodeBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        mBinding.btnAddLeft.setOnClickListener(<span class="keyword">this</span><span class="symbol">@RelativeCodeActivity</span>)</span><br><span class="line">        mBinding.btnAddRight.setOnClickListener(<span class="keyword">this</span><span class="symbol">@RelativeCodeActivity</span>)</span><br><span class="line">        mBinding.btnAddAbove.setOnClickListener(<span class="keyword">this</span><span class="symbol">@RelativeCodeActivity</span>)</span><br><span class="line">        mBinding.btnAddCenter.setOnClickListener(<span class="keyword">this</span><span class="symbol">@RelativeCodeActivity</span>)</span><br><span class="line">        mBinding.btnAddBelow.setOnClickListener(<span class="keyword">this</span><span class="symbol">@RelativeCodeActivity</span>)</span><br><span class="line">        mBinding.btnAddParentBottom.setOnClickListener(<span class="keyword">this</span><span class="symbol">@RelativeCodeActivity</span>)</span><br><span class="line">        mBinding.btnAddParentLeft.setOnClickListener(<span class="keyword">this</span><span class="symbol">@RelativeCodeActivity</span>)</span><br><span class="line">        mBinding.btnAddParentRight.setOnClickListener(<span class="keyword">this</span><span class="symbol">@RelativeCodeActivity</span>)</span><br><span class="line">        mBinding.btnAddParentTop.setOnClickListener(<span class="keyword">this</span><span class="symbol">@RelativeCodeActivity</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onClick</span><span class="params">(v: <span class="type">View</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">when</span>(v?.id)&#123;</span><br><span class="line">            mBinding.btnAddLeft.id -&gt; addView(RelativeLayout.LEFT_OF,RelativeLayout.ALIGN_TOP,v.id)</span><br><span class="line">            mBinding.btnAddAbove.id -&gt; addView(RelativeLayout.ABOVE,RelativeLayout.ALIGN_LEFT,v.id)</span><br><span class="line">            mBinding.btnAddBelow.id -&gt; addView(RelativeLayout.BELOW,RelativeLayout.ALIGN_RIGHT,v.id)</span><br><span class="line">            mBinding.btnAddRight.id -&gt; addView(RelativeLayout.RIGHT_OF,RelativeLayout.ALIGN_BOTTOM,v.id)</span><br><span class="line">            mBinding.btnAddCenter.id -&gt; addView(RelativeLayout.CENTER_IN_PARENT,-<span class="number">1</span>,v.id)</span><br><span class="line">            mBinding.btnAddParentBottom.id -&gt; addView(RelativeLayout.ALIGN_PARENT_BOTTOM,-<span class="number">1</span>,v.id)</span><br><span class="line">            mBinding.btnAddParentLeft.id -&gt; addView(RelativeLayout.ALIGN_PARENT_LEFT,RelativeLayout.CENTER_VERTICAL,v.id)</span><br><span class="line">            mBinding.btnAddParentRight.id -&gt; addView(RelativeLayout.ALIGN_PARENT_RIGHT,-<span class="number">1</span>,v.id)</span><br><span class="line">            mBinding.btnAddParentTop.id -&gt; addView(RelativeLayout.ALIGN_PARENT_TOP,RelativeLayout.CENTER_HORIZONTAL,v.id)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> firstAlign Int</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> secondAlign Int</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> referId Int 代表参考对象的编号</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">addView</span><span class="params">(firstAlign:<span class="type">Int</span>,secondAlign:<span class="type">Int</span>,referId:<span class="type">Int</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> view = View(<span class="keyword">this</span>)</span><br><span class="line">        <span class="comment">//设为半透明绿色</span></span><br><span class="line">        view.setBackgroundColor(<span class="number">0xaa66ff66</span>.toInt())</span><br><span class="line">        <span class="comment">//声明一个布局参数，宽100，高100</span></span><br><span class="line">        <span class="keyword">val</span> params = RelativeLayout.LayoutParams(<span class="number">100</span>,<span class="number">100</span>)</span><br><span class="line">        <span class="comment">//给布局参数添加第一个相对位置的规则，firstAlign代表位置类型，referId代表参考对象</span></span><br><span class="line">        params.addRule(firstAlign,referId)</span><br><span class="line">        <span class="keyword">if</span> (secondAlign&gt;=<span class="number">0</span>)&#123;</span><br><span class="line">            <span class="comment">//如果存在第二个相对位置，则同时给布局参数添加第二个相对位置的规则</span></span><br><span class="line">            params.addRule(secondAlign,referId)</span><br><span class="line">        &#125;</span><br><span class="line">        view.layoutParams = params</span><br><span class="line">        view.setOnLongClickListener(View.OnLongClickListener &#123;</span><br><span class="line">                mBinding.rlContent.removeView(it)</span><br><span class="line">                <span class="keyword">return</span><span class="symbol">@OnLongClickListener</span> <span class="literal">true</span></span><br><span class="line">        &#125;)</span><br><span class="line">        mBinding.rlContent.addView(view)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="FrameLayout"><a href="#FrameLayout" class="headerlink" title="FrameLayout"></a>FrameLayout</h3><p>​        FrameLayout也是较常用的布局，其下级视图无法指定所处的位置，只能统统从上级FrameLayout的左上角开始添加，并且后面添加的子视图会把之前的子视图覆盖掉。框架布局一般用于需要重叠显示的场合，比如绘图、游戏界面等。常见属性说明如下：</p>
+<ul>
+<li>foreground：指定框架布局的前景图像。该图像在框架内部永远处于最顶层，不会被框架内的其他视图覆盖。</li>
+<li>foregroundGravity：指定前景图像的对齐方式。该属性的取值说明同gravity。</li>
+</ul>
+<p>为了更直观地理解FrameLayout，可在代码中为框架布局动态添加子视图，然后观察前后两个子视图的显示效果。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FrameActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityFramBinding</span>&gt;</span>(),View.OnClickListener &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mColorArray = arrayOf(</span><br><span class="line">        Color.BLACK, Color.WHITE, Color.RED, Color.YELLOW, Color.GREEN,</span><br><span class="line">        Color.BLUE, Color.CYAN, Color.MAGENTA, Color.GRAY, Color.DKGRAY)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityFramBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        mBinding.btnAddFrame.setOnClickListener(<span class="keyword">this</span><span class="symbol">@FrameActivity</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onClick</span><span class="params">(v: <span class="type">View</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">when</span>(v?.id)&#123;</span><br><span class="line">            mBinding.btnAddFrame.id -&gt; &#123;</span><br><span class="line">                <span class="keyword">val</span> random = (Math.random()*<span class="number">10</span> % <span class="number">10</span>).toInt()</span><br><span class="line">                <span class="keyword">val</span> vv = View(<span class="keyword">this</span>)</span><br><span class="line">                vv.setBackgroundColor(mColorArray[random])</span><br><span class="line">                <span class="keyword">val</span> params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(random+<span class="number">1</span>)*<span class="number">50</span>)</span><br><span class="line">                vv.layoutParams = params</span><br><span class="line">                vv.setOnLongClickListener(View.OnLongClickListener &#123;</span><br><span class="line">                        mBinding.flContent.removeView(it)</span><br><span class="line">                        <span class="keyword">return</span><span class="symbol">@OnLongClickListener</span> <span class="literal">true</span></span><br><span class="line">                &#125;)</span><br><span class="line">                mBinding.flContent.addView(vv)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="特殊按钮"><a href="#特殊按钮" class="headerlink" title="特殊按钮"></a>特殊按钮</h2><h3 id="复选框CheckBox"><a href="#复选框CheckBox" class="headerlink" title="复选框CheckBox"></a>复选框CheckBox</h3><p>​        CompoundButton类是抽象的复合按钮，因为是抽象类，所以不能直接使用。实际开发中用的是CompoundButton类的几个派生类，主要有复选框CheckBox、单选按钮RadioButton以及开关按钮Switch，这些派生类都可使用CompoundButton的属性和方法。</p>
+<p>​        CompoundButton在布局文件中主要使用下面两个属性。</p>
+<ul>
+<li>checked：指定按钮的勾选状态，true表示勾选，false表示未勾选。默认未勾选。</li>
+<li>button：指定左侧勾选图标的图形。如果不指定就使用系统的默认图标。</li>
+</ul>
+<p>CompoundButton在代码中可使用下列4种方法进行设置。</p>
+<ul>
+<li>setChecked：设置按钮的勾选状态。</li>
+<li>setButtonDrawable：设置左侧勾选图标的图形。</li>
+<li>setOnCheckedChangeListener：设置勾选状态变化的监听器。</li>
+<li>isChecked：判断按钮是否勾选。</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CheckBoxActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityCheckBoxBinding</span>&gt;</span>(),CompoundButton.OnCheckedChangeListener &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityCheckBoxBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        mBinding.ckSystem.setOnCheckedChangeListener(<span class="keyword">this</span><span class="symbol">@CheckBoxActivity</span>)</span><br><span class="line">        mBinding.ckCustom.setOnCheckedChangeListener(<span class="keyword">this</span><span class="symbol">@CheckBoxActivity</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCheckedChanged</span><span class="params">(buttonView: <span class="type">CompoundButton</span>?, isChecked: <span class="type">Boolean</span>)</span></span> &#123;</span><br><span class="line">            <span class="keyword">val</span> desc = String.format(<span class="string">"您%s了这个CheckBox"</span>,<span class="keyword">if</span> (isChecked) <span class="string">"勾选"</span> <span class="keyword">else</span> <span class="string">"取消勾选"</span>)</span><br><span class="line">            buttonView?.text = desc</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>@drawable/checkbox_selector:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">selector</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:state_checked</span>=<span class="string">"true"</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/check_choose"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/check_unchoose"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">selector</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="开关按钮Switch"><a href="#开关按钮Switch" class="headerlink" title="开关按钮Switch"></a>开关按钮Switch</h3><p>​        Switch是开关按钮，Android从4.0版本开始支持该控件。其实Switch是一个高级版本的CheckBox，在选中与取消选中时可展现的界面元素比CheckBox丰富。Switch新添加的属性和设置方法见表3-2。</p>
+<p><img src="/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/1.png" alt></p>
+<p>让Android实现类似iOS的开关按钮，主要思路是借助状态列表图形StateListDrawable，首先定义一个状态列表，XML的代码如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">selector</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:state_checked</span>=<span class="string">"true"</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/switch_on"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/switch_off"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">selector</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​        然后把CheckBox控件的background属性设置为该状态图形，当然button属性要先设置为@null。为什么这里修改background属性，而不直接修改button属性呢？因为button属性是有限制的，无论多大的图片，都只显示一个小小的图标，可是小小的图标怎么能体现用户高大上的身份呢？所以这里必须使用background，要它有多大就能有多大，这才够炫、够档次。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;CheckBox</span><br><span class="line">                android:id=<span class="string">"@+id/ck_status"</span></span><br><span class="line">                android:layout_width=<span class="string">"100dp"</span></span><br><span class="line">                android:layout_height=<span class="string">"50dp"</span></span><br><span class="line">                android:background=<span class="string">"@drawable/switch_selector"</span></span><br><span class="line">                android:button=<span class="string">"@null"</span> /&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="单选按钮RadioButton"><a href="#单选按钮RadioButton" class="headerlink" title="单选按钮RadioButton"></a>单选按钮RadioButton</h3><p>​        单选按钮要在一组按钮中选择其中一项，并且不能多选，这要求有个容器确定这组按钮的范围，这个容器便是RadioGroup。RadioGroup实质上是个布局，同一组RadioButton都要放在同一个RadioGroup节点下。RadioGroup有orientation属性可指定下级控件的排列方向，该属性为horizontal时，单选按钮在水平方向排列；该属性为vertical时，单选按钮在垂直方向排列。RadioGroup下面除了RadioButton，还可以挂载其他子控件（如TextView、ImageView等）。这样看来，RadioGroup就是一个特殊的线性布局，只不过多了管理单选按钮的功能。</p>
+<p>下面是RadioGroup常用的3个方法。</p>
+<ul>
+<li>check：选中指定资源编号的单选按钮。</li>
+<li>getCheckedRadioButtonId：获取选中状态单选按钮的资源编号</li>
+<li>setOnCheckedChangeListener：设置单选按钮勾选变化的监听器。</li>
+</ul>
+<p>​        单选按钮的选中事件一般不由RadioButton处理，而是由RadioGroup响应。选中事件在实现时，首先要写一个单选监听器实现接口RadioGroup.OnCheckedChangeListener，然后调用RadioGroup对象的setOnCheckedChangeListener方法注册该监听器。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RadioHActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityRadioHactivityBinding</span>&gt;</span>(),RadioGroup.OnCheckedChangeListener &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityRadioHactivityBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        mBinding.rgSex.setOnCheckedChangeListener(<span class="keyword">this</span><span class="symbol">@RadioHActivity</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCheckedChanged</span><span class="params">(group: <span class="type">RadioGroup</span>?, checkedId: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (checkedId == mBinding.rbMale.id)&#123;</span><br><span class="line">            mBinding.tvSex.text = <span class="string">"哇哦，你是个帅气的男孩"</span></span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span> (checkedId == mBinding.rbFemale.id)&#123;</span><br><span class="line">            mBinding.tvSex.text = <span class="string">"哇哦，你是个漂亮的女孩"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>前面给不同的按钮自定义按钮图标先后用了3个属性，即自定义CheckBox图标时的button属性、仿iOS开关按钮时的background属性以及自定义RadioButton时的drawableLeft属性。下面总结一下这3个图标设置方式分别适用的场合。</p>
+<ul>
+<li>button：主要用于图标大小要求不高，间隔要求也不高的场合。</li>
+<li>background：主要用于能够以较大空间显示图标的场合。</li>
+<li>drawableLeft：主要用于对图标与文字之间的间隔有要求的场合。</li>
+</ul>
+<h2 id="适配视图基础"><a href="#适配视图基础" class="headerlink" title="适配视图基础"></a>适配视图基础</h2><h3 id="下拉框Spinner"><a href="#下拉框Spinner" class="headerlink" title="下拉框Spinner"></a>下拉框Spinner</h3><p>​        Spinner是下拉框，用于从一串列表中选择某项，功能类似于单选按钮的组合。下拉列表的展示方式有两种，一种是在当前下拉框的正下方展示列表，此时把spinnerMode属性设置为dropdown；另一种是在页面中部以对话框形式展示列表，此时把spinnerMode属性设置为dialog。另外，Spinner还可以在代码中调用下列4个方法。</p>
+<ul>
+<li>setPrompt：设置标题文字。</li>
+<li>setAdapter：设置下拉列表的适配器。适配器可选择ArrayAdapter或SimpleAdapter。</li>
+<li>setSelection：设置当前选中哪项。注意该方法要在setAdapter方法后调用。</li>
+<li>setOnItemSelectedListener：设置下拉列表的选择监听器，该监听器要实现接口OnItemSelectedListener。</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SpinnerDialogActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivitySpinnerDialogBinding</span>&gt;</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> starArray = arrayOf(<span class="string">"水星"</span>, <span class="string">"金星"</span>, <span class="string">"地球"</span>, <span class="string">"火星"</span>, <span class="string">"木星"</span>, <span class="string">"土星"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivitySpinnerDialogBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> starAdapter = ArrayAdapter&lt;String&gt;(<span class="keyword">this</span><span class="symbol">@SpinnerDialogActivity</span>,R.layout.item_select_layout,starArray)</span><br><span class="line">        starAdapter.setDropDownViewResource(R.layout.item_drop_down)</span><br><span class="line">        mBinding.spDialog.prompt = <span class="string">"请选择行星"</span></span><br><span class="line">        mBinding.spDialog.adapter = starAdapter</span><br><span class="line">        mBinding.spDialog.setSelection(<span class="number">0</span>)</span><br><span class="line">        mBinding.spDialog.onItemSelectedListener = MySelectedListener()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">MySelectedListener</span> : <span class="type">AdapterView.OnItemSelectedListener&#123;</span></span></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?, view: <span class="type">View</span>?, position: <span class="type">Int</span>, id: <span class="type">Long</span>)</span></span> &#123;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span><span class="symbol">@SpinnerDialogActivity</span>,<span class="string">"您选择的是<span class="subst">$&#123;starArray[position]&#125;</span>"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onNothingSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?)</span></span> &#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SpinnerIconActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivitySpinnerIconBinding</span>&gt;</span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> starArray = arrayOf(<span class="string">"水星"</span>, <span class="string">"金星"</span>, <span class="string">"地球"</span>, <span class="string">"火星"</span>, <span class="string">"木星"</span>, <span class="string">"土星"</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> icons = arrayOf(R.drawable.shuixing, R.drawable.jinxing, R.drawable.diqiu,</span><br><span class="line">        R.drawable.huoxing, R.drawable.muxing, R.drawable.tuxing)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivitySpinnerIconBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> list = arrayListOf&lt;Map&lt;String,Any&gt;&gt;()</span><br><span class="line">        <span class="keyword">for</span> (i <span class="keyword">in</span> icons.indices)&#123;</span><br><span class="line">            <span class="keyword">val</span> item = HashMap&lt;String,Any&gt;()</span><br><span class="line">            item[<span class="string">"icon"</span>] = icons[i]</span><br><span class="line">            item[<span class="string">"name"</span>] = starArray[i]</span><br><span class="line">            list.add(item)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">val</span> starAdapter = SimpleAdapter(<span class="keyword">this</span><span class="symbol">@SpinnerIconActivity</span>,list,R.layout.item_select_layout,</span><br><span class="line">            arrayOf(<span class="string">"icon"</span>,<span class="string">"name"</span>), intArrayOf(R.id.iv_icon,R.id.tv_name)</span><br><span class="line">        )</span><br><span class="line">        starAdapter.setDropDownViewResource(R.layout.item_simple)</span><br><span class="line">        mBinding.spIcon.prompt = <span class="string">"请选择行星"</span></span><br><span class="line">        mBinding.spIcon.adapter = starAdapter</span><br><span class="line">        mBinding.spIcon.setSelection(<span class="number">0</span>)</span><br><span class="line">        mBinding.spIcon.onItemSelectedListener = MySelectedListener()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">MySelectedListener</span> : <span class="type">AdapterView.OnItemSelectedListener&#123;</span></span></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?, view: <span class="type">View</span>?, position: <span class="type">Int</span>, id: <span class="type">Long</span>)</span></span> &#123;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span><span class="symbol">@SpinnerIconActivity</span>,<span class="string">"您选择的是<span class="subst">$&#123;starArray[position]&#125;</span>"</span>, Toast.LENGTH_SHORT).show()</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onNothingSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?)</span></span> &#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="数组适配器ArrayAdapter"><a href="#数组适配器ArrayAdapter" class="headerlink" title="数组适配器ArrayAdapter"></a>数组适配器ArrayAdapter</h3><p>​        ArrayAdapter主要用于每行列表只展示文本的情况，有两道工序，第一道工序是构造函数，除了提供一堆原始数据外（六大行星的名称列表），还可以指定下拉框当前文本的包装盒，即下面这行代码里的R.layout.item_select，这个布局文件内只有一个TextView，定义了<strong>当前选中文本</strong>的大小、颜色、对齐方式等属性。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//声明一个下拉列表的数组适配器</span></span><br><span class="line"><span class="keyword">val</span> starAdapter = ArrayAdapter&lt;String&gt;(<span class="keyword">this</span><span class="symbol">@SpinnerDropdownActivity</span>,</span><br><span class="line">            R.layout.item_select_layout,starArray)</span><br></pre></td></tr></table></figure>
+
+<p>第二道工序是定义下拉列表的包装盒，即下面代码里的R.layout.item_dropdown，定义了对话框列表中<strong>每行文本</strong>的显示属性。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//设置数组适配器的布局样式</span></span><br><span class="line">starAdapter.setDropDownViewResource(R.layout.item_drop_down)</span><br></pre></td></tr></table></figure>
+
+<h3 id="简单适配器SimpleAdapter"><a href="#简单适配器SimpleAdapter" class="headerlink" title="简单适配器SimpleAdapter"></a>简单适配器SimpleAdapter</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> starAdapter = SimpleAdapter(<span class="keyword">this</span><span class="symbol">@SpinnerIconActivity</span>,list,R.layout.item_select_layout,</span><br><span class="line">            arrayOf(<span class="string">"icon"</span>,<span class="string">"name"</span>), intArrayOf(R.id.iv_icon,R.id.tv_name)</span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p>​        对于SimpleAdapter的构造函数来说，第二个参数Map容器放的是原料糖果与贺卡，第3个参数放的是包装盒，第4个参数放的是糖果袋与贺卡袋的名称，第5个参数放的是包装盒里塞糖果的位置与塞贺卡的位置。</p>
+<h2 id="编辑框"><a href="#编辑框" class="headerlink" title="编辑框"></a>编辑框</h2><h3 id="文本编辑框EditText"><a href="#文本编辑框EditText" class="headerlink" title="文本编辑框EditText"></a>文本编辑框EditText</h3><p>EditText是文本编辑框，用户可在此输入文本等信息。EditText的常用属性说明如下。</p>
+<ul>
+<li>inputType：指定输入的文本类型，代码中对应的方法是setInputType。输入类型的取值说明见表3-3，若同时使用多种文本类型，则可使用竖线“|”把多种文本类型拼接起来。</li>
+<li>maxLength：指定文本允许输入的最大长度。该属性无法通过代码设置。</li>
+<li>hint：指定提示文本的内容，代码中对应的方法是setHint。</li>
+<li>textColorHint：指定提示文本的颜色，代码中对应的方法是setHintTextColor。</li>
+</ul>
+<p><img src="/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/3.png" alt></p>
+<h4 id="更换编辑框的光标"><a href="#更换编辑框的光标" class="headerlink" title="更换编辑框的光标"></a>更换编辑框的光标</h4><p>EditText与光标处理有关的属性主要有两个，分别是：</p>
+<ul>
+<li>cursorVisible，指定光标是否可见。代码中对应的方法是setCursorVisible。</li>
+<li>textCursorDrawable，指定光标的图像。该属性无法通过代码设置。</li>
+</ul>
+<p>如果要隐藏光标，就要把cursorVisible设置为false。如果要变更光标的样式，就要修改textCursorDrawable设置新图像。</p>
+<h4 id="更换编辑框的边框"><a href="#更换编辑框的边框" class="headerlink" title="更换编辑框的边框"></a>更换编辑框的边框</h4><p>​        EditText的边框通过background属性控制，如果要隐藏边框，就要把background设置为@null；如果要修改边框的样式，就要将background设置为其他边框图形。</p>
+<p>​        下面是一个边框定义XML的例子，一旦编辑框获得焦点（例如用户点击了该编辑框），边框就会显示图形shape_edit_focus；否则默认显示shape_edit_normal。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">selector</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:state_focused</span>=<span class="string">"true"</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/shape_edit_focus"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:drawable</span>=<span class="string">"@drawable/shape_edit_normal"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">selector</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>shape_edit_focus:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">shape</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span> &gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">solid</span> <span class="attr">android:color</span>=<span class="string">"#ffffff"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">stroke</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:width</span>=<span class="string">"1dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:color</span>=<span class="string">"#ff0000ff"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">corners</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:bottomLeftRadius</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:bottomRightRadius</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:topLeftRadius</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:topRightRadius</span>=<span class="string">"5dp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">padding</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:bottom</span>=<span class="string">"2dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:left</span>=<span class="string">"2dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:right</span>=<span class="string">"2dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:top</span>=<span class="string">"2dp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">shape</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>shape_edit_normal:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">shape</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span> &gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">solid</span> <span class="attr">android:color</span>=<span class="string">"#ffffff"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">stroke</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:width</span>=<span class="string">"1dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:color</span>=<span class="string">"#ffaaaaaa"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">corners</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:bottomLeftRadius</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:bottomRightRadius</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:topLeftRadius</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:topRightRadius</span>=<span class="string">"5dp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">padding</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:bottom</span>=<span class="string">"2dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:left</span>=<span class="string">"2dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:right</span>=<span class="string">"2dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:top</span>=<span class="string">"2dp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">shape</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="自动隐藏输入法"><a href="#自动隐藏输入法" class="headerlink" title="自动隐藏输入法"></a>自动隐藏输入法</h4><p>​        如果页面上有EditText控件，开发者又没做其他处理，那么用户打开该页面时往往会自动弹出输入法。这是因为编辑框会默认获得焦点，即默认模拟用户的点击操作，于是输入法的软键盘就弹出了。要想避免这种情况，就得阻止编辑框默认获得焦点。</p>
+<p>​        比较常见的做法是给该页面的根节点设置focusable和focusableInTouchMode属性，通过将这两个属性设置为true可强制让根节点获得焦点，从而避免输入法自动弹出的尴尬。</p>
+<p>​        想让编辑框文本达到指定长度时自动关闭输入法，开发者需要获得两个参数，第一个是该编辑框允许输入的最大长度，第二个是当前已经输入的文本长度。当已输入的文本长度等于最大长度时，即可触发关闭软键盘。自动隐藏输入法可分解为3个功能点，分别是获取编辑框的最大长度、监控当前已输入的文本长度和关闭软键盘。</p>
+<ol>
+<li><p>获取编辑框的最大长度</p>
+<p>​    前面提到maxLength属性可设置最大长度，但是EditText并没有直接提供获取最大长度的方法，不过开发者可以通过反射方式间接获得最大长度。</p>
+</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ViewUtil</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getMaxLength</span><span class="params">(EditText et)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">int</span> length = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			InputFilter[] inputFilters = et.getFilters();</span><br><span class="line">			<span class="keyword">for</span> (InputFilter filter : inputFilters) &#123;</span><br><span class="line">				Class&lt;?&gt; c = filter.getClass();</span><br><span class="line">				<span class="keyword">if</span> (c.getName().equals(<span class="string">"android.text.InputFilter$LengthFilter"</span>)) &#123;</span><br><span class="line">					Field[] f = c.getDeclaredFields();</span><br><span class="line">					<span class="keyword">for</span> (Field field : f) &#123;</span><br><span class="line">						<span class="keyword">if</span> (field.getName().equals(<span class="string">"mMax"</span>)) &#123;</span><br><span class="line">							field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">							length = (Integer) field.get(filter);</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> length;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">hideAllInputMethod</span><span class="params">(Activity act)</span> </span>&#123;</span><br><span class="line">		InputMethodManager imm = (InputMethodManager) act.getSystemService(Context.INPUT_METHOD_SERVICE);  </span><br><span class="line">		<span class="comment">//软键盘如果已经打开则关闭之</span></span><br><span class="line">		<span class="keyword">if</span> (imm.isActive() == <span class="keyword">true</span>) &#123;</span><br><span class="line">			imm.toggleSoftInput(<span class="number">0</span>, InputMethodManager.HIDE_NOT_ALWAYS);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">hideOneInputMethod</span><span class="params">(Activity act, View v)</span> </span>&#123;</span><br><span class="line">		InputMethodManager imm = (InputMethodManager) act.getSystemService(Context.INPUT_METHOD_SERVICE);</span><br><span class="line">		imm.hideSoftInputFromWindow(v.getWindowToken(), <span class="number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>监控当前已输入的文本长度</li>
+</ol>
+<p>这个监控操作用到一个文本监听器接口TextWatcher，该接口提供了3个监控方法，具体说明如下。</p>
+<ul>
+<li>beforeTextChanged：在文本改变之前触发。</li>
+<li>onTextChanged：在文本改变过程中触发</li>
+<li>afterTextChanged：在文本改变之后触发。</li>
+</ul>
+<p>​       这里用到的是afterTextChanged方法，开发者需要自己写个监听器实现TextWatcher接口，另外再给EditText对象调用addTextChangedListener方法注册该监听器。下面是一个具体实现该监听器的例子，用途是在输入文本达到指定长度时自动隐藏输入法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EditHideActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityEditHideBinding</span>&gt;</span>(),View.OnClickListener &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityEditHideBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        mBinding.llHide.setOnClickListener(<span class="keyword">this</span><span class="symbol">@EditHideActivity</span>)</span><br><span class="line">        etPhone.addTextChangedListener(HideTextWatcher(etPhone))</span><br><span class="line">        etPassword.addTextChangedListener(HideTextWatcher(etPassword))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onClick</span><span class="params">(v: <span class="type">View</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (v?.id == mBinding.llHide.id)&#123;</span><br><span class="line">            ViewUtil.hideOneInputMethod(<span class="keyword">this</span>,mBinding.etOther)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">HideTextWatcher</span> : <span class="type">TextWatcher&#123;</span></span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">var</span> mMaxLength:<span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">var</span> mStr:String = <span class="string">""</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">var</span> mView:EditText? = <span class="literal">null</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">constructor</span>(v:EditText)&#123;</span><br><span class="line">            mView = v</span><br><span class="line">            mMaxLength = ViewUtil.getMaxLength(v)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">beforeTextChanged</span><span class="params">(s: <span class="type">CharSequence</span>?, start: <span class="type">Int</span>, count: <span class="type">Int</span>, after: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onTextChanged</span><span class="params">(s: <span class="type">CharSequence</span>?, start: <span class="type">Int</span>, before: <span class="type">Int</span>, count: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">            mStr = s.toString()</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">afterTextChanged</span><span class="params">(s: <span class="type">Editable</span>?)</span></span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (mStr.isEmpty())&#123;</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (mStr.length==<span class="number">11</span>&amp;&amp;mMaxLength==<span class="number">11</span>)&#123;</span><br><span class="line">                ViewUtil.hideAllInputMethod(<span class="keyword">this</span><span class="symbol">@EditHideActivity</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (mStr.length == <span class="number">6</span>&amp;&amp;mMaxLength==<span class="number">6</span>)&#123;</span><br><span class="line">                ViewUtil.hideOneInputMethod(<span class="keyword">this</span><span class="symbol">@EditHideActivity</span>,mView)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><p>关闭软键盘</p>
+<p>输入法通过系统服务INPUT_METHOD_SERVICE管理，所以隐藏输入法也要通过该服务实现。下面是关闭软键盘的两种方式及其代码：</p>
+<ul>
+<li><p>调用toggleSoftInput方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">hideAllInputMethod</span><span class="params">(Activity act)</span> </span>&#123;</span><br><span class="line">		InputMethodManager imm = (InputMethodManager) act.getSystemService(Context.INPUT_METHOD_SERVICE);  </span><br><span class="line">		<span class="comment">//软键盘如果已经打开则关闭之</span></span><br><span class="line">		<span class="keyword">if</span> (imm.isActive() == <span class="keyword">true</span>) &#123;</span><br><span class="line">			imm.toggleSoftInput(<span class="number">0</span>, InputMethodManager.HIDE_NOT_ALWAYS);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>调用hideSoftInputFromWindow方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">hideOneInputMethod</span><span class="params">(Activity act, View v)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//从系统服务中获取输入法管理器</span></span><br><span class="line">		InputMethodManager imm = (InputMethodManager) act.getSystemService(Context.INPUT_METHOD_SERVICE);</span><br><span class="line">    <span class="comment">//关闭屏幕上的输入法软键盘</span></span><br><span class="line">		imm.hideSoftInputFromWindow(v.getWindowToken(), <span class="number">0</span>);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ol>
+<h4 id="输入回车符自动跳转"><a href="#输入回车符自动跳转" class="headerlink" title="输入回车符自动跳转"></a>输入回车符自动跳转</h4><p>​        该功能也用到了文本监听器接口TextWatcher，主要监听用户是否输入回车符，如果监控到已输入回车符，就自动将焦点移到下一个控件，从而实现回车符自动跳转的要求。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EditJumpActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> <span class="keyword">implements</span> <span class="title">OnClickListener</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> EditText et_username;</span><br><span class="line">	<span class="keyword">private</span> EditText et_password;</span><br><span class="line">	<span class="keyword">private</span> Button btn_login;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">		setContentView(R.layout.activity_edit_jump);</span><br><span class="line">		</span><br><span class="line">		et_username= (EditText) findViewById(R.id.et_username);</span><br><span class="line">		et_password= (EditText) findViewById(R.id.et_password);</span><br><span class="line">		btn_login = (Button) findViewById(R.id.btn_login);</span><br><span class="line">		et_username.addTextChangedListener(<span class="keyword">new</span> JumpTextWatcher(et_username, et_password));</span><br><span class="line">		et_password.addTextChangedListener(<span class="keyword">new</span> JumpTextWatcher(et_password, btn_login));</span><br><span class="line">		btn_login.setOnClickListener(<span class="keyword">this</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (v.getId() == R.id.btn_login) &#123;</span><br><span class="line">			Toast.makeText(<span class="keyword">this</span>, <span class="string">"这个登录按钮啥事也没做"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">JumpTextWatcher</span> <span class="keyword">implements</span> <span class="title">TextWatcher</span> </span>&#123;</span><br><span class="line">		 </span><br><span class="line">		<span class="keyword">private</span> EditText mThisView = <span class="keyword">null</span>;</span><br><span class="line">		<span class="keyword">private</span> View mNextView = <span class="keyword">null</span>;</span><br><span class="line">		 </span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="title">JumpTextWatcher</span><span class="params">(EditText vThis, View vNext)</span> </span>&#123;</span><br><span class="line">			<span class="keyword">super</span>();</span><br><span class="line">			mThisView = vThis;</span><br><span class="line">			<span class="keyword">if</span> (vNext != <span class="keyword">null</span>) &#123;</span><br><span class="line">				mNextView = vNext;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="meta">@Override</span></span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">beforeTextChanged</span><span class="params">(CharSequence s, <span class="keyword">int</span> start, <span class="keyword">int</span> count, <span class="keyword">int</span> after)</span> </span>&#123;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="meta">@Override</span></span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onTextChanged</span><span class="params">(CharSequence s, <span class="keyword">int</span> start, <span class="keyword">int</span> before, <span class="keyword">int</span> count)</span> </span>&#123;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="meta">@Override</span></span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterTextChanged</span><span class="params">(Editable s)</span> </span>&#123;</span><br><span class="line">			String str = s.toString();</span><br><span class="line">			<span class="comment">//发现输入回车符或换行符</span></span><br><span class="line">			<span class="keyword">if</span> (str.indexOf(<span class="string">"\r"</span>) &gt;= <span class="number">0</span> || str.indexOf(<span class="string">"\n"</span>) &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">				<span class="comment">//去掉回车符和换行符</span></span><br><span class="line">				mThisView.setText(str.replace(<span class="string">"\r"</span>, <span class="string">""</span>).replace(<span class="string">"\n"</span>, <span class="string">""</span>));</span><br><span class="line">				<span class="keyword">if</span> (mNextView != <span class="keyword">null</span>) &#123;</span><br><span class="line">					<span class="comment">//让下一个视图获得焦点，即将光标移到下个视图</span></span><br><span class="line">					mNextView.requestFocus();</span><br><span class="line">					<span class="keyword">if</span> (mNextView <span class="keyword">instanceof</span> EditText) &#123;</span><br><span class="line">						EditText et = (EditText)mNextView;</span><br><span class="line">						<span class="comment">//让光标自动移到编辑框内部的文本末尾</span></span><br><span class="line">						<span class="comment">//方式一：直接调用EditText的setSelection方法</span></span><br><span class="line">						et.setSelection(et.getText().length());</span><br><span class="line">						<span class="comment">//方式二：调用Selection类的setSelection方法</span></span><br><span class="line">						<span class="comment">//Editable edit = et.getText();</span></span><br><span class="line">						<span class="comment">//Selection.setSelection(edit, edit.length());</span></span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	 &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="自动完成编辑框AutoCompleteTextView"><a href="#自动完成编辑框AutoCompleteTextView" class="headerlink" title="自动完成编辑框AutoCompleteTextView"></a>自动完成编辑框AutoCompleteTextView</h3><p>​        AutoCompleteTextView的实现原理是：EditText结合监听器TextWatcher与下拉列表Spinner，一旦监控到EditText的文本发生变化，就自动弹出适配好的文字下拉列表，选中具体的下拉项向EditText填入相应文字。</p>
+<p>AutoCompleteTextView新增的几个属性都与下拉列表有关，详细说明见表3-4。</p>
+<p><img src="/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/4.png" alt></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">layout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">data</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">data</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:padding</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".ui.EditAutoActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">AutoCompleteTextView</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/ac_text"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">style</span>=<span class="string">"@style/text_normal"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:padding</span>=<span class="string">"10dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:hint</span>=<span class="string">"请输入搜索关键词"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:completionHint</span>=<span class="string">"相关词语"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:completionThreshold</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:dropDownHeight</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:dropDownHorizontalOffset</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:dropDownVerticalOffset</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:dropDownWidth</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textColor</span>=<span class="string">"#000"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">layout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>自动填充：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EditAutoActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityEditAutoBinding</span>&gt;</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> hitArray = arrayOf(<span class="string">"第一"</span>, <span class="string">"第一次"</span>, <span class="string">"第一次写代码"</span>, <span class="string">"第一次领工资"</span>, <span class="string">"第二"</span>, <span class="string">"第二个"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityEditAutoBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> adapter = ArrayAdapter&lt;String&gt;(<span class="keyword">this</span><span class="symbol">@EditAutoActivity</span>,R.layout.item_drop_down,hitArray)</span><br><span class="line">        mBinding.acText.setAdapter(adapter)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Activity"><a href="#Activity" class="headerlink" title="Activity"></a>Activity</h2><ul>
+<li>onCreate：创建页面。把页面上的各个元素加载到内存中。</li>
+<li>onStart：开始页面。把页面显示在屏幕上。</li>
+<li>onResume：恢复页面。让页面在屏幕上活动起来，例如开启动画、开始任务等。</li>
+<li>onPause：暂停页面。让页面在屏幕上的动作停下来。</li>
+<li>onStop：停止页面。把页面从屏幕上撤下来。</li>
+<li>onDestroy：销毁页面。把页面从内存中清除掉。</li>
+<li>onRestart：重启页面。重新加载内存中的页面数据。</li>
+</ul>
+<h2 id="Intent"><a href="#Intent" class="headerlink" title="Intent"></a>Intent</h2><p>Intent用于处理Android各组件之间的通信，完成的工作主要有3部分：</p>
+<ol>
+<li>Intent需标明本次通信请求从哪里来、到哪里去、要怎么走。</li>
+<li>发起方携带本次通信需要的数据内容，接收方对收到的Intent数据进行解包。</li>
+<li>如果发起方要求判断接收方的处理结果，Intent就要负责让接收方传回应答的数据内容。</li>
+</ol>
+<p><img src="/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/5.png" alt></p>
+<h3 id="显式Intent"><a href="#显式Intent" class="headerlink" title="显式Intent"></a>显式Intent</h3><p><strong>直接指定来源类与目标类名，属于精确匹配。</strong></p>
+<p>​        在声明一个Intent对象时，需要指定两个参数，第一个参数表示跳转的来源页面，第二个参数表示接下来要跳转到的页面类。具体的声明方式有如下3种：</p>
+<ol>
+<li><p>在构造函数中指定，示例代码如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> intent =Intent(<span class="keyword">this</span>,EditSimpleActivity::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>)</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>调用setClass方法指定，示例代码如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> intent = Intent()</span><br><span class="line">intent.setClass(<span class="keyword">this</span>,RelativeCodeActivity::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>)</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>调用setComponent方法指定，示例代码如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> intent = Intent()</span><br><span class="line"><span class="keyword">val</span> component = ComponentName(<span class="keyword">this</span>,RelativeLayoutXMLActivity::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>)</span></span><br><span class="line">intent.setComponent(component)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="隐式Intent"><a href="#隐式Intent" class="headerlink" title="隐式Intent"></a>隐式Intent</h3><p><strong>没有明确指定要跳转的类名，只给出一个动作让系统匹配拥有相同字串定义的目标，属于模糊匹配。</strong></p>
+<p>​        因为我们常常不希望直接暴露源码的类名，只给出一个事先定义好的名称，这样大家约定俗成、按图索骥就好，所以隐式Intent起到了过滤作用。这个定义好的动作名称是一个字符串，可以是自己定义的动作，也可以是已有的系统动作。系统动作的取值说明见表3-6。</p>
+<p><img src="/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/6.png" alt></p>
+<ul>
+<li><p>这个动作名称通过setAction方法指定，也可以通过构造函数Intent(String action)直接生成Intent对象。</p>
+</li>
+<li><p>Uri数据可通过构造函数Intent(String action,Uri uri)在生成对象时一起指定，也可通过setData方法指定（setData这个名字有歧义，实际就是setUri）；</p>
+</li>
+<li><p>Category可通过addCategory方法指定，之所以用add而不用set方法，是因为一个Intent可同时设置多个Category，一起进行过滤。</p>
+</li>
+</ul>
+<p>下面是一个调用系统拨号程序的例子，其中就用到了Uri：</p>
+<p><img src="/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/7.png" alt></p>
+<p>​        隐式Intent还用到了过滤器的概念，即把不符合匹配条件的过滤掉，剩下符合条件的按照优先顺序调用。创建一个Android工程，<strong>AndroidManifest.xml里的intent-filter就是XML中的过滤器</strong>。比如最常见的MainActivity,</p>
+<p>activity节点下面便设置了action和category的过滤条件。其中，android.intent.action.MAIN表示App的入口动作，android.intent.category.LAUNCHER表示在App启动时调用。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:name</span>=<span class="string">".MainActivity"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:exported</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="向下一个Activity传递参数"><a href="#向下一个Activity传递参数" class="headerlink" title="向下一个Activity传递参数"></a>向下一个Activity传递参数</h3><p>​        Intent的setData方法只指定到达目标的路径，并非本次通信所携带的参数信息，真正的参数信息存放在Extras中。Intent重载了很多种putExtra方法传递各种类型的参数，包括String、int、double等基本数据类型，甚至Parcelable、Serializable等序列化结构。不过只是调用putExtra方法显然不好管理，像送快递一样大小包裹随便扔，不但找起来不方便，丢了也难以知道。所以Android引入了Bundle概念，可以把Bundle理解为超市的寄包柜或快递收件柜，大小包裹由Bundle统一存取，方便又安全。</p>
+<p>​        Bundle内部用于存放数据的实质结构是Map映射，可添加元素、删除元素，还可判断元素是否存在。开发者把Bundle全部打包好只需调用一次putExtras方法，把Bundle全部取出来也只需调用一次getExtras方法。</p>
+<p>下面是前一个页面向后一个页面发送请求数据的代码：</p>
+<p><img src="/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/8.png" alt></p>
+<p>下面是后一个页面接收前一个页面请求数据的代码：</p>
+<p><img src="/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/9.png" alt></p>
+<h3 id="向上一个Activity返回参数"><a href="#向上一个Activity返回参数" class="headerlink" title="向上一个Activity返回参数"></a>向上一个Activity返回参数</h3><p>​        Intent有时只把请求数据发送到下一个页面就行，有时还要处理下一个页面的应答数据（通常发生在下一个页面返回到上一个页面时）。如果只把请求数据发送到下一个页面，前一个页面调用startActivity方法就可以；如果还要处理一下个页面的应答数据，此时就得分多步处理，详细步骤如下：</p>
+<ol>
+<li>前一个页面打包好请求数据，调用方法startActivityForResult(Intentintent, int requestCode)，表示需要处理结果数据，第二个参数表示请求编号，用于标识每次请求的唯一性。</li>
+<li>后一个页面接收请求数据，进行相应处理。</li>
+<li>后一个页面在返回前一个页面时，打包应答数据并调用setResult方法返回信息。setResult的第一个参数表示应答代码（成功还是失败），代码示例如下：</li>
+</ol>
+<p><img src="/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/10.png" alt></p>
+<ol start="4">
+<li><p>前一个页面重写方法onActivityResult，该方法的输入参数包含请求编号和应答代码，请求编号用于判断对应哪次请求，应答代码用于判断后一个页面是否处理成功。然后对应答数据进行解包处理，代码示例如下：</p>
+<p><img src="/2022/06/15/%E4%B8%AD%E7%BA%A7%E6%8E%A7%E4%BB%B6/11.png" alt></p>
+</li>
+</ol>
+<p>下面是完整的请求页面代码与应答页面代码，结合效果界面加深对Activity处理参数传递的理解。请求页面的代码示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ActRequestActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> <span class="keyword">implements</span> <span class="title">OnClickListener</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> EditText et_request;</span><br><span class="line">	<span class="keyword">private</span> TextView tv_request;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">		setContentView(R.layout.activity_act_request);</span><br><span class="line">		findViewById(R.id.btn_act_request).setOnClickListener(<span class="keyword">this</span>);</span><br><span class="line">		et_request = (EditText) findViewById(R.id.et_request);</span><br><span class="line">		tv_request = (TextView) findViewById(R.id.tv_request);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (v.getId() == R.id.btn_act_request) &#123;</span><br><span class="line">			Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">			intent.setClass(<span class="keyword">this</span>, ActResponseActivity<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">			intent.putExtra(<span class="string">"request_time"</span>, DateUtil.getNowTime());</span><br><span class="line">			intent.putExtra(<span class="string">"request_content"</span>, et_request.getText().toString());</span><br><span class="line">			startActivityForResult(intent, <span class="number">0</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onActivityResult</span><span class="params">(<span class="keyword">int</span> requestCode, <span class="keyword">int</span> resultCode, Intent data)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (data != <span class="keyword">null</span>) &#123;</span><br><span class="line">			String response_time = data.getStringExtra(<span class="string">"response_time"</span>);</span><br><span class="line">			String response_content = data.getStringExtra(<span class="string">"response_content"</span>);</span><br><span class="line">			String desc = String.format(<span class="string">"收到返回消息：\n应答时间为%s\n应答内容为%s"</span>,</span><br><span class="line">					response_time, response_content);</span><br><span class="line">			tv_request.setText(desc);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>应答页面的代码示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ActResponseActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> <span class="keyword">implements</span> <span class="title">OnClickListener</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> EditText et_response;</span><br><span class="line">	<span class="keyword">private</span> TextView tv_response;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">		setContentView(R.layout.activity_act_response);</span><br><span class="line">		findViewById(R.id.btn_act_response).setOnClickListener(<span class="keyword">this</span>);</span><br><span class="line">		et_response = (EditText) findViewById(R.id.et_response);</span><br><span class="line">		tv_response = (TextView) findViewById(R.id.tv_response);</span><br><span class="line">		<span class="comment">//从前一个页面传来的意图中获取快递包裹</span></span><br><span class="line">		Bundle bundle = getIntent().getExtras();</span><br><span class="line">		String request_time = bundle.getString(<span class="string">"request_time"</span>);</span><br><span class="line">		String request_content = bundle.getString(<span class="string">"request_content"</span>);</span><br><span class="line">		String desc = String.format(<span class="string">"收到请求消息：\n请求时间为%s\n请求内容为%s"</span>,</span><br><span class="line">				request_time, request_content);</span><br><span class="line">		tv_response.setText(desc);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (v.getId() == R.id.btn_act_response) &#123;</span><br><span class="line">			Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">			Bundle bundle = <span class="keyword">new</span> Bundle();</span><br><span class="line">			bundle.putString(<span class="string">"response_time"</span>, DateUtil.getNowTime());</span><br><span class="line">			bundle.putString(<span class="string">"response_content"</span>, et_response.getText().toString());</span><br><span class="line">			intent.putExtras(bundle);</span><br><span class="line">			setResult(Activity.RESULT_OK, intent);</span><br><span class="line">			finish();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/06/07/%E5%B8%B8%E7%94%A8%E6%8F%92%E4%BB%B6/" rel="prev" title="常用插件">
+      <i class="fa fa-chevron-left"></i> 常用插件
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/20/%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8/" rel="next" title="数据存储">
+      数据存储 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#其他布局"><span class="nav-number">1.</span> <span class="nav-text">其他布局</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#相对布局RelativeLayout"><span class="nav-number">1.1.</span> <span class="nav-text">相对布局RelativeLayout</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FrameLayout"><span class="nav-number">1.2.</span> <span class="nav-text">FrameLayout</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#特殊按钮"><span class="nav-number">2.</span> <span class="nav-text">特殊按钮</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#复选框CheckBox"><span class="nav-number">2.1.</span> <span class="nav-text">复选框CheckBox</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开关按钮Switch"><span class="nav-number">2.2.</span> <span class="nav-text">开关按钮Switch</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单选按钮RadioButton"><span class="nav-number">2.3.</span> <span class="nav-text">单选按钮RadioButton</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#适配视图基础"><span class="nav-number">3.</span> <span class="nav-text">适配视图基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下拉框Spinner"><span class="nav-number">3.1.</span> <span class="nav-text">下拉框Spinner</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数组适配器ArrayAdapter"><span class="nav-number">3.2.</span> <span class="nav-text">数组适配器ArrayAdapter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单适配器SimpleAdapter"><span class="nav-number">3.3.</span> <span class="nav-text">简单适配器SimpleAdapter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编辑框"><span class="nav-number">4.</span> <span class="nav-text">编辑框</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#文本编辑框EditText"><span class="nav-number">4.1.</span> <span class="nav-text">文本编辑框EditText</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#更换编辑框的光标"><span class="nav-number">4.1.1.</span> <span class="nav-text">更换编辑框的光标</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#更换编辑框的边框"><span class="nav-number">4.1.2.</span> <span class="nav-text">更换编辑框的边框</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#自动隐藏输入法"><span class="nav-number">4.1.3.</span> <span class="nav-text">自动隐藏输入法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#输入回车符自动跳转"><span class="nav-number">4.1.4.</span> <span class="nav-text">输入回车符自动跳转</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自动完成编辑框AutoCompleteTextView"><span class="nav-number">4.2.</span> <span class="nav-text">自动完成编辑框AutoCompleteTextView</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Activity"><span class="nav-number">5.</span> <span class="nav-text">Activity</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Intent"><span class="nav-number">6.</span> <span class="nav-text">Intent</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#显式Intent"><span class="nav-number">6.1.</span> <span class="nav-text">显式Intent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#隐式Intent"><span class="nav-number">6.2.</span> <span class="nav-text">隐式Intent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#向下一个Activity传递参数"><span class="nav-number">6.3.</span> <span class="nav-text">向下一个Activity传递参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#向上一个Activity返回参数"><span class="nav-number">6.4.</span> <span class="nav-text">向上一个Activity返回参数</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

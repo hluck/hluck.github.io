@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1.抠图类型： 透明材质 （冰块、玻璃杯抠图）——通道抠图、图层蒙版抠图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ps提升课 抠图一">
+<meta property="og:url" content="https://hluck.github.io/2020/10/24/ps%E6%8F%90%E5%8D%87%E8%AF%BE%E6%8A%A0%E5%9B%BE%E4%B8%80/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="1.抠图类型： 透明材质 （冰块、玻璃杯抠图）——通道抠图、图层蒙版抠图">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2020/10/24/ps%E6%8F%90%E5%8D%87%E8%AF%BE%E6%8A%A0%E5%9B%BE%E4%B8%80/%E6%8F%90%E5%8D%871.jpg">
+<meta property="article:published_time" content="2020-10-24T03:42:19.973Z">
+<meta property="article:modified_time" content="2020-10-24T03:45:18.847Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="ps">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2020/10/24/ps%E6%8F%90%E5%8D%87%E8%AF%BE%E6%8A%A0%E5%9B%BE%E4%B8%80/%E6%8F%90%E5%8D%871.jpg">
+
+<link rel="canonical" href="https://hluck.github.io/2020/10/24/ps%E6%8F%90%E5%8D%87%E8%AF%BE%E6%8A%A0%E5%9B%BE%E4%B8%80/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ps提升课 抠图一 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2020/10/24/ps%E6%8F%90%E5%8D%87%E8%AF%BE%E6%8A%A0%E5%9B%BE%E4%B8%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ps提升课 抠图一
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-10-24 11:42:19 / 修改时间：11:45:18" itemprop="dateCreated datePublished" datetime="2020-10-24T11:42:19+08:00">2020-10-24</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-抠图类型："><a href="#1-抠图类型：" class="headerlink" title="1.抠图类型："></a>1.抠图类型：</h2><ol>
+<li>透明材质 （冰块、玻璃杯抠图）——通道抠图、图层蒙版抠图<a id="more"></a></li>
+<li>半透明材质（婚纱抠图）——通道抠图</li>
+</ol>
+<h2 id="2-需要用到的辅助工具："><a href="#2-需要用到的辅助工具：" class="headerlink" title="2.需要用到的辅助工具："></a>2.需要用到的辅助工具：</h2><p><strong>钢笔、色阶、蒙版、调整图层</strong></p>
+<h2 id="3-抠图方法："><a href="#3-抠图方法：" class="headerlink" title="3.抠图方法："></a>3.抠图方法：</h2><h3 id="1-扣冰块——蒙版抠图（若自身带有环境色，可先进行去色操作，再利用蒙版抠图；也可先利用蒙版抠图完再进行去色。去色：图像菜单–调整–去色-快捷键：ctrl-shift-u"><a href="#1-扣冰块——蒙版抠图（若自身带有环境色，可先进行去色操作，再利用蒙版抠图；也可先利用蒙版抠图完再进行去色。去色：图像菜单–调整–去色-快捷键：ctrl-shift-u" class="headerlink" title="1.扣冰块——蒙版抠图（若自身带有环境色，可先进行去色操作，再利用蒙版抠图；也可先利用蒙版抠图完再进行去色。去色：图像菜单–调整–去色/快捷键：ctrl+shift+u)"></a>1.扣冰块——蒙版抠图（若自身带有环境色，可先进行去色操作，再利用蒙版抠图；也可先利用蒙版抠图完再进行去色。去色：图像菜单–调整–去色/快捷键：ctrl+shift+u)</h3><ul>
+<li><p>抠图时按ctrl+c复制选区内像素</p>
+</li>
+<li><p>添加蒙版后，按alt再点击蒙版可进入蒙版内部</p>
+</li>
+</ul>
+<p><strong>1.原理：</strong></p>
+<ol>
+<li><p>蒙版的工作原理————白色保留，黑色隐藏，灰色半透明。</p>
+</li>
+<li><p>蒙版抠透明物体的原理————用自身颜色 在蒙版中抵消自身颜色。 （比如直接把冰块图层复制到通道里，位置不变，黑色位置在蒙版里对应位置还是黑色；白色对应位置还是白色；灰色对应位置还是灰色，由此产生透明与半透明效果）</p>
+</li>
+</ol>
+<p><strong>2.步骤方法：</strong></p>
+<ol>
+<li>如果有背景的话需要先分离背景，把冰块的轮廓抠 出来，可以选择钢笔工具，把冰块轮廓勾勒出来形成闭合路径，ctrl+enter路劲变选区，ctrl+j复制出来成为单独冰块图层。</li>
+<li>在冰块图层添加图层蒙版，选中冰块图层缩览图执行ctrl+A全选画布选区的操作，ctrl+c复制选区内容，按住alt键进入蒙版，ctrl+shift+v原位粘贴（避免出现位置的偏移）。</li>
+<li>点击图层缩览图回到图层，在冰块地下新建图层填充较深颜色即可</li>
+</ol>
+<h3 id="2-抠冰块———通道抠图（注意：通道是颜色原色，通过不同的色彩在通道中显示出的不同程度的黑白灰关系来进行透明物体抠图。抠图时通道不能先去色，否则会缺失通道中的明暗对比效果）"><a href="#2-抠冰块———通道抠图（注意：通道是颜色原色，通过不同的色彩在通道中显示出的不同程度的黑白灰关系来进行透明物体抠图。抠图时通道不能先去色，否则会缺失通道中的明暗对比效果）" class="headerlink" title="2.抠冰块———通道抠图（注意：通道是颜色原色，通过不同的色彩在通道中显示出的不同程度的黑白灰关系来进行透明物体抠图。抠图时通道不能先去色，否则会缺失通道中的明暗对比效果）"></a>2.抠冰块———通道抠图<strong>（注意：通道是颜色原色，通过不同的色彩在通道中显示出的不同程度的黑白灰关系来进行透明物体抠图。抠图时通道不能先去色，否则会缺失通道中的明暗对比效果）</strong></h3><p><strong>1.通道抠图原理——</strong>利用通道当中只显示黑白灰的原理，1、来获取亮部、暗部或者是灰部区域选区进行抠图。（默认黑色完全不选中；白色完全选中；灰色呈现半透明效果）</p>
+<p><strong>2.步骤方法：</strong></p>
+<ol>
+<li>观察RGB通道，选择颜色对比最强烈的通道，（注意：如果三个通道对比都不够强烈，可以选择最强烈的再适当调整一下色阶）。如红通道，复制红通道（拖动红通道到通道面板右下角新建按钮上即可拷贝当前通道）。</li>
+<li>按住Ctrl键加鼠标左键点击红色拷贝通道的缩览图，获取选区（此时载入选区选择的是画面当中的亮部和灰部，即我们所需要保留的区域），接着点击RGB复合通道（即通道里眼睛亮着的只能有RGB、R、G、B通道，其余拷贝出来的通道都要隐藏），回到图层面板，ctrl j复制即可。</li>
+</ol>
+<h3 id="3-抠杯子——通道抠图（注意不要提前去色）"><a href="#3-抠杯子——通道抠图（注意不要提前去色）" class="headerlink" title="3.抠杯子——通道抠图（注意不要提前去色）"></a>3.抠杯子——通道抠图（注意不要提前去色）</h3><ol>
+<li>对比RGB通道，蓝色通道中不包含背景中包含的黄色信息（即显示为黑色），可以直接利用蓝色通道进行抠图。首先复制蓝色通道，用黑色画笔工具涂抹掉多余的白色信息（例如投影等）。只保留杯子部分。</li>
+<li>按住ctrl键点击蓝色拷贝通道缩揽图，获取亮部（杯子部分）选区，点击RGB复合通道，回到图层面板，ctrl +j 复制出来杯子即可。</li>
+<li>对抠选出来的杯子进行ctrl shift u进行去色。</li>
+</ol>
+<h3 id="4-抠婚纱————通道抠图（抠婚纱不需要去色，不管抠之前还是之后）"><a href="#4-抠婚纱————通道抠图（抠婚纱不需要去色，不管抠之前还是之后）" class="headerlink" title="4.抠婚纱————通道抠图（抠婚纱不需要去色，不管抠之前还是之后）"></a>4.抠婚纱————通道抠图（抠婚纱不需要去色，不管抠之前还是之后）</h3><ol>
+<li>钢笔工具将人物和背景分开，边缘要完整平滑。Ctrl+回车路径转选区，ctrl j复制。</li>
+<li>隐藏背景图层，只保留人物图层。观察RGB通道，选择对比度最强烈的图层，如绿色通道。复制绿色通道，调整色阶，适当加大对比度。（注意：在调整色阶对比度时，对比度要适当：如果对比度过强，纱的质感会显得特别单薄；如果对比度太弱，纱的质感会特别厚重，显得抠不干净。）</li>
+<li>按住ctrl点击通道缩览图获得选区（获得的选区是亮部，是我们需要的纱的部分），接着点击RGB复合通道，直接回到图层面板回到图层面板进行ctrl+j复制。</li>
+<li>现在复制出来的图层是半透明图层，需要结合原人物图层添加蒙版，把有背景色的头纱，部分进行隐藏，留出人物皮肤和脑袋不需要擦出。</li>
+<li>使用曲线调节亮度，或者使用减淡工具（快捷键：O）进行提亮，</li>
+<li>拖入到合适的背景当中，适当调整色彩平衡。</li>
+</ol>
+<p><img src="/2020/10/24/ps%E6%8F%90%E5%8D%87%E8%AF%BE%E6%8A%A0%E5%9B%BE%E4%B8%80/%E6%8F%90%E5%8D%871.jpg" alt="提升1.jpg"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ps/" rel="tag"># ps</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/11/git%E6%8F%90%E4%BA%A4%E4%BB%A3%E7%A0%81%E6%AD%A5%E9%AA%A4/" rel="prev" title="git提交代码步骤">
+      <i class="fa fa-chevron-left"></i> git提交代码步骤
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/10/Ps%E6%8F%90%E5%8D%87%E8%AF%BE%20%E6%8A%A0%E5%9B%BE%E4%BA%8C/" rel="next" title="Ps提升课 抠图二">
+      Ps提升课 抠图二 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-抠图类型："><span class="nav-number">1.</span> <span class="nav-text">1.抠图类型：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-需要用到的辅助工具："><span class="nav-number">2.</span> <span class="nav-text">2.需要用到的辅助工具：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-抠图方法："><span class="nav-number">3.</span> <span class="nav-text">3.抠图方法：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-扣冰块——蒙版抠图（若自身带有环境色，可先进行去色操作，再利用蒙版抠图；也可先利用蒙版抠图完再进行去色。去色：图像菜单–调整–去色-快捷键：ctrl-shift-u"><span class="nav-number">3.1.</span> <span class="nav-text">1.扣冰块——蒙版抠图（若自身带有环境色，可先进行去色操作，再利用蒙版抠图；也可先利用蒙版抠图完再进行去色。去色：图像菜单–调整–去色&#x2F;快捷键：ctrl+shift+u)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-抠冰块———通道抠图（注意：通道是颜色原色，通过不同的色彩在通道中显示出的不同程度的黑白灰关系来进行透明物体抠图。抠图时通道不能先去色，否则会缺失通道中的明暗对比效果）"><span class="nav-number">3.2.</span> <span class="nav-text">2.抠冰块———通道抠图（注意：通道是颜色原色，通过不同的色彩在通道中显示出的不同程度的黑白灰关系来进行透明物体抠图。抠图时通道不能先去色，否则会缺失通道中的明暗对比效果）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-抠杯子——通道抠图（注意不要提前去色）"><span class="nav-number">3.3.</span> <span class="nav-text">3.抠杯子——通道抠图（注意不要提前去色）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-抠婚纱————通道抠图（抠婚纱不需要去色，不管抠之前还是之后）"><span class="nav-number">3.4.</span> <span class="nav-text">4.抠婚纱————通道抠图（抠婚纱不需要去色，不管抠之前还是之后）</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

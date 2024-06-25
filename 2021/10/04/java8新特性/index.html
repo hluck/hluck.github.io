@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1.接口默认方法修饰为普通方法在jdk8之前，interface之中可以定义变量和方法，变量必须是public、static、final的，方法必须是public、abstract的，这些修饰符都是默认的。  接口定义的方法：public 抽象方法 需要子类实现 接口定义变量：public  static  final  jdk1.8开始，支持使用static 和 default 修饰 可以写方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java8新特性">
+<meta property="og:url" content="https://hluck.github.io/2021/10/04/java8%E6%96%B0%E7%89%B9%E6%80%A7/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="1.接口默认方法修饰为普通方法在jdk8之前，interface之中可以定义变量和方法，变量必须是public、static、final的，方法必须是public、abstract的，这些修饰符都是默认的。  接口定义的方法：public 抽象方法 需要子类实现 接口定义变量：public  static  final  jdk1.8开始，支持使用static 和 default 修饰 可以写方法">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2021/10/04/java8%E6%96%B0%E7%89%B9%E6%80%A7/1.png">
+<meta property="article:published_time" content="2021-10-04T03:15:11.363Z">
+<meta property="article:modified_time" content="2021-10-07T06:01:58.358Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Java复习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2021/10/04/java8%E6%96%B0%E7%89%B9%E6%80%A7/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2021/10/04/java8%E6%96%B0%E7%89%B9%E6%80%A7/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>java8新特性 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2021/10/04/java8%E6%96%B0%E7%89%B9%E6%80%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          java8新特性
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-04 11:15:11" itemprop="dateCreated datePublished" datetime="2021-10-04T11:15:11+08:00">2021-10-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-10-07 14:01:58" itemprop="dateModified" datetime="2021-10-07T14:01:58+08:00">2021-10-07</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>14k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>13 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-接口默认方法修饰为普通方法"><a href="#1-接口默认方法修饰为普通方法" class="headerlink" title="1.接口默认方法修饰为普通方法"></a>1.接口默认方法修饰为普通方法</h2><p>在jdk8之前，interface之中可以定义变量和方法，变量必须是public、static、final的，方法必须是public、abstract的，这些修饰符都是默认的。</p>
+<ul>
+<li>接口定义的方法：public 抽象方法 需要子类实现</li>
+<li>接口定义变量：public  static  final</li>
+</ul>
+<p><strong>jdk1.8开始，支持使用static 和 default 修饰 可以写方法体，不需要子类重写。</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.education;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/10/4  11:29</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">JDK18Example</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">say</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"hello! jdk 1.8"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">staticSay</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"hello! java8"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">sayHi</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">JdkTest</span> <span class="keyword">implements</span> <span class="title">JDK18Example</span></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 默认方法和静态方法不是抽象的，不需要重写</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sayHi</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"hi"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h2 id="2-Lambda表达式"><a href="#2-Lambda表达式" class="headerlink" title="2.Lambda表达式"></a>2.Lambda表达式</h2><h3 id="什么是Lambda表达式"><a href="#什么是Lambda表达式" class="headerlink" title="什么是Lambda表达式"></a>什么是Lambda表达式</h3><p>Lambda好处：</p>
+<ul>
+<li>简化我们匿名内部类的调用</li>
+<li>Lambda + 方法引入 代码变得更加精简</li>
+</ul>
+<p>Lambda 表达式（lambda expression）是一个匿名函数，简化我们调用匿名函数的过程。</p>
+<h3 id="为什么要使用Lambda表达式"><a href="#为什么要使用Lambda表达式" class="headerlink" title="为什么要使用Lambda表达式"></a>为什么要使用Lambda表达式</h3><p>可以非常简洁的形式调用我们匿名函数的接口。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">    <span class="comment">//1.使用new 的实现类形式调用接口</span></span><br><span class="line">    OrderService orderService = <span class="keyword">new</span> OrderServiceImpl();</span><br><span class="line">    orderService.addOrder();</span><br><span class="line">     <span class="comment">// 2.使用匿名内部类调用</span></span><br><span class="line">    <span class="keyword">new</span> OrderService() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addOrder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">"使用匿名内部类的形式调用接口"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;.addOrder();</span><br><span class="line">	<span class="comment">//3.使用lambda调用接口</span></span><br><span class="line">    OrderService orderService2 = () -&gt; System.out.println(<span class="string">"使用lambda调用接口"</span>);</span><br><span class="line">    orderService2.addOrder();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Lambda表达式的规范"><a href="#Lambda表达式的规范" class="headerlink" title="Lambda表达式的规范"></a>Lambda表达式的规范</h3><p>使用Lambda表达式 依赖于函数接口</p>
+<ol>
+<li>在接口中只能够允许有一个抽象方法</li>
+<li>在函数接口中定义object类中方法</li>
+<li>使用默认或者静态方法</li>
+<li>@FunctionalInterface 表示该接口为函数接口</li>
+</ol>
+<p>Java中使用Lambda表达式的规范，必须是为函数接口</p>
+<p>函数接口的定义：在该接口中只能存在一个抽象方法，该接口称作为函数接口</p>
+<p>JDK中自带的函数接口：</p>
+<p>java.lang.Runnable</p>
+<p>java.util.concurrent.Callable</p>
+<p>java.security.PrivilegedAction</p>
+<p>java.util.Comparator</p>
+<p>java.io.FileFilter</p>
+<p>java.nio.file.PathMatcher</p>
+<p>java.lang.reflect.InvocationHandler</p>
+<p>java.beans.PropertyChangeListener</p>
+<p>java.awt.event.ActionListener</p>
+<p>javax.swing.event.ChangeListener</p>
+<p>我们也可以使用@FunctionalInterface修饰为函数接口</p>
+<h4 id="函数接口的定义"><a href="#函数接口的定义" class="headerlink" title="函数接口的定义"></a>函数接口的定义</h4><ol>
+<li>在接口中只能有一个抽象方法</li>
+<li>@FunctionalInterface  标记为该接口为函数接口</li>
+<li>可以通过default 修饰为普通方法</li>
+<li>可以定义object类中的方法</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyFunctionalInterface</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function">String <span class="title">toString</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Lambda基础语法"><a href="#Lambda基础语法" class="headerlink" title="Lambda基础语法"></a>Lambda基础语法</h3><h4 id="1-无参方法的调用"><a href="#1-无参方法的调用" class="headerlink" title="1.无参方法的调用"></a>1.无参方法的调用</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">NoArgumentInterface</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">get</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">NoArgumentInterface noArgumentInterface = () -&gt; &#123;</span><br><span class="line">     System.out.println(<span class="string">"使用lamdba表达式调用方法"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">noArgumentInterface.get();</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-带参数和返回值"><a href="#2-带参数和返回值" class="headerlink" title="2.带参数和返回值"></a>2.带参数和返回值</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">YouShenInterface</span> </span>&#123;</span><br><span class="line">    <span class="function">String <span class="title">get</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 1.使用匿名内部类调用有参数函数方法</span></span><br><span class="line"><span class="comment">//        String result = new YouShenInterface() &#123;</span></span><br><span class="line"><span class="comment">//            @Override</span></span><br><span class="line"><span class="comment">//            public String get(int i, int j) &#123;</span></span><br><span class="line"><span class="comment">//                return i + "-" + j;</span></span><br><span class="line"><span class="comment">//            &#125;</span></span><br><span class="line"><span class="comment">//        &#125;.get(1, 1);</span></span><br><span class="line"><span class="comment">//        System.out.println(result);</span></span><br><span class="line">        <span class="comment">//2.使用lamdba 调用有参数函数方法</span></span><br><span class="line">        YouShenInterface youShenInterface = (i, j) -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">"mayikt:"</span> + i + <span class="string">","</span> + j);</span><br><span class="line">            <span class="keyword">return</span> i + <span class="string">"-"</span> + j;</span><br><span class="line">        &#125;;</span><br><span class="line">        System.out.println(youShenInterface.get(<span class="number">1</span>, <span class="number">1</span>));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-精简语法"><a href="#3-精简语法" class="headerlink" title="3.精简语法"></a>3.精简语法</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//如果方法体中只有一条语句的情况下 可以不需要写&#123;&#125;</span></span><br><span class="line">NoArgumentInterface noArgumentInterface = () -&gt; </span><br><span class="line">     System.out.println(<span class="string">"使用lamdba表达式调用方法"</span>);</span><br><span class="line">noArgumentInterface.get();</span><br><span class="line"></span><br><span class="line"><span class="comment">//如果方法体只有一条return的情况下不需要些&#123;&#125; 和return</span></span><br><span class="line"><span class="comment">// YouShenInterface youShenInterface = (i, j) -&gt; &#123;</span></span><br><span class="line"><span class="comment">//            return i + "-" + j;</span></span><br><span class="line"><span class="comment">// &#125;;</span></span><br><span class="line"></span><br><span class="line">YouShenInterface youShenInterface2 = (i, j) -&gt; i + <span class="string">"-"</span> + j;</span><br><span class="line">        System.out.println(youShenInterface2.get(<span class="number">1</span>, <span class="number">2</span>));</span><br></pre></td></tr></table></figure>
+
+<h3 id="方法引入"><a href="#方法引入" class="headerlink" title="方法引入"></a>方法引入</h3><h4 id="1-什么是方法引入"><a href="#1-什么是方法引入" class="headerlink" title="1.什么是方法引入"></a>1.什么是方法引入</h4><p>方法引入：需要结合lambda表达式能够让代码变得更加精简。</p>
+<p>需要遵循一个规范：</p>
+<p>方法引入 方法参数列表、返回类型与函数接口参数列表和返回类型必须</p>
+<p>要保持一致。</p>
+<table>
+<thead>
+<tr>
+<th><strong>类型</strong></th>
+<th><strong>语法</strong></th>
+<th><strong>对应lambda表达式</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>构造器引用</td>
+<td>Class::new</td>
+<td>(args) -&gt; new 类名(args)</td>
+</tr>
+<tr>
+<td>静态方法引用</td>
+<td>Class::static_method</td>
+<td>(args) -&gt; 类名.static_method(args)</td>
+</tr>
+<tr>
+<td>对象方法引用</td>
+<td>Class::method</td>
+<td>(inst,args) -&gt; 类名.method(args)</td>
+</tr>
+<tr>
+<td>实例方法引用</td>
+<td>instance::method</td>
+<td>(args) -&gt; instance.method(args)</td>
+</tr>
+</tbody></table>
+<h4 id="2-静态方法引入"><a href="#2-静态方法引入" class="headerlink" title="2.静态方法引入"></a>2.静态方法引入</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TestInterface</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">get</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">getStaticMethod</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"我是 getMethod"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">     <span class="comment">//1.使用匿名内部类的方式调用 get 方法</span></span><br><span class="line">     <span class="keyword">new</span> TestInterface()&#123;</span><br><span class="line">         <span class="meta">@Override</span></span><br><span class="line">         <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">               MethodReference.getMethod();</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;.get();</span><br><span class="line">     </span><br><span class="line">     <span class="comment">//2.使用lambda表达式</span></span><br><span class="line">     TestInterface test = () -&gt; &#123;</span><br><span class="line">         MethodReference.getMethod();</span><br><span class="line">     &#125;;</span><br><span class="line">     test.get();</span><br><span class="line">     <span class="comment">// 使用方法引入调用方法 必须满足：方法引入的方法必须和函数接口中的方法参数列表/返回值一定保持一致。</span></span><br><span class="line">     TestInterface messageInterface = MethodReference::getStaticMethod;</span><br><span class="line">        messageInterface.get();</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-对象方法引入"><a href="#3-对象方法引入" class="headerlink" title="3.对象方法引入"></a>3.对象方法引入</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test23</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">     <span class="function"><span class="keyword">public</span> String <span class="title">objGet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"mayikt"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//1.使用匿名内部类的形式</span></span><br><span class="line">        TestInterface2 test = <span class="keyword">new</span> TestInterface2()&#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> String <span class="title">get</span><span class="params">(Test23 test23)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> test23.objGet();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        System.out.println(test.get(<span class="keyword">new</span> Test23()));</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//2.lambda</span></span><br><span class="line">         TestInterface2 test = (test23) -&gt; test23.objGet();</span><br><span class="line">         System.out.println(test.get(<span class="keyword">new</span> Test23())); </span><br><span class="line">        </span><br><span class="line">        <span class="comment">//3.方法引入在这时候我们函数接口 第一个参数传递test23 返回调用test23.objGet方法</span></span><br><span class="line">         TestInterface2 test = Test23 :: objGet();</span><br><span class="line">         System.out.println(test.get(<span class="keyword">new</span> Test23()));</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//R apply(T t);T  apply方法传递的参数类型 ： R apply 方法返回的类型</span></span><br><span class="line">               <span class="comment">// 需要将string类型字符串获取长度</span></span><br><span class="line"><span class="comment">//        Function&lt;String, Integer&gt; strFunction = (str) -&gt; &#123;</span></span><br><span class="line"><span class="comment">//            return str.length();</span></span><br><span class="line"><span class="comment">//        &#125;;</span></span><br><span class="line">		Function&lt;String, Integer&gt; strFunction2 = String :: length;</span><br><span class="line">        System.out.println(strFunction2.apply(<span class="string">"mayikt"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-实例方法引入"><a href="#4-实例方法引入" class="headerlink" title="4.实例方法引入"></a>4.实例方法引入</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MessageInterface</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">get</span><span class="params">(Integer a)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test009</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">get</span><span class="params">(Integer a)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"方法引入get方法:"</span> + a);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Test009 test009 = <span class="keyword">new</span> Test009();</span><br><span class="line">        <span class="comment">//lambda</span></span><br><span class="line">        MessageInterface messageInterface = () -&gt; &#123;</span><br><span class="line">            test009.get();</span><br><span class="line">        &#125;</span><br><span class="line">        messageInterface.get();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//实例方法引入</span></span><br><span class="line">         MessageInterface messageInterface = test009 :: get;</span><br><span class="line">         messageInterface.get(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="5-构造函数引入"><a href="#5-构造函数引入" class="headerlink" title="5.构造函数引入"></a>5.构造函数引入</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserEntity</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String userName;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">UserEntity</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserInterface</span> </span>&#123;</span><br><span class="line">    <span class="function">UserEntity <span class="title">getUser</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test011</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//1.lambada</span></span><br><span class="line">        UserInterface userInterFace = () -&gt; <span class="keyword">new</span> UserEntity();</span><br><span class="line">        userInterFace.getUser();</span><br><span class="line">        </span><br><span class="line">        UserInterface userInterFace = UserEntity :: <span class="keyword">new</span>;</span><br><span class="line">        userInterFace.getUser();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="lambda实战案例"><a href="#lambda实战案例" class="headerlink" title="lambda实战案例"></a>lambda实战案例</h3><h4 id="Foreach"><a href="#Foreach" class="headerlink" title="Foreach"></a>Foreach</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"> ArrayList&lt;String&gt; strings = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        strings.add(<span class="string">"mayikt"</span>);</span><br><span class="line">        strings.add(<span class="string">"xiaowei"</span>);</span><br><span class="line">        strings.add(<span class="string">"xiaomin"</span>)</span><br><span class="line"><span class="comment">//        strings.forEach(new Consumer() &#123;</span></span><br><span class="line"><span class="comment">//            @Override</span></span><br><span class="line"><span class="comment">//            public void accept(Object o) &#123;</span></span><br><span class="line"><span class="comment">//                System.out.println("o:" + o);</span></span><br><span class="line"><span class="comment">//            &#125;</span></span><br><span class="line"><span class="comment">//        &#125;);</span></span><br><span class="line">strings.forEach((o) -&gt; &#123;</span><br><span class="line">    System.out.println(o);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h4 id="Lambda集合排序"><a href="#Lambda集合排序" class="headerlink" title="Lambda集合排序"></a>Lambda集合排序</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserEntity</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">UserEntity</span><span class="params">(String name, Integer age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"UserEntity&#123;"</span> +</span><br><span class="line">                <span class="string">"name='"</span> + name + <span class="string">'\''</span> +</span><br><span class="line">                <span class="string">", age="</span> + age +</span><br><span class="line">                <span class="string">'&#125;'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">       ArrayList&lt;UserEntity&gt; userlists = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">       userlists.add(<span class="keyword">new</span> UserEntity(<span class="string">"mayikt"</span>, <span class="number">22</span>));</span><br><span class="line">       userlists.add(<span class="keyword">new</span> UserEntity(<span class="string">"xiaomin"</span>, <span class="number">18</span>));</span><br><span class="line">       userlists.add(<span class="keyword">new</span> UserEntity(<span class="string">"xiaoha"</span>, <span class="number">36</span>));</span><br><span class="line"><span class="comment">//        userlists.sort(new Comparator&lt;UserEntity&gt;() &#123;</span></span><br><span class="line"><span class="comment">//            @Override</span></span><br><span class="line"><span class="comment">//            public int compare(UserEntity o1, UserEntity o2) &#123;</span></span><br><span class="line"><span class="comment">//                return o1.getAge() - o2.getAge();</span></span><br><span class="line"><span class="comment">//            &#125;</span></span><br><span class="line"><span class="comment">//        &#125;);</span></span><br><span class="line">	  userlists.sort((o1,o2) -&gt; &#123;</span><br><span class="line">          o1.getAge() - o2.getAge();</span><br><span class="line">      &#125;)</span><br><span class="line">      </span><br><span class="line">      userlists.forEach((Consumer) o -&gt; System.out.println(<span class="string">"o"</span> + o.toString()))</span><br></pre></td></tr></table></figure>
+
+<h4 id="线程调用"><a href="#线程调用" class="headerlink" title="线程调用"></a>线程调用</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Thread(() -&gt; System.out.println(<span class="string">"我是子线程"</span>)).start();</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-Java8-stream流"><a href="#3-Java8-stream流" class="headerlink" title="3.Java8 stream流"></a>3.Java8 stream流</h2><h3 id="什么是stream流"><a href="#什么是stream流" class="headerlink" title="什么是stream流"></a>什么是stream流</h3><p>Stream是JDK1.8 中处理集合的关键抽象概念。</p>
+<p>Lambda 和 Stream 是JDK1.8新增的函数式编程最有亮点的特性了，它可以指定你希望对集合进行的操作，可以执行非常复杂的查找、过滤和映射数据等操作。</p>
+<p>使用Stream API 对集合数据进行操作，就类似于使用SQL执行的数据库查询。</p>
+<p>Stream 使用一种类似用 SQL 语句从数据库查询数据的直观方式来提供一种对 Java 集合运算和表达的高阶抽象。Stream API可以极大提高Java程序员的生产力，让程序员写出高效率、干净、简洁的代码。</p>
+<p>这种风格将要处理的元素集合看作一种流， 流在管道中传输， 并且可以在管道的节点上进行处理， 比如筛选， 排序，聚合等。</p>
+<p>元素流在管道中经过中间操作（intermediate operation）的处理，最后由最终操作(terminal operation)得到前面处理的结果。</p>
+<p><strong>Stream</strong>：非常方便精简的形式遍历集合实现 过滤、排序等。</p>
+<p><strong>Mysql</strong>：select userName from mayikt where userName =‘mayikt’</p>
+<p>Order by age limt(0,2)</p>
+<p><img src="/2021/10/04/java8%E6%96%B0%E7%89%B9%E6%80%A7/1.png" alt></p>
+<h3 id="Stream创建方式"><a href="#Stream创建方式" class="headerlink" title="Stream创建方式"></a>Stream创建方式</h3><p>parallelStream为并行流采用多线程执行</p>
+<p>Stream采用单线程执行 </p>
+<p>parallelStream效率比Stream要高。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;UserEntity&gt; userEntities = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"mayikt"</span>, <span class="number">20</span>));</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"meite"</span>, <span class="number">28</span>));</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"zhangsan"</span>, <span class="number">35</span>));</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"xiaowei"</span>, <span class="number">16</span>));</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"xiaowei"</span>, <span class="number">16</span>));</span><br><span class="line"></span><br><span class="line">userEntities.stream();</span><br><span class="line">userEntities.parallelStream();</span><br></pre></td></tr></table></figure>
+
+<h3 id="Stream将list转换为Set"><a href="#Stream将list转换为Set" class="headerlink" title="Stream将list转换为Set"></a>Stream将list转换为Set</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;UserEntity&gt; stream = userEntities.stream();</span><br><span class="line"><span class="comment">//将我们的集合转为set</span></span><br><span class="line">Set&lt;UserEntity&gt; collectSet = stream.collect(Collectors.toSet());</span><br><span class="line">System.out.println(collectSet);</span><br></pre></td></tr></table></figure>
+
+<h3 id="Stream将list转换为Map"><a href="#Stream将list转换为Map" class="headerlink" title="Stream将list转换为Map"></a>Stream将list转换为Map</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;UserEntity&gt; userEntities = <span class="keyword">new</span> ArrayList&lt;UserEntity&gt;();</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"mayikt"</span>, <span class="number">20</span>));</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"meite"</span>, <span class="number">28</span>));</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"zhangsan"</span>, <span class="number">35</span>));</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"xiaowei"</span>, <span class="number">16</span>));</span><br><span class="line"></span><br><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 创建一个串行的stream流</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">Stream&lt;UserEntity&gt; stream = userEntities.stream();</span><br><span class="line"></span><br><span class="line"> <span class="comment">// key 为string类型 value UserEntity  集合中的数据：UserEntity , string类型</span></span><br><span class="line"> Map&lt;String, UserEntity&gt; collect = stream.collect(Collectors.toMap(<span class="keyword">new</span>      Function&lt;UserEntity, String&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> String <span class="title">apply</span><span class="params">(UserEntity userEntity)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> userEntity.getUserName();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="keyword">new</span> Function&lt;UserEntity, UserEntity&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> UserEntity <span class="title">apply</span><span class="params">(UserEntity userEntity)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> userEntity;</span><br><span class="line">            &#125;</span><br><span class="line">&#125;));</span><br><span class="line"></span><br><span class="line"> collect.forEach(<span class="keyword">new</span> BiConsumer&lt;String, UserEntity&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">accept</span><span class="params">(String s, UserEntity userEntity)</span> </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">"s:"</span> + s + <span class="string">",:"</span> + userEntity.toString());</span><br><span class="line">            &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="Stream将Reduce-求和"><a href="#Stream将Reduce-求和" class="headerlink" title="Stream将Reduce 求和"></a>Stream将Reduce 求和</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;Integer&gt; integerStream = Stream.of(<span class="number">10</span>,<span class="number">20</span>,<span class="number">30</span>,<span class="number">80</span>,<span class="number">50</span>);</span><br><span class="line">Optional&lt;Integer&gt; reduce = integerStream.reduce((a1, a2) -&gt; a1 + a2);</span><br><span class="line">System.out.println(reduce.get());</span><br><span class="line"></span><br><span class="line">Optional&lt;UserEntity&gt; reduce = stream.reduce((user1, user2) -&gt; &#123;</span><br><span class="line">            user1.setAge(user1.getAge() + user2.getAge());</span><br><span class="line">            <span class="keyword">return</span> user1;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="StreamMax和Min"><a href="#StreamMax和Min" class="headerlink" title="StreamMax和Min"></a>StreamMax和Min</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Optional&lt;UserEntity&gt; max = stream.max((o1, o2) -&gt; o1.getAge() - o2.getAge());</span><br><span class="line">System.out.println(max.get());</span><br><span class="line"></span><br><span class="line">Optional&lt;UserEntity&gt; min = stream.min(((o1, o2) -&gt; o1.getAge() - o2.getAge()));</span><br><span class="line">System.out.println(min.get());</span><br></pre></td></tr></table></figure>
+
+<h3 id="StreamMatch-匹配"><a href="#StreamMatch-匹配" class="headerlink" title="StreamMatch 匹配"></a>StreamMatch 匹配</h3><p>anyMatch表示，判断的条件里，任意一个元素成功，返回true</p>
+<p>allMatch表示，判断条件里的元素，所有的都是，返回true</p>
+<p>noneMatch跟allMatch相反，判断条件里的元素，所有的都不是，返回true</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//        boolean result = stream.noneMatch(new Predicate&lt;UserEntity&gt;() &#123;</span></span><br><span class="line"><span class="comment">//            @Override</span></span><br><span class="line"><span class="comment">//            public boolean test(UserEntity userEntity) &#123;</span></span><br><span class="line"><span class="comment">//                return userEntity.getAge() &gt;35;</span></span><br><span class="line"><span class="comment">//            &#125;</span></span><br><span class="line"><span class="comment">//        &#125;);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">boolean</span> result = stream.noneMatch((user) -&gt; user.getAge() &gt; <span class="number">35</span>);</span><br><span class="line">System.out.println(result);</span><br></pre></td></tr></table></figure>
+
+<h3 id="StreamFor循环"><a href="#StreamFor循环" class="headerlink" title="StreamFor循环"></a>StreamFor循环</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//        stream.forEach(new Consumer&lt;UserEntity&gt;() &#123;</span></span><br><span class="line"><span class="comment">//            @Override</span></span><br><span class="line"><span class="comment">//            public void accept(UserEntity userEntity) &#123;</span></span><br><span class="line"><span class="comment">//                System.out.println(userEntity.toString());</span></span><br><span class="line"><span class="comment">//            &#125;</span></span><br><span class="line"><span class="comment">//        &#125;);</span></span><br><span class="line">stream.forEach((userEntity -&gt; System.out.println(userEntity.toString())));</span><br></pre></td></tr></table></figure>
+
+<h3 id="Stream过滤器"><a href="#Stream过滤器" class="headerlink" title="Stream过滤器"></a>Stream过滤器</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">stream.filter((userEntity -&gt; userEntity.getAge() &gt;= <span class="number">35</span>))</span><br><span class="line">      .filter(userEntity -&gt; userEntity.equals(<span class="string">"zhangsan"</span>))</span><br><span class="line">      .forEach((userEntity -&gt; System.out.println(userEntity.toString())));</span><br></pre></td></tr></table></figure>
+
+<h3 id="Stream排序-sorted"><a href="#Stream排序-sorted" class="headerlink" title="Stream排序 sorted"></a>Stream排序 sorted</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">stream.sorted(((o1, o2) -&gt; o1.getAge() - o2.getAge()))</span><br><span class="line">      .forEach(userEntity -&gt; System.out.println(userEntity.toString()));</span><br></pre></td></tr></table></figure>
+
+<h3 id="Stream-limit和skip"><a href="#Stream-limit和skip" class="headerlink" title="Stream limit和skip"></a>Stream limit和skip</h3><p>Limit 从头开始获取</p>
+<p>Skip 就是跳过</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stream.skip(<span class="number">2</span>).limit(<span class="number">1</span>).forEach(userEntity -&gt; System.out.println(userEntity));</span><br></pre></td></tr></table></figure>
+
+<h3 id="Stream-综合案例"><a href="#Stream-综合案例" class="headerlink" title="Stream 综合案例"></a>Stream 综合案例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;UserEntity&gt; userEntities = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"mayikt"</span>, <span class="number">20</span>));</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"meite"</span>, <span class="number">28</span>));</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"zhangsan"</span>, <span class="number">35</span>));</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"xiaowei"</span>, <span class="number">16</span>));</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"mayikt_list"</span>, <span class="number">109</span>));</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"mayikt_zhangsan"</span>, <span class="number">110</span>));</span><br><span class="line">userEntities.add(<span class="keyword">new</span> UserEntity(<span class="string">"lisi"</span>, <span class="number">109</span>));</span><br><span class="line"><span class="comment">//要求：对数据流的数据实现降序排列、且名称包含mayikt 获取前两位</span></span><br><span class="line">userEntities.stream().filter(userEntity -&gt; userEntity.getUserName().contains(<span class="string">"mayikt_"</span>)).limit(<span class="number">2</span>)</span><br><span class="line">    .sorted((o1,o2) -&gt; o1.getAge() - o2.getAge())</span><br><span class="line">    .forEach(userEntity -&gt; System.out.println(userEntity.toString()))</span><br></pre></td></tr></table></figure>
+
+<h3 id="并行流与串行流区别"><a href="#并行流与串行流区别" class="headerlink" title="并行流与串行流区别"></a>并行流与串行流区别</h3><p>串行流：单线程的方式操作； 数据量比较少的时候。</p>
+<p>并行流：多线程方式操作；数据量比较大的时候，原理：</p>
+<p>Fork join 将一个大的任务拆分n多个小的子任务并行执行，</p>
+<p>最后在统计结果，有可能会非常消耗cpu的资源，确实可以</p>
+<p>提高效率。</p>
+<p>注意：数据量比较少的情况下，不要使用并行流。</p>
+<h2 id="4-JDK8Optional"><a href="#4-JDK8Optional" class="headerlink" title="4.JDK8Optional"></a>4.JDK8Optional</h2><p>Optional 类是一个可以为null的容器对象。如果值存在则isPresent()方法会返回true，调用get()方法会返回该对象。</p>
+<p>Optional 是个容器：它可以保存类型T的值，或者仅仅保存null。Optional提供很多有用的方法，这样我们就不用显式进行空值检测。</p>
+<p>Optional 类的引入很好的解决空指针异常。</p>
+<h3 id="判断参数是否为空"><a href="#判断参数是否为空" class="headerlink" title="判断参数是否为空"></a>判断参数是否为空</h3><p>ofNullable(可以传递一个空对象)</p>
+<p>Of(不可以传递空对象)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Integer a1 = <span class="number">1</span>;</span><br><span class="line">Optional&lt;Integer&gt; a = Optional.ofNullable(a1);</span><br><span class="line"><span class="comment">//isPresent true不为空，isPresent返回false为空。</span></span><br><span class="line">System.out.println(a.isPresent());</span><br></pre></td></tr></table></figure>
+
+<p><strong>isPresent  true不为空，isPresent返回false为空。</strong></p>
+<h3 id="参数为空可以设定默认值"><a href="#参数为空可以设定默认值" class="headerlink" title="参数为空可以设定默认值"></a>参数为空可以设定默认值</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Integer a1 = <span class="number">5</span>;</span><br><span class="line">Optional&lt;Integer&gt; a11 = Optional.ofNullable(a1);</span><br><span class="line"><span class="comment">//        System.out.println(a11.get());</span></span><br><span class="line"><span class="comment">//        System.out.println(a11.isPresent());</span></span><br><span class="line">Integer a = Optional.ofNullable(a1).orElse(<span class="number">10</span>);</span><br><span class="line">System.out.println(a);</span><br></pre></td></tr></table></figure>
+
+<h3 id="参数实现过滤"><a href="#参数实现过滤" class="headerlink" title="参数实现过滤"></a>参数实现过滤</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Integer a1 = <span class="number">15</span></span><br><span class="line">Optional&lt;Integer&gt; a = Optional.ofNullable(a1);</span><br><span class="line"><span class="keyword">boolean</span> isPresent = a.filter(a2 -&gt; a2 &gt; <span class="number">17</span>).isPresent();</span><br><span class="line">System.out.println(isPresent);</span><br></pre></td></tr></table></figure>
+
+<h3 id="与Lambda表达式结合使用，优化代码"><a href="#与Lambda表达式结合使用，优化代码" class="headerlink" title="与Lambda表达式结合使用，优化代码"></a>与Lambda表达式结合使用，优化代码</h3><h4 id="1-优化方案1"><a href="#1-优化方案1" class="headerlink" title="1.优化方案1"></a>1.优化方案1</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 优化前</span></span><br><span class="line">String mayiktName = <span class="string">"meite"</span>;</span><br><span class="line"><span class="keyword">if</span> (mayiktName != <span class="keyword">null</span>) &#123;</span><br><span class="line">    System.out.println(mayiktName);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//优化后</span></span><br><span class="line">Optional&lt;String&gt; mayiktName2 = Optional.ofNullable(mayiktName);</span><br><span class="line"><span class="comment">// 当value 不为空时，则不会调用</span></span><br><span class="line"><span class="comment">// mayiktName2.ifPresent(s -&gt; System.out.println(s));</span></span><br><span class="line">mayiktName2.ifPresent(System.out :: print);</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-优化方案2"><a href="#2-优化方案2" class="headerlink" title="2.优化方案2"></a>2.优化方案2</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> OrderEntity order = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    OrderEntity order = Test06.getOrder();</span><br><span class="line">    System.out.println(order);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> OrderEntity <span class="title">getOrder</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="comment">//        // 优化前</span></span><br><span class="line"><span class="comment">//        if (order == null) &#123;</span></span><br><span class="line"><span class="comment">//            return createOrder();</span></span><br><span class="line"><span class="comment">//        &#125;</span></span><br><span class="line"><span class="comment">//        return order;</span></span><br><span class="line">        <span class="comment">// 优化后</span></span><br><span class="line"><span class="comment">//        return Optional.ofNullable(order).orElseGet(new Supplier&lt;OrderEntity&gt;() &#123;</span></span><br><span class="line"><span class="comment">//            @Override</span></span><br><span class="line"><span class="comment">//            public OrderEntity get() &#123;</span></span><br><span class="line"><span class="comment">//                return createOrder();</span></span><br><span class="line"><span class="comment">//            &#125;</span></span><br><span class="line"><span class="comment">//        &#125;);</span></span><br><span class="line">     <span class="keyword">return</span> Optional.ofNullable(order).orElseGet(() -&gt; createOrder());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> OrderEntity <span class="title">createOrder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> OrderEntity(<span class="string">"123456"</span>, <span class="string">"mayikt"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-优化方案3"><a href="#3-优化方案3" class="headerlink" title="3.优化方案3"></a>3.优化方案3</h4><p>map中获取的返回值自动被Optional包装,即 返回值 -&gt; Optional&lt;返回值&gt;</p>
+<p>flatMap中返回值保持不变,但必须是Optional类型,即Optional&lt;返回值&gt; -&gt; Optional&lt;返回值&gt;</p>
+<p>eg:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test07</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        String orderName = Test07.getOrderName();</span><br><span class="line">        System.out.println(orderName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getOrderName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 优化前写法：</span></span><br><span class="line">        OrderEntity order = <span class="keyword">new</span> OrderEntity(<span class="string">"123456"</span>, <span class="string">"MAyikt"</span>);</span><br><span class="line">        <span class="keyword">if</span> (order != <span class="keyword">null</span>) &#123;</span><br><span class="line">            String orderName = order.getOrderName();</span><br><span class="line">            <span class="keyword">if</span> (orderName != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> orderName.toLowerCase();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"><span class="comment">//        return null;</span></span><br><span class="line">        <span class="comment">//优化后写法:</span></span><br><span class="line">        <span class="keyword">return</span> Optional.ofNullable(order).map(orderEntity -&gt; &#123;</span><br><span class="line">            <span class="keyword">return</span> orderEntity.getOrderName();</span><br><span class="line">        &#125;).map(name -&gt; &#123;</span><br><span class="line">            <span class="keyword">return</span> name.toLowerCase();</span><br><span class="line">        &#125;).orElse(<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java%E5%A4%8D%E4%B9%A0/" rel="tag"># Java复习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/24/shiro/" rel="prev" title="shiro">
+      <i class="fa fa-chevron-left"></i> shiro
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/10/10/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/" rel="next" title="多线程基础">
+      多线程基础 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-接口默认方法修饰为普通方法"><span class="nav-number">1.</span> <span class="nav-text">1.接口默认方法修饰为普通方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Lambda表达式"><span class="nav-number">2.</span> <span class="nav-text">2.Lambda表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是Lambda表达式"><span class="nav-number">2.1.</span> <span class="nav-text">什么是Lambda表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要使用Lambda表达式"><span class="nav-number">2.2.</span> <span class="nav-text">为什么要使用Lambda表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lambda表达式的规范"><span class="nav-number">2.3.</span> <span class="nav-text">Lambda表达式的规范</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#函数接口的定义"><span class="nav-number">2.3.1.</span> <span class="nav-text">函数接口的定义</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lambda基础语法"><span class="nav-number">2.4.</span> <span class="nav-text">Lambda基础语法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-无参方法的调用"><span class="nav-number">2.4.1.</span> <span class="nav-text">1.无参方法的调用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-带参数和返回值"><span class="nav-number">2.4.2.</span> <span class="nav-text">2.带参数和返回值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-精简语法"><span class="nav-number">2.4.3.</span> <span class="nav-text">3.精简语法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法引入"><span class="nav-number">2.5.</span> <span class="nav-text">方法引入</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-什么是方法引入"><span class="nav-number">2.5.1.</span> <span class="nav-text">1.什么是方法引入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-静态方法引入"><span class="nav-number">2.5.2.</span> <span class="nav-text">2.静态方法引入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-对象方法引入"><span class="nav-number">2.5.3.</span> <span class="nav-text">3.对象方法引入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-实例方法引入"><span class="nav-number">2.5.4.</span> <span class="nav-text">4.实例方法引入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-构造函数引入"><span class="nav-number">2.5.5.</span> <span class="nav-text">5.构造函数引入</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lambda实战案例"><span class="nav-number">2.6.</span> <span class="nav-text">lambda实战案例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Foreach"><span class="nav-number">2.6.1.</span> <span class="nav-text">Foreach</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Lambda集合排序"><span class="nav-number">2.6.2.</span> <span class="nav-text">Lambda集合排序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#线程调用"><span class="nav-number">2.6.3.</span> <span class="nav-text">线程调用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Java8-stream流"><span class="nav-number">3.</span> <span class="nav-text">3.Java8 stream流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是stream流"><span class="nav-number">3.1.</span> <span class="nav-text">什么是stream流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stream创建方式"><span class="nav-number">3.2.</span> <span class="nav-text">Stream创建方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stream将list转换为Set"><span class="nav-number">3.3.</span> <span class="nav-text">Stream将list转换为Set</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stream将list转换为Map"><span class="nav-number">3.4.</span> <span class="nav-text">Stream将list转换为Map</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stream将Reduce-求和"><span class="nav-number">3.5.</span> <span class="nav-text">Stream将Reduce 求和</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#StreamMax和Min"><span class="nav-number">3.6.</span> <span class="nav-text">StreamMax和Min</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#StreamMatch-匹配"><span class="nav-number">3.7.</span> <span class="nav-text">StreamMatch 匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#StreamFor循环"><span class="nav-number">3.8.</span> <span class="nav-text">StreamFor循环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stream过滤器"><span class="nav-number">3.9.</span> <span class="nav-text">Stream过滤器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stream排序-sorted"><span class="nav-number">3.10.</span> <span class="nav-text">Stream排序 sorted</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stream-limit和skip"><span class="nav-number">3.11.</span> <span class="nav-text">Stream limit和skip</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stream-综合案例"><span class="nav-number">3.12.</span> <span class="nav-text">Stream 综合案例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#并行流与串行流区别"><span class="nav-number">3.13.</span> <span class="nav-text">并行流与串行流区别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-JDK8Optional"><span class="nav-number">4.</span> <span class="nav-text">4.JDK8Optional</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#判断参数是否为空"><span class="nav-number">4.1.</span> <span class="nav-text">判断参数是否为空</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数为空可以设定默认值"><span class="nav-number">4.2.</span> <span class="nav-text">参数为空可以设定默认值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数实现过滤"><span class="nav-number">4.3.</span> <span class="nav-text">参数实现过滤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与Lambda表达式结合使用，优化代码"><span class="nav-number">4.4.</span> <span class="nav-text">与Lambda表达式结合使用，优化代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-优化方案1"><span class="nav-number">4.4.1.</span> <span class="nav-text">1.优化方案1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-优化方案2"><span class="nav-number">4.4.2.</span> <span class="nav-text">2.优化方案2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-优化方案3"><span class="nav-number">4.4.3.</span> <span class="nav-text">3.优化方案3</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

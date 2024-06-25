@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="转载RxJava常用操作符 Observable的创建 from() just() create() interval() timer() range() error()    defer()  from()1public static &lt;T&gt; Observable&lt;T&gt; from(Iterable&lt;? extends T&gt; iterable);  转换集合为一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RxJava常用操作符">
+<meta property="og:url" content="https://hluck.github.io/2022/05/18/RxJava%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C%E7%AC%A6/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="转载RxJava常用操作符 Observable的创建 from() just() create() interval() timer() range() error()    defer()  from()1public static &lt;T&gt; Observable&lt;T&gt; from(Iterable&lt;? extends T&gt; iterable);  转换集合为一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/05/18/RxJava%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C%E7%AC%A6/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/18/RxJava%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C%E7%AC%A6/2.png">
+<meta property="article:published_time" content="2022-05-18T05:59:28.162Z">
+<meta property="article:modified_time" content="2022-05-19T13:47:39.871Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/05/18/RxJava%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C%E7%AC%A6/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/05/18/RxJava%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C%E7%AC%A6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>RxJava常用操作符 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/05/18/RxJava%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C%E7%AC%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RxJava常用操作符
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-18 13:59:28" itemprop="dateCreated datePublished" datetime="2022-05-18T13:59:28+08:00">2022-05-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-19 21:47:39" itemprop="dateModified" datetime="2022-05-19T21:47:39+08:00">2022-05-19</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>转载<a href="https://mp.weixin.qq.com/s?__biz=Mzg2MTYzNzM5OA==&mid=2247508814&idx=1&sn=e36f5be5cf23d84ade1852ec648fbd31&source=41#wechat_redirect" target="_blank" rel="noopener">RxJava常用操作符</a></p>
+<h2 id="Observable的创建"><a href="#Observable的创建" class="headerlink" title="Observable的创建"></a>Observable的创建</h2><ol>
+<li>from()</li>
+<li>just()</li>
+<li>create()</li>
+<li>interval()</li>
+<li>timer()</li>
+<li>range()</li>
+<li>error()   </li>
+<li>defer()</li>
+</ol>
+<h3 id="from"><a href="#from" class="headerlink" title="from()"></a>from()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">Observable&lt;T&gt; <span class="title">from</span><span class="params">(Iterable&lt;? extends T&gt; iterable)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>转换集合为一个每次发射集合中一个元素的 Observable 对象。</p>
+<p><strong>使用场景：对集合（数组、List 等）进行遍历。</strong></p>
+<p><img src="/2022/05/18/RxJava%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C%E7%AC%A6/1.png" alt></p>
+<p><strong>其他 form() API：</strong></p>
+<ul>
+<li>public static <T> Observable<T> from(Future&lt;? extends T&gt; future);</T></T></li>
+<li>public static <T> Observable<T> from(Future&lt;? extends T&gt; future, long timeout, TimeUnit unit);</T></T></li>
+<li>public static <T> Observable<T> from(Future&lt;? extends T&gt; future, Scheduler scheduler);</T></T></li>
+<li>public static <T> Observable<T> from(T[] array);</T></T></li>
+</ul>
+<p><strong>举例：</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1.遍历数组</span></span><br><span class="line">Observable.fromArray(<span class="string">"a"</span>,<span class="string">"b"</span>)</span><br><span class="line"><span class="comment">//2.使用Future创建Observable,Future表示一个异步计算的结果</span></span><br><span class="line"><span class="keyword">val</span> futureTask = FutureTask&lt;String&gt;(<span class="keyword">object</span> :Callable&lt;String&gt;&#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">call</span><span class="params">()</span></span>: String &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"a"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">val</span> worker:Scheduler.Worker = Schedulers.io().createWorker();</span><br><span class="line">worker.schedule &#123;</span><br><span class="line">    futureTask.run()</span><br><span class="line">&#125;</span><br><span class="line">Observable.fromFuture(futureTask)</span><br></pre></td></tr></table></figure>
+
+<h3 id="just"><a href="#just" class="headerlink" title="just()"></a>just()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">Observable&lt;T&gt; <span class="title">just</span><span class="params">(<span class="keyword">final</span> T value)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>转换一个或多个 Object 为依次发射这些 Object 的 Observable 对象。</p>
+<p><strong>使用场景：转换一个或多个普通 Object 为 Observable 对象，如转换数据库查询结果、网络查询结果等。</strong></p>
+<p><img src="/2022/05/18/RxJava%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C%E7%AC%A6/2.png" alt></p>
+<a id="more"></a>
+<p><strong>其他 just() API：</strong></p>
+<ul>
+<li>public static <T> Observable<T> just(T t1, T t2);</T></T></li>
+<li>public static <T> Observable<T> just(T t1, T t2, T t3);</T></T></li>
+<li>public static <T> Observable<T> just(T t1, T t2, T t3, T t4);</T></T></li>
+<li>…</li>
+<li>public static <T> Observable<T> just(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9, T t10);</T></T></li>
+</ul>
+<p><strong>举例：</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//遍历一个或多个</span></span><br><span class="line">Observable.just(<span class="string">"hello"</span>)</span><br><span class="line">Observable.just(<span class="string">"hello"</span>,<span class="string">"22"</span>)</span><br><span class="line"><span class="comment">//效果和just()一样</span></span><br><span class="line">Observable.fromArray(arrayOf(<span class="string">"1"</span>,<span class="string">"2"</span>,<span class="string">"3"</span>))</span><br></pre></td></tr></table></figure>
+
+<p>​        just() 方法可传入 1~10 个参数，也就说当元素个数小于等于 10 的时候既可以使用 just() 也可以使用 from()，否则只能用 from() 方法。</p>
+<h3 id="create"><a href="#create" class="headerlink" title="create"></a>create</h3><p>此方法不常用，大多数时候都是用 just()、form() 等方法</p>
+<h3 id="interval"><a href="#interval" class="headerlink" title="interval()"></a>interval()</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> static Observable&lt;<span class="built_in">Long</span>&gt; interval(long interval, TimeUnit unit);</span><br></pre></td></tr></table></figure>
+
+<p>返回一个每隔指定的时间间隔就发射一个序列号的 Observable 对象。</p>
+<p><strong>使用场景：可使用该操作符完成定时、倒计时等功能。</strong></p>
+<p><strong>其他 interval() API：</strong></p>
+<ul>
+<li>public static Observable<Long> interval(long interval, TimeUnit unit, Scheduler scheduler);</Long></li>
+<li>public static Observable<Long> interval(long initialDelay, long period, TimeUnit unit);</Long></li>
+<li>public static Observable<Long> interval(long initialDelay, long period, TimeUnit unit, Scheduler scheduler);</Long></li>
+</ul>
+<p><strong>举例：</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//每隔1s发送一个序列号，序列号从0开始，每次累加1</span></span><br><span class="line">Observable.interval(<span class="number">1</span>,TimeUnit.SECONDS)</span><br></pre></td></tr></table></figure>
+
+<h3 id="timer"><a href="#timer" class="headerlink" title="timer()"></a>timer()</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> static Observable&lt;<span class="built_in">Long</span>&gt; timer(long delay, TimeUnit unit);</span><br></pre></td></tr></table></figure>
+
+<p>创建一个在指定延迟时间后发射一条数据（固定值：0）的 Observable 对象。</p>
+<p><strong>使用场景：可用来完成定时功能。</strong></p>
+<p><strong>其他 timer() API：</strong></p>
+<ul>
+<li>public static Observable<Long> timer(long delay, TimeUnit unit, Scheduler scheduler);</Long></li>
+</ul>
+<p><strong>举例：</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定时3s</span></span><br><span class="line">Observable.timer(<span class="number">3</span>,TimeUnit.SECONDS)</span><br></pre></td></tr></table></figure>
+
+<h3 id="range"><a href="#range" class="headerlink" title="range()"></a>range()</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> static Observable&lt;Integer&gt; range(int start, int count);</span><br></pre></td></tr></table></figure>
+
+<p>创建一个发射指定范围内的连续整数的 Observable 对象。</p>
+<p><strong>使用场景：可使用该操作符完成一个 fori 的循环，如 for(int i=5;i&lt;=7;i++) -&gt; Observable.range(5, 3)。</strong></p>
+<p><strong>其他 range() API：</strong></p>
+<ul>
+<li>public static Observable<Integer> range(int start, int count, Scheduler scheduler);</Integer></li>
+</ul>
+<p><strong>举例：</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//依次发射5、6、7</span></span><br><span class="line">Observable.range(<span class="number">5</span>,<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="error"><a href="#error" class="headerlink" title="error()"></a>error()</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> static &lt;T&gt; Observable&lt;T&gt; error(Throwable exception);</span><br></pre></td></tr></table></figure>
+
+<p>创建不发射任何数据就发出 onError 通知的 Observable 对象。</p>
+<p><strong>使用场景：程序中捕获异常后，可使用该操作符把捕获的异常传递到后面的逻辑中处理。</strong></p>
+<p><strong>举例：</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//发出一个onError通知</span></span><br><span class="line">Observable.error&lt;Exception&gt;(Exception(<span class="string">"msg"</span>))</span><br></pre></td></tr></table></figure>
+
+<h3 id="defer"><a href="#defer" class="headerlink" title="defer()"></a>defer()</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> static &lt;T&gt; Observable&lt;T&gt; defer(Func0&lt;Observable&lt;T&gt;&gt; observableFactory);</span><br></pre></td></tr></table></figure>
+
+<p>在订阅的时候才会创建 Observable 对象；每一次订阅都创建一个新的 Observable 对象。</p>
+<p><strong>使用场景：可以使用该操作符封装需要被多次执行的函数。</strong></p>
+<p><strong>举例：</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Observable.defer &#123;</span><br><span class="line">    Observable.just(<span class="string">"1"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="重做"><a href="#重做" class="headerlink" title="重做"></a>重做</h2><ol>
+<li>repeat()</li>
+<li>repeatWhen()</li>
+</ol>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> Observable&lt;T&gt; repeat();</span><br></pre></td></tr></table></figure>
+
+<p>使 Observable 对象在发出 onNext() 通知之后重复发射数据。重做结束才会发出 onComplete() 通知，若重做过程中出现异常则会中断并发出 onError() 通知。</p>
+<p><strong>使用场景：可使用该操作符指定一次任务执行完成后立即重复执行上一次的任务，如发送多次网络请求等。</strong></p>
+<p><strong>举例：</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> just = Observable.just(<span class="string">"string"</span>)</span><br><span class="line">        <span class="comment">//无限重复执行</span></span><br><span class="line">        just.repeat()</span><br><span class="line">        <span class="comment">//重复5次</span></span><br><span class="line">        just.repeat(<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="repeatWhen"><a href="#repeatWhen" class="headerlink" title="repeatWhen()"></a>repeatWhen()</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> Observable&lt;T&gt; repeatWhen(<span class="keyword">final</span> Func1&lt;? <span class="keyword">super</span> Observable&lt;? extends <span class="built_in">Void</span>&gt;, ? extends Observable&lt;?&gt;&gt; notificationHandler)</span><br></pre></td></tr></table></figure>
+
+<p>使 Observable 对象在发出 onNext() 通知之后<strong>有条件的重复发射数据</strong>。重做结束才会发出 onCompleted() 通知，若重做过程中出现异常则会中断并发出 onError() 通知。</p>
+<p><strong>使用场景：可使用该操作符指定满足一定条件时重复执行一个任务，如发送多次网络请求等。</strong></p>
+<h2 id="重试"><a href="#重试" class="headerlink" title="重试"></a>重试</h2><ol>
+<li>retry()</li>
+<li>retryWhen()</li>
+</ol>
+<h3 id="retry"><a href="#retry" class="headerlink" title="retry()"></a>retry()</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> Observable&lt;T&gt; retry();</span><br></pre></td></tr></table></figure>
+
+<p>​        在执行 Observable 对象的序列出现异常时，不直接发出 onError() 通知，而是重新订阅该 Observable 对象，直到重做过程中未出现异常，则会发出 onNext() 和 onCompleted() 通知；若重做过程中也出现异常，则会继续重试，直到达到重试次数上限，超出次数后发出最新的 onError() 通知。</p>
+<p><strong>使用场景：网络等请求异常出错后，可重新发起请求。</strong></p>
+<p><strong>其他 retry() API：</strong></p>
+<ul>
+<li>public final Observable<T> retry(final long count);</T></li>
+<li>public final Observable<T> retry(Func2&lt;Integer, Throwable, Boolean&gt; predicate);</T></li>
+</ul>
+<h3 id="retryWhen"><a href="#retryWhen" class="headerlink" title="retryWhen()"></a>retryWhen()</h3><p>有条件的执行重试。</p>
+<p><strong>使用场景：网络等请求异常出错后，若满足一定条件，则重新发起请求。</strong></p>
+<h2 id="变换"><a href="#变换" class="headerlink" title="变换"></a>变换</h2><ol>
+<li>map()</li>
+<li>flatMap()</li>
+</ol>
+<h2 id="过滤"><a href="#过滤" class="headerlink" title="过滤"></a>过滤</h2><ol>
+<li>filter()</li>
+<li>first()</li>
+<li>last()</li>
+<li>skip()</li>
+<li>skipLast()</li>
+<li>take()</li>
+<li>takeLast()</li>
+<li>sample()</li>
+<li>elementAt()</li>
+<li>elementAtOrDefault()</li>
+<li>ignoreElements()</li>
+</ol>
+<h3 id="filter"><a href="#filter" class="headerlink" title="filter()"></a>filter()</h3><p>只发射满足指定谓词的元素。</p>
+<p><strong>使用场景：可使用 filter 代替 if 语句。</strong></p>
+<p><strong>举例：</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Observable.just(-<span class="number">1</span>,-<span class="number">2</span>,<span class="number">0</span>,<span class="number">3</span>)</span><br><span class="line">            .filter &#123;</span><br><span class="line">                <span class="keyword">return</span><span class="symbol">@filter</span> it &gt; <span class="number">0</span></span><br><span class="line">            &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="first"><a href="#first" class="headerlink" title="first()"></a>first()</h3><p>返回一个仅仅发射源 Observable 发射的第一个［满足指定谓词的］元素的 Observable，如果源 Observable 为空，则会抛出一个 NoSuchElementException。</p>
+<p><strong>使用场景： 顺序发出多条数据，只接收第一条。</strong></p>
+<p><strong>举例：</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//发射第一个元素</span></span><br><span class="line">Observable.just(-<span class="number">1</span>,-<span class="number">2</span>,<span class="number">0</span>,<span class="number">3</span>).first(-<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="last"><a href="#last" class="headerlink" title="last()"></a>last()</h3><p>返回一个仅仅发射源 Observable 发射的倒数第一个［满足指定谓词的］元素的 Observable，如果源 Observable 为空，则会抛出一个 NoSuchElementException。</p>
+<p><strong>使用场景： 顺序发出多条数据，只接收最后一条。</strong></p>
+<p><strong>举例：</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//发射满足条件的第一个元素</span></span><br><span class="line">Observable.just(-<span class="number">1</span>,-<span class="number">2</span>,<span class="number">0</span>,<span class="number">3</span>).lastElement()</span><br></pre></td></tr></table></figure>
+
+<h3 id="skip"><a href="#skip" class="headerlink" title="skip()"></a>skip()</h3><p>跳过前面指定数量或指定时间内的元素，只发射后面的元素。</p>
+<p><strong>举例：</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//跳过前两个元素</span></span><br><span class="line">Observable.just(-<span class="number">1</span>,-<span class="number">2</span>,<span class="number">0</span>,<span class="number">3</span>).skip(<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="skipLast"><a href="#skipLast" class="headerlink" title="skipLast()"></a>skipLast()</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//跳过后两个元素</span></span><br><span class="line">Observable.just(-<span class="number">1</span>,-<span class="number">2</span>,<span class="number">0</span>,<span class="number">3</span>).skipLast(<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="take"><a href="#take" class="headerlink" title="take()"></a>take()</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//只发射前三条数据</span></span><br><span class="line">Observable.just(-<span class="number">1</span>,-<span class="number">2</span>,<span class="number">0</span>,<span class="number">3</span>).take(<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="takeLast"><a href="#takeLast" class="headerlink" title="takeLast()"></a>takeLast()</h3><p>只发射后面指定数量或指定时间内的元素。指定时间时会延迟源 Observable 发射的任何数据。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//只发射后三条数据</span></span><br><span class="line">Observable.just(-<span class="number">1</span>,-<span class="number">2</span>,<span class="number">0</span>,<span class="number">3</span>).takeLast(<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="sample"><a href="#sample" class="headerlink" title="sample()"></a>sample()</h3><p>定期发射 Observable 发射的最后一条数据。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Observable.interval(<span class="number">300</span>,TimeUnit.SECONDS)</span><br><span class="line">            .sample(<span class="number">2</span>,TimeUnit.SECONDS)</span><br></pre></td></tr></table></figure>
+
+<h3 id="elementAt"><a href="#elementAt" class="headerlink" title="elementAt()"></a>elementAt()</h3><p>只发射指定索引的元素。</p>
+<p><strong>使用场景： 按索引去集合中的元素等。</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//只发射索引为2数据</span></span><br><span class="line">Observable.just(-<span class="number">1</span>,-<span class="number">2</span>,<span class="number">0</span>,<span class="number">3</span>).elementAt(<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+
+<p>只发射指定索引的元素，若该索引对应的元素不存在，则发射默认值。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//只发射索引为9数据，若不存在则发射8</span></span><br><span class="line">Observable.just(-<span class="number">1</span>,-<span class="number">2</span>,<span class="number">0</span>,<span class="number">3</span>).elementAt(<span class="number">9</span>,<span class="number">8</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="ignoreElements"><a href="#ignoreElements" class="headerlink" title="ignoreElements()"></a>ignoreElements()</h3><p>不发射任何数据，直接发出 onCompleted() 通知。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Observable.just(-<span class="number">1</span>,-<span class="number">2</span>,<span class="number">0</span>,<span class="number">3</span>).ignoreElements()</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/05/18/RxJava2(Flowable)/" rel="prev" title="RxJava2(Flowable)">
+      <i class="fa fa-chevron-left"></i> RxJava2(Flowable)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/" rel="next" title="Kotlin协程（基础用法）">
+      Kotlin协程（基础用法） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Observable的创建"><span class="nav-number">1.</span> <span class="nav-text">Observable的创建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#from"><span class="nav-number">1.1.</span> <span class="nav-text">from()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#just"><span class="nav-number">1.2.</span> <span class="nav-text">just()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#create"><span class="nav-number">1.3.</span> <span class="nav-text">create</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#interval"><span class="nav-number">1.4.</span> <span class="nav-text">interval()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#timer"><span class="nav-number">1.5.</span> <span class="nav-text">timer()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#range"><span class="nav-number">1.6.</span> <span class="nav-text">range()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#error"><span class="nav-number">1.7.</span> <span class="nav-text">error()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#defer"><span class="nav-number">1.8.</span> <span class="nav-text">defer()</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重做"><span class="nav-number">2.</span> <span class="nav-text">重做</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#repeatWhen"><span class="nav-number">2.1.</span> <span class="nav-text">repeatWhen()</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重试"><span class="nav-number">3.</span> <span class="nav-text">重试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#retry"><span class="nav-number">3.1.</span> <span class="nav-text">retry()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#retryWhen"><span class="nav-number">3.2.</span> <span class="nav-text">retryWhen()</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#变换"><span class="nav-number">4.</span> <span class="nav-text">变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#过滤"><span class="nav-number">5.</span> <span class="nav-text">过滤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#filter"><span class="nav-number">5.1.</span> <span class="nav-text">filter()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#first"><span class="nav-number">5.2.</span> <span class="nav-text">first()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#last"><span class="nav-number">5.3.</span> <span class="nav-text">last()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#skip"><span class="nav-number">5.4.</span> <span class="nav-text">skip()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#skipLast"><span class="nav-number">5.5.</span> <span class="nav-text">skipLast()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#take"><span class="nav-number">5.6.</span> <span class="nav-text">take()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#takeLast"><span class="nav-number">5.7.</span> <span class="nav-text">takeLast()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sample"><span class="nav-number">5.8.</span> <span class="nav-text">sample()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#elementAt"><span class="nav-number">5.9.</span> <span class="nav-text">elementAt()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ignoreElements"><span class="nav-number">5.10.</span> <span class="nav-text">ignoreElements()</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

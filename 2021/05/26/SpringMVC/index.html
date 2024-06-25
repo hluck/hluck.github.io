@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Spring与Web环境集成1.ApplicationContext应用上下文获取方式应用上下文对象是通过new ClasspathXmlApplicationContext(spring配置文件) 方式获取的， 但是每次从容器中获得Bean时都要编写*new ClasspathXmlApplicationContext(spring配置文件) *，这样的弊端是配置文件加载多次，应用上下文对象创建">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringMVC">
+<meta property="og:url" content="https://hluck.github.io/2021/05/26/SpringMVC/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="Spring与Web环境集成1.ApplicationContext应用上下文获取方式应用上下文对象是通过new ClasspathXmlApplicationContext(spring配置文件) 方式获取的， 但是每次从容器中获得Bean时都要编写*new ClasspathXmlApplicationContext(spring配置文件) *，这样的弊端是配置文件加载多次，应用上下文对象创建">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2021/05/26/SpringMVC/1.png">
+<meta property="og:image" content="https://hluck.github.io/2021/05/26/SpringMVC/2.png">
+<meta property="article:published_time" content="2021-05-26T02:25:39.669Z">
+<meta property="article:modified_time" content="2021-05-27T02:23:29.633Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="SpringMVC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2021/05/26/SpringMVC/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2021/05/26/SpringMVC/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>SpringMVC | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2021/05/26/SpringMVC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SpringMVC
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-26 10:25:39" itemprop="dateCreated datePublished" datetime="2021-05-26T10:25:39+08:00">2021-05-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-27 10:23:29" itemprop="dateModified" datetime="2021-05-27T10:23:29+08:00">2021-05-27</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Spring与Web环境集成"><a href="#Spring与Web环境集成" class="headerlink" title="Spring与Web环境集成"></a>Spring与Web环境集成</h1><h2 id="1-ApplicationContext应用上下文获取方式"><a href="#1-ApplicationContext应用上下文获取方式" class="headerlink" title="1.ApplicationContext应用上下文获取方式"></a>1.ApplicationContext应用上下文获取方式</h2><p>应用上下文对象是通过<strong>new</strong> <strong>ClasspathXmlApplicationContext</strong>(spring配置文件) 方式获取的，</p>
+<p>但是每次从容器中获得Bean时都要编写*<em>new ClasspathXmlApplicationContext(spring配置文件) *</em>，这样的弊端是配置文件加载多次，应用上下文对象创建多次。</p>
+<a id="more"></a>
+
+<p>在Web项目中，可以使用<strong>ServletContextListener</strong>监听Web应用的启动，我们可以在Web应用启动时，就加载Spring的配置文件，创建应用上下文对象<strong>ApplicationContext</strong>，在将其存储到最大的域<strong>servletContext</strong>域中，这样就可以在任意位置从域中获得应用上下文<strong>ApplicationContext</strong>对象了。</p>
+<h2 id="2-Spring提供获取应用上下文的工具"><a href="#2-Spring提供获取应用上下文的工具" class="headerlink" title="2.Spring提供获取应用上下文的工具"></a>2.Spring提供获取应用上下文的工具</h2><p>上面的分析不用手动实现，Spring提供了一个监听器<strong>ContextLoaderListener</strong>就是对上述功能的封装，该监听器内部加载Spring配置文件，创建应用上下文对象，并存储到<strong>ServletContext</strong>域中，提供了一个客户端工具<strong>WebApplicationContextUtils</strong>供使用者获得应用上下文对象。</p>
+<p>所以我们需要做的只有两件事：</p>
+<ol>
+<li><p>在web.xml中配置ContextLoaderListener监听器(导入spring-web坐标)</p>
+</li>
+<li><p>使用WebApplicationContextUtils获得应用上下文对象ApplicationContext</p>
+</li>
+</ol>
+<h2 id="3-导入Spring集成web的坐标"><a href="#3-导入Spring集成web的坐标" class="headerlink" title="3.导入Spring集成web的坐标"></a>3.导入Spring集成web的坐标</h2><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line"> &lt;groupId&gt;org.springframework&lt;/groupId&gt;  &lt;artifactId&gt;spring-web&lt;/artifactId&gt;  &lt;version&gt;5.0.5.RELEASE&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-配置ContextLoaderListener监听器"><a href="#4-配置ContextLoaderListener监听器" class="headerlink" title="4.配置ContextLoaderListener监听器"></a>4.配置ContextLoaderListener监听器</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--全局参数--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">context-param</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>contextConfigLocation<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>classpath:applicationContext.xml<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">context-param</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--Spring的监听器--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">listener</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">listener-class</span>&gt;</span></span><br><span class="line">org.springframework.web.context.ContextLoaderListener</span><br><span class="line">   <span class="tag">&lt;/<span class="name">listener-class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">listener</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="5-通过工具获得应用上下文对象"><a href="#5-通过工具获得应用上下文对象" class="headerlink" title="5.通过工具获得应用上下文对象"></a>5.通过工具获得应用上下文对象</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);</span><br><span class="line">Object obj = applicationContext.getBean(<span class="string">"id"</span>);</span><br></pre></td></tr></table></figure>
+
+<p><strong>Spring集成web环境步骤</strong></p>
+<ol>
+<li><strong>配置ContextLoaderListener监听器</strong></li>
+<li><strong>使用WebApplicationContextUtils获得应用上下文</strong></li>
+</ol>
+<h1 id="SpringMVC的简介"><a href="#SpringMVC的简介" class="headerlink" title="SpringMVC的简介"></a>SpringMVC的简介</h1><h2 id="1-SpringMVC概述"><a href="#1-SpringMVC概述" class="headerlink" title="1.SpringMVC概述"></a>1.SpringMVC概述</h2><p><strong>SpringMVC</strong>是一种基于Java的实现<strong>MVC设计模型</strong>的请求驱动类型的轻量级Web框架，属于<strong>SpringFrameWork</strong>的后续产品，已经融合在Spring Web Flow中。</p>
+<p>SpringMVC 已经成为目前最主流的MVC框架之一，并且随着Spring3.0 的发布，全面超越 Struts2，成为最优秀的 MVC 框架。它通过一套注解，让一个简单的Java类成为处理请求的控制器，而无需实现任何接口。同时它还支持<strong>RESTful</strong>编程风格的请求。</p>
+<h2 id="2-SpringMVC快速入门"><a href="#2-SpringMVC快速入门" class="headerlink" title="2.SpringMVC快速入门"></a>2.SpringMVC快速入门</h2><p>需求：客户端发起请求，服务器端接收请求，执行逻辑并进行视图跳转。</p>
+<p>开发步骤：</p>
+<ol>
+<li>导入springMVC相关坐标</li>
+<li>配置SpringMVC核心控制器DispatcherServlet</li>
+<li>创建Controller类和视图页面</li>
+<li>使用注解配置Controller类中业务方法的映射地址</li>
+<li>配置SpringMVC核心文件spring-mvc.xml</li>
+<li>客户端发起请求测试</li>
+</ol>
+<h3 id="1-导入springMVC-Servlet和jsp相关坐标"><a href="#1-导入springMVC-Servlet和jsp相关坐标" class="headerlink" title="1.导入springMVC,Servlet和jsp相关坐标"></a>1.导入springMVC,Servlet和jsp相关坐标</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--Spring坐标--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-context<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.0.5.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--SpringMVC坐标--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-webmvc<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.0.5.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--Servlet坐标--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.servlet<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>servlet-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--Jsp坐标--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.servlet.jsp<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jsp-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-在Web-xml配置SpringMVC的核心控制器"><a href="#2-在Web-xml配置SpringMVC的核心控制器" class="headerlink" title="2.在Web.xml配置SpringMVC的核心控制器"></a>2.在Web.xml配置SpringMVC的核心控制器</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">init-param</span>&gt;</span></span><br><span class="line">  	<span class="tag">&lt;<span class="name">param-name</span>&gt;</span>contextConfigLocation<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>classpath:spring-mvc.xml<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>1<span class="tag">&lt;/<span class="name">load-on-startup</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">servlet-mapping</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servlet-mapping</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-创建Controller和业务方法和index-jsp"><a href="#3-创建Controller和业务方法和index-jsp" class="headerlink" title="3.创建Controller和业务方法和index.jsp"></a>3.创建Controller和业务方法和index.jsp</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">QuickController</span></span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">quickMethod</span><span class="params">()</span></span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"quickMethod running...."</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"index"</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h2</span>&gt;</span></span><br><span class="line">      Hello SpringMVC !</span><br><span class="line">    <span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-配置注解"><a href="#4-配置注解" class="headerlink" title="4.配置注解"></a>4.配置注解</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">QuickController</span></span>&#123;</span><br><span class="line">  <span class="meta">@RequestMapping</span>(<span class="string">"/quick"</span>)</span><br><span class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">quickMethod</span><span class="params">()</span></span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"quickMethod running...."</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"index"</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-创建spring-mvc-xml"><a href="#5-创建spring-mvc-xml" class="headerlink" title="5.创建spring-mvc.xml"></a>5.创建spring-mvc.xml</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">     <span class="attr">xmlns:mvc</span>=<span class="string">"http://www.springframework.org/schema/mvc"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">xmlns:context</span>=<span class="string">"http://www.springframework.org/schema/context"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">  <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans</span></span></span><br><span class="line"><span class="tag"><span class="string">  http://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">  http://www.springframework.org/schema/mvc                 http://www.springframework.org/schema/mvc/spring-mvc.xsd </span></span></span><br><span class="line"><span class="tag"><span class="string">  http://www.springframework.org/schema/context</span></span></span><br><span class="line"><span class="tag"><span class="string">  http://www.springframework.org/schema/context/spring-context.xsd"</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--配置注解扫描--&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">"com.example"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-访问测试地址"><a href="#6-访问测试地址" class="headerlink" title="6.访问测试地址"></a>6.访问测试地址</h3><h2 id="3-SpringMVC流程图示"><a href="#3-SpringMVC流程图示" class="headerlink" title="3.SpringMVC流程图示"></a>3.SpringMVC流程图示</h2><p><img src="/2021/05/26/SpringMVC/1.png" alt></p>
+<h2 id="4-SpringMVC的开发步骤"><a href="#4-SpringMVC的开发步骤" class="headerlink" title="4.SpringMVC的开发步骤"></a>4.SpringMVC的开发步骤</h2><ol>
+<li>导入SpringMVC相关坐标</li>
+<li>配置SpringMVC核心控制器DispathcerServlet</li>
+<li>创建Controller类和视图页面</li>
+<li>使用注解配置Controller类中业务方法的映射地址</li>
+<li>配置SpringMVC核心文件 spring-mvc.xml</li>
+<li>客户端发起请求测试</li>
+</ol>
+<h1 id="SpringMVC的组件解析"><a href="#SpringMVC的组件解析" class="headerlink" title="SpringMVC的组件解析"></a>SpringMVC的组件解析</h1><h2 id="1-SpringMVC的执行流程"><a href="#1-SpringMVC的执行流程" class="headerlink" title="1.SpringMVC的执行流程"></a>1.SpringMVC的执行流程</h2><p><img src="/2021/05/26/SpringMVC/2.png" alt></p>
+<ol>
+<li>用户发送请求至前端控制器DispatcherServlet。</li>
+<li>DispatcherServlet收到请求调用HandlerMapping处理器映射器。</li>
+<li>处理器映射器找到具体的处理器(可以根据xml配置、注解进行查找)，生成处理器对象及处理器拦截器(如果有则生成)一并返回给DispatcherServlet。</li>
+<li>DispatcherServlet调用HandlerAdapter处理器适配器。</li>
+<li>HandlerAdapter经过适配调用具体的处理器(Controller，也叫后端控制器)。</li>
+<li>Controller执行完成返回ModelAndView。</li>
+<li>HandlerAdapter将controller执行结果ModelAndView返回给DispatcherServlet。</li>
+<li>DispatcherServlet将ModelAndView传给ViewReslover视图解析器。</li>
+<li>ViewReslover解析后返回具体View。</li>
+<li>DispatcherServlet根据View进行渲染视图（即将模型数据填充至视图中）。DispatcherServlet响应用户。</li>
+</ol>
+<h2 id="2-SpringMVC组件解析"><a href="#2-SpringMVC组件解析" class="headerlink" title="2.SpringMVC组件解析"></a>2.SpringMVC组件解析</h2><h3 id="1-前端控制器-DispatcherServlet"><a href="#1-前端控制器-DispatcherServlet" class="headerlink" title="1.前端控制器: DispatcherServlet"></a>1.前端控制器: DispatcherServlet</h3><p>​         用户请求到达前端控制器，它就相当于 MVC 模式中的 C，DispatcherServlet 是整个流程控制的中心，由它调用其它组件处理用户的请求，DispatcherServlet 的存在降低了组件之间的耦合性。</p>
+<h3 id="2-处理器映射器：-HandlerMapping"><a href="#2-处理器映射器：-HandlerMapping" class="headerlink" title="2.处理器映射器： HandlerMapping"></a>2.处理器映射器： HandlerMapping</h3><p>​        HandlerMapping 负责根据用户请求找到 Handler 即处理器，SpringMVC 提供了不同的映射器实现不同的映射方式，例如：配置文件方式，实现接口方式，注解方式等。</p>
+<h3 id="3-处理器适配器：HandlerAdapter"><a href="#3-处理器适配器：HandlerAdapter" class="headerlink" title="3.处理器适配器：HandlerAdapter"></a>3.处理器适配器：HandlerAdapter</h3><p>​        通过 HandlerAdapter 对处理器进行执行，这是适配器模式的应用，通过扩展适配器可以对更多类型的处理器进行执行。</p>
+<h3 id="4-处理器：Handler"><a href="#4-处理器：Handler" class="headerlink" title="4.处理器：Handler"></a>4.处理器：Handler</h3><p>​        它就是我们开发中要编写的具体业务控制器。由 DispatcherServlet 把用户请求转发到 Handler。由Handler 对具体的用户请求进行处理。</p>
+<h3 id="5-视图解析器：View-Resolver"><a href="#5-视图解析器：View-Resolver" class="headerlink" title="5.视图解析器：View Resolver"></a>5.视图解析器：View Resolver</h3><p>​        View Resolver 负责将处理结果生成 View 视图，View Resolver 首先根据逻辑视图名解析成物理视图名，即具体的页面地址，再生成 View 视图对象，最后对 View 进行渲染将处理结果通过页面展示给用户。</p>
+<h3 id="6-视图-View"><a href="#6-视图-View" class="headerlink" title="6.视图: View"></a>6.视图: View</h3><p>​         SpringMVC 框架提供了很多的 View 视图类型的支持，包括：jstlView、freemarkerView、pdfView等。最常用的视图就是 jsp。一般情况下需要通过页面标签或页面模版技术将模型数据通过页面展示给用户，需要由程序员根据业务需求开发具体的页面。</p>
+<h2 id="3-SpringMVC注解解析"><a href="#3-SpringMVC注解解析" class="headerlink" title="3.SpringMVC注解解析"></a>3.SpringMVC注解解析</h2><h3 id="RequestMapping"><a href="#RequestMapping" class="headerlink" title="@RequestMapping"></a><strong>@RequestMapping</strong></h3><p>作用：用于建立请求 URL 和处理请求方法之间的对应关系</p>
+<p>位置：</p>
+<ul>
+<li>类上，请求URL 的第一级访问目录。此处不写的话，就相当于应用的根目录</li>
+<li>方法上，请求 URL 的第二级访问目录，与类上的使用@ReqquestMapping标注的一级目录一起组成访问虚拟路径</li>
+</ul>
+<p>属性：</p>
+<ul>
+<li>*<em>value: *</em> 用于指定请求的URL。它和path属性的作用是一样的</li>
+<li><strong>method</strong>：用于指定请求的方式</li>
+<li><strong>params</strong>：用于指定限制请求参数的条件。它支持简单的表达式。要求请求参数的key和value必须和配置的一模一样</li>
+</ul>
+<p>例如：</p>
+<ul>
+<li><p><strong>params  = {“accountName”}</strong>，表示请求参数必须有accountName</p>
+</li>
+<li><p><strong>params= {“moeny!100”}</strong>，表示请求参数中money不能是100</p>
+</li>
+</ul>
+<h3 id="1-mvc命名空间引入"><a href="#1-mvc命名空间引入" class="headerlink" title="1. mvc命名空间引入"></a><strong>1.</strong> <strong>mvc命名空间引入</strong></h3><p>命名空间：<strong>xmlns:context=”<a href="http://www.springframework.org/schema/context&quot;" target="_blank" rel="noopener">http://www.springframework.org/schema/context&quot;</a></strong></p>
+<p>​        <strong>xmlns:mvc=”<a href="http://www.springframework.org/schema/mvc&quot;" target="_blank" rel="noopener">http://www.springframework.org/schema/mvc&quot;</a></strong></p>
+<p>约束地址：<strong><a href="http://www.springframework.org/schema/context" target="_blank" rel="noopener">http://www.springframework.org/schema/context</a></strong></p>
+<p>​     <strong><a href="http://www.springframework.org/schema/context/spring-context.xsd" target="_blank" rel="noopener">http://www.springframework.org/schema/context/spring-context.xsd</a></strong></p>
+<p>​     <strong><a href="http://www.springframework.org/schema/mvc" target="_blank" rel="noopener">http://www.springframework.org/schema/mvc</a></strong></p>
+<p>​     <strong><a href="http://www.springframework.org/schema/mvc/spring-mvc.xsd" target="_blank" rel="noopener">http://www.springframework.org/schema/mvc/spring-mvc.xsd</a></strong></p>
+<h3 id="2-组件扫描"><a href="#2-组件扫描" class="headerlink" title="2. 组件扫描"></a><strong>2.</strong> <strong>组件扫描</strong></h3><p>SpringMVC基于Spring容器，所以在进行SpringMVC操作时，需要将Controller存储到Spring容器中，如果使用@Controller注解标注的话，就需要使用&lt;<strong>context:component-scan</strong> base-package=“com.itheima.controller”/&gt;进行组件扫描。</p>
+<h2 id="4-SpringMVC的XML配置解析"><a href="#4-SpringMVC的XML配置解析" class="headerlink" title="4.SpringMVC的XML配置解析"></a>4.<strong>SpringMVC的XML配置解析</strong></h2><h3 id="1-视图解析器"><a href="#1-视图解析器" class="headerlink" title="1.视图解析器"></a>1.视图解析器</h3><p>SpringMVC有默认组件配置，默认组件都是<strong>DispatcherServlet.properties</strong>配置文件中配置的，该配置文件地址<strong>org/springframework/web/servlet/DispatcherServlet.properties</strong>，该文件中配置了默认的视图解析器，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">org.springframework.web.servlet.ViewResolver=org.springframework.web.servlet.view.InternalResourceViewResolver</span><br></pre></td></tr></table></figure>
+
+<p>翻看该解析器源码，可以看到该解析器的默认设置，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">REDIRECT_URL_PREFIX = <span class="string">"redirect:"</span>  --重定向前缀</span><br><span class="line">FORWARD_URL_PREFIX = <span class="string">"forward:"</span>    --转发前缀（默认值）</span><br><span class="line">prefix = <span class="string">""</span>;     --视图名称前缀</span><br><span class="line">suffix = <span class="string">""</span>;     --视图名称后缀</span><br></pre></td></tr></table></figure>
+
+<p>我们可以通过属性注入的方式修改视图的的前后缀</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--配置内部资源视图解析器--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"org.springframework.web.servlet.view.InternalResourceViewResolver"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"prefix"</span> <span class="attr">value</span>=<span class="string">"/WEB-INF/views/"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"suffix"</span> <span class="attr">value</span>=<span class="string">".jsp"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="5-知识要点"><a href="#5-知识要点" class="headerlink" title="5.知识要点"></a>5.知识要点</h2><h3 id="1-SpringMVC的相关组件"><a href="#1-SpringMVC的相关组件" class="headerlink" title="1.SpringMVC的相关组件"></a>1.<strong>SpringMVC的相关组件</strong></h3><ul>
+<li>前端控制器：DispatcherServlet</li>
+<li>处理器映射器：HandlerMapping</li>
+<li>处理器适配器：HandlerAdapter</li>
+<li>处理器：Handler</li>
+<li>视图解析器：View Resolver</li>
+<li>视图：View</li>
+</ul>
+<h3 id="2-SpringMVC的注解和配置"><a href="#2-SpringMVC的注解和配置" class="headerlink" title="2.SpringMVC的注解和配置"></a>2.<strong>SpringMVC的注解和配置</strong></h3><ul>
+<li><p>请求映射注解：@RequestMapping</p>
+</li>
+<li><p>视图解析器配置：</p>
+<ul>
+<li><p><em>REDIRECT_URL_PREFIX = “redirect:”</em> </p>
+<p><em>FORWARD_URL_PREFIX = “forward:”</em>  </p>
+<p><em>prefix = “”;</em>   </p>
+<p><em>suffix = “”;</em>  </p>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SpringMVC/" rel="tag"># SpringMVC</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/14/spring/" rel="prev" title="Spring">
+      <i class="fa fa-chevron-left"></i> Spring
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/26/SpringMVC%E7%9A%84%E8%AF%B7%E6%B1%82%E5%92%8C%E5%93%8D%E5%BA%94/" rel="next" title="SpringMVC的请求和响应">
+      SpringMVC的请求和响应 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring与Web环境集成"><span class="nav-number">1.</span> <span class="nav-text">Spring与Web环境集成</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-ApplicationContext应用上下文获取方式"><span class="nav-number">1.1.</span> <span class="nav-text">1.ApplicationContext应用上下文获取方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Spring提供获取应用上下文的工具"><span class="nav-number">1.2.</span> <span class="nav-text">2.Spring提供获取应用上下文的工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-导入Spring集成web的坐标"><span class="nav-number">1.3.</span> <span class="nav-text">3.导入Spring集成web的坐标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-配置ContextLoaderListener监听器"><span class="nav-number">1.4.</span> <span class="nav-text">4.配置ContextLoaderListener监听器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-通过工具获得应用上下文对象"><span class="nav-number">1.5.</span> <span class="nav-text">5.通过工具获得应用上下文对象</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SpringMVC的简介"><span class="nav-number">2.</span> <span class="nav-text">SpringMVC的简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-SpringMVC概述"><span class="nav-number">2.1.</span> <span class="nav-text">1.SpringMVC概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-SpringMVC快速入门"><span class="nav-number">2.2.</span> <span class="nav-text">2.SpringMVC快速入门</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-导入springMVC-Servlet和jsp相关坐标"><span class="nav-number">2.2.1.</span> <span class="nav-text">1.导入springMVC,Servlet和jsp相关坐标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-在Web-xml配置SpringMVC的核心控制器"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.在Web.xml配置SpringMVC的核心控制器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-创建Controller和业务方法和index-jsp"><span class="nav-number">2.2.3.</span> <span class="nav-text">3.创建Controller和业务方法和index.jsp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-配置注解"><span class="nav-number">2.2.4.</span> <span class="nav-text">4.配置注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-创建spring-mvc-xml"><span class="nav-number">2.2.5.</span> <span class="nav-text">5.创建spring-mvc.xml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-访问测试地址"><span class="nav-number">2.2.6.</span> <span class="nav-text">6.访问测试地址</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-SpringMVC流程图示"><span class="nav-number">2.3.</span> <span class="nav-text">3.SpringMVC流程图示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-SpringMVC的开发步骤"><span class="nav-number">2.4.</span> <span class="nav-text">4.SpringMVC的开发步骤</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SpringMVC的组件解析"><span class="nav-number">3.</span> <span class="nav-text">SpringMVC的组件解析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-SpringMVC的执行流程"><span class="nav-number">3.1.</span> <span class="nav-text">1.SpringMVC的执行流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-SpringMVC组件解析"><span class="nav-number">3.2.</span> <span class="nav-text">2.SpringMVC组件解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-前端控制器-DispatcherServlet"><span class="nav-number">3.2.1.</span> <span class="nav-text">1.前端控制器: DispatcherServlet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-处理器映射器：-HandlerMapping"><span class="nav-number">3.2.2.</span> <span class="nav-text">2.处理器映射器： HandlerMapping</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-处理器适配器：HandlerAdapter"><span class="nav-number">3.2.3.</span> <span class="nav-text">3.处理器适配器：HandlerAdapter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-处理器：Handler"><span class="nav-number">3.2.4.</span> <span class="nav-text">4.处理器：Handler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-视图解析器：View-Resolver"><span class="nav-number">3.2.5.</span> <span class="nav-text">5.视图解析器：View Resolver</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-视图-View"><span class="nav-number">3.2.6.</span> <span class="nav-text">6.视图: View</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-SpringMVC注解解析"><span class="nav-number">3.3.</span> <span class="nav-text">3.SpringMVC注解解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RequestMapping"><span class="nav-number">3.3.1.</span> <span class="nav-text">@RequestMapping</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-mvc命名空间引入"><span class="nav-number">3.3.2.</span> <span class="nav-text">1. mvc命名空间引入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-组件扫描"><span class="nav-number">3.3.3.</span> <span class="nav-text">2. 组件扫描</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-SpringMVC的XML配置解析"><span class="nav-number">3.4.</span> <span class="nav-text">4.SpringMVC的XML配置解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-视图解析器"><span class="nav-number">3.4.1.</span> <span class="nav-text">1.视图解析器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-知识要点"><span class="nav-number">3.5.</span> <span class="nav-text">5.知识要点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-SpringMVC的相关组件"><span class="nav-number">3.5.1.</span> <span class="nav-text">1.SpringMVC的相关组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-SpringMVC的注解和配置"><span class="nav-number">3.5.2.</span> <span class="nav-text">2.SpringMVC的注解和配置</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="自定义视图声明属性​    PagerTitleStrip和PagerTabStrip无法在布局文件中指定文字样式，只能在代码中设置，让人很不习惯，如果可以直接指定textColor和textSize属性就会好很多。现在我们小试牛刀，通过扩展自定义属性，以满足在布局文件指定属性的要求。  在res\values目录下创建attrs.xml。其中，declare-styleable的name属性值表">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自定义控件">
+<meta property="og:url" content="https://hluck.github.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="自定义视图声明属性​    PagerTitleStrip和PagerTabStrip无法在布局文件中指定文字样式，只能在代码中设置，让人很不习惯，如果可以直接指定textColor和textSize属性就会好很多。现在我们小试牛刀，通过扩展自定义属性，以满足在布局文件指定属性的要求。  在res\values目录下创建attrs.xml。其中，declare-styleable的name属性值表">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/3.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/4.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/5.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/6.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/7.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/8.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/9.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/10.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/11.png">
+<meta property="article:published_time" content="2022-06-24T00:52:50.288Z">
+<meta property="article:modified_time" content="2022-07-03T12:09:04.688Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>自定义控件 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          自定义控件
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-24 08:52:50" itemprop="dateCreated datePublished" datetime="2022-06-24T08:52:50+08:00">2022-06-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-07-03 20:09:04" itemprop="dateModified" datetime="2022-07-03T20:09:04+08:00">2022-07-03</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>30k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>27 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="自定义视图"><a href="#自定义视图" class="headerlink" title="自定义视图"></a>自定义视图</h2><h3 id="声明属性"><a href="#声明属性" class="headerlink" title="声明属性"></a>声明属性</h3><p>​    PagerTitleStrip和PagerTabStrip无法在布局文件中指定文字样式，只能在代码中设置，让人很不习惯，如果可以直接指定textColor和textSize属性就会好很多。现在我们小试牛刀，通过扩展自定义属性，以满足在布局文件指定属性的要求。</p>
+<ol>
+<li><p>在res\values目录下创建attrs.xml。其中，declare-styleable的name属性值表示新视图名为CustomPagerTab，两个attr节点表示新增的两个属性分别是textColor和textSize。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">resources</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">declare-styleable</span> <span class="attr">name</span>=<span class="string">"CustomPaperTab"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"textColor"</span> <span class="attr">format</span>=<span class="string">"color"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"textSize"</span> <span class="attr">format</span>=<span class="string">"dimension"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">declare-styleable</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">resources</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<a id="more"></a></li>
+<li><p>在代码的widget目录中创建CustomPagerTab.java，填入以下代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomPagerTab</span></span>(context: Context,attributeSet: AttributeSet?): androidx.viewpager.widget.PagerTabStrip(context,attributeSet) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> tColor = Color.BLACK</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> textSize = <span class="number">15F</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (attributeSet!=<span class="literal">null</span>)&#123;</span><br><span class="line">            <span class="comment">//根据CustomPaperTab的属性定义，从布局文件中获取属性数组描述</span></span><br><span class="line">            <span class="keyword">val</span> attrArray:TypedArray = context.obtainStyledAttributes(attributeSet, R.styleable.CustomPaperTab)</span><br><span class="line">            <span class="comment">//根据属性描述定义，获取布局文件中的文本颜色</span></span><br><span class="line">            tColor = attrArray.getColor(R.styleable.CustomPaperTab_textColor,tColor)</span><br><span class="line">            <span class="comment">//回收属性数组描述</span></span><br><span class="line">            attrArray.recycle()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDraw</span><span class="params">(canvas: <span class="type">Canvas</span>?)</span></span> &#123;</span><br><span class="line">        setTextColor(tColor)</span><br><span class="line">        setTextSize(TypedValue.COMPLEX_UNIT_PX,textSize)</span><br><span class="line">        <span class="keyword">super</span>.onDraw(canvas)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在布局文件根节点增加命名空间声明xmlns:app=”<a href="http://schemas.android.com/apk/res-auto&quot;，并把android.support.v4.view.PagerTabStrip的节点名称改为自定义视图的全路径名称（如com.example.custom.widget.CustomPagerTab），同时在该节点下指定新增的两个属性——app:textColor与app:textSize。修改后的布局文件代码如下：" target="_blank" rel="noopener">http://schemas.android.com/apk/res-auto&quot;，并把android.support.v4.view.PagerTabStrip的节点名称改为自定义视图的全路径名称（如com.example.custom.widget.CustomPagerTab），同时在该节点下指定新增的两个属性——app:textColor与app:textSize。修改后的布局文件代码如下：</a></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:padding</span>=<span class="string">"10dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".ui.CustomProperty"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">androidx.viewpager.widget.ViewPager</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/vp_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"400dp"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">com.example.chaptersix.widget.CustomPagerTab</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">app:textColor</span>=<span class="string">"@color/teal_700"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">app:textSize</span>=<span class="string">"20px"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;/<span class="name">androidx.viewpager.widget.ViewPager</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>适配器Adapter:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ImagePagerAdapater</span></span>(<span class="keyword">private</span> <span class="keyword">val</span> context: Context, <span class="keyword">private</span> <span class="keyword">var</span> goodList:ArrayList&lt;GoodsInfo&gt;) :PagerAdapter()&#123;</span><br><span class="line">    <span class="keyword">var</span> mContext:Context = context</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mViewList = mutableListOf&lt;ImageView&gt;()</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mGoodList = listOf&lt;GoodsInfo&gt;()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span> &#123;</span><br><span class="line">        mGoodList = goodList</span><br><span class="line">        <span class="comment">//给每个商品分配一个专用的图像视图</span></span><br><span class="line">        <span class="keyword">for</span> (i <span class="keyword">in</span> goodList.indices)&#123;</span><br><span class="line">            <span class="keyword">val</span> imageView = ImageView(mContext)</span><br><span class="line">            imageView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)</span><br><span class="line">            imageView.setImageResource(mGoodList[i].pic)</span><br><span class="line">            imageView.scaleType = ImageView.ScaleType.FIT_CENTER</span><br><span class="line">            mViewList.add(imageView)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//获取页面项个数</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getCount</span><span class="params">()</span></span>: <span class="built_in">Int</span> = mGoodList.size</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">isViewFromObject</span><span class="params">(view: <span class="type">View</span>, obj : <span class="type">Any</span>)</span></span>: <span class="built_in">Boolean</span> = view == obj</span><br><span class="line"></span><br><span class="line">    <span class="comment">//从容器中销毁指定位置的页面</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">destroyItem</span><span class="params">(container: <span class="type">ViewGroup</span>, position: <span class="type">Int</span>, `<span class="keyword">object</span>`: <span class="type">Any</span>)</span></span> &#123;</span><br><span class="line">        container.removeView(mViewList[position])</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//实例化指定位置的页面，并将其添加到容器中</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">instantiateItem</span><span class="params">(container: <span class="type">ViewGroup</span>, position: <span class="type">Int</span>)</span></span>: Any &#123;</span><br><span class="line">        container.addView(mViewList[position])</span><br><span class="line">        <span class="keyword">return</span> mViewList[position]</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getPageTitle</span><span class="params">(position: <span class="type">Int</span>)</span></span>: CharSequence? &#123;</span><br><span class="line">        <span class="keyword">return</span> mGoodList[position].name</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>activity:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomProperty</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityCustomPropertyBinding</span>&gt;</span>(),ViewPager.OnPageChangeListener &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> goodsList = GoodsInfo.getDefaultList()</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityCustomPropertyBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> adapter = ImagePagerAdapater(<span class="keyword">this</span><span class="symbol">@CustomProperty</span>,goodsList)</span><br><span class="line">        mBinding.vpContent.adapter = adapter</span><br><span class="line">        vpContent.currentItem = <span class="number">0</span></span><br><span class="line">        vpContent.addOnPageChangeListener(<span class="keyword">this</span><span class="symbol">@CustomProperty</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onPageScrolled</span><span class="params">(position: <span class="type">Int</span>, positionOffset: <span class="type">Float</span>, positionOffsetPixels: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onPageSelected</span><span class="params">(position: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">        Toast.makeText(<span class="keyword">this</span>,<span class="string">"您翻到的手机品牌是<span class="subst">$&#123;goodsList[position].name&#125;</span>"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onPageScrollStateChanged</span><span class="params">(state: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/1.png" alt></p>
+<p>​        从属性数组<strong>TypedArray</strong>调用getColor方法获取颜色值，调用getDimensionPixelSize方法获取文字大小，不同的数据类型调用不同的获取方法。有关属性类型及其获取方法的对应说明见表6-1。</p>
+</li>
+</ol>
+<p><img src="/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/2.png" alt></p>
+<p>​        enum类型与flag类型的使用稍微复杂，枚举类型的属性常见的有LinearLayout的orientation和ImageView的scaleType；标志类型的属性常见的有TextView的gravity和EditText的inputType。下面是枚举类型的属性声明例子和标志类型的属性声明例子，注意给出了多个标志位的取值，注意给出了多个枚举值：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">declare-styleable</span> <span class="attr">name</span>=<span class="string">"PagerTab"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"textColor"</span> <span class="attr">format</span>=<span class="string">"color"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"textSize"</span> <span class="attr">format</span>=<span class="string">"dimension"</span> /&gt;</span></span><br><span class="line">        </span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"customBackground"</span> <span class="attr">format</span>=<span class="string">"reference"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"customOrientation"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enum</span> <span class="attr">name</span>=<span class="string">"horizontal"</span> <span class="attr">value</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enum</span> <span class="attr">name</span>=<span class="string">"vertical"</span> <span class="attr">value</span>=<span class="string">"1"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">attr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"customGravity"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">flag</span> <span class="attr">name</span> = <span class="string">"center"</span> <span class="attr">value</span> = <span class="string">"0"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">flag</span> <span class="attr">name</span> = <span class="string">"left"</span> <span class="attr">value</span> = <span class="string">"1"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">flag</span> <span class="attr">name</span> = <span class="string">"top"</span> <span class="attr">value</span> = <span class="string">"2"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">flag</span> <span class="attr">name</span> = <span class="string">"right"</span> <span class="attr">value</span> = <span class="string">"3"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">flag</span> <span class="attr">name</span> = <span class="string">"bttom"</span> <span class="attr">value</span> = <span class="string">"4"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">attr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">declare-styleable</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="构造对象"><a href="#构造对象" class="headerlink" title="构造对象"></a>构造对象</h3><p><strong>自定义视图的编码主要由3部分组成：</strong></p>
+<ol>
+<li>重写构造函数，初始化该视图的自有属性</li>
+<li>重写测量函数onMeasure，计算该视图的宽与高（一般只有复杂视图才重写该函数）。</li>
+<li>重写绘图函数onLayout、onDraw、dispatchDraw，视情况重写3个中的一个或多个。</li>
+</ol>
+<p>一般要重写3个构造函数。前面在演示新控件CustomPagerTab时，示例代码给出了3个构造函数（实际只实现了两个），分别是：</p>
+<ul>
+<li>只带一个参数的public CustomPagerTab (Context context)。在代码中声明对象时采用该构造函数。</li>
+<li>带两个参数的public CustomPagerTab (Context context,AttributeSetattrs)。在布局文件中引用自定义视图时采用该构造函数。</li>
+</ul>
+<h3 id="测量尺寸"><a href="#测量尺寸" class="headerlink" title="测量尺寸"></a>测量尺寸</h3><p>​        在绘制图案之前系统得先知道这个图案的尺寸，即宽和高。一般在布局文件中对视图的宽和高有3种赋值方式，具体说明见表6-2。</p>
+<p><img src="/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/3.png" alt></p>
+<p>​        Android提供了相关度量方法，可以在不同情况下进行尺寸测量。需要测量的对象主要有3种，分别是文本尺寸、图形尺寸和布局尺寸。</p>
+<h4 id="文本尺寸测量"><a href="#文本尺寸测量" class="headerlink" title="文本尺寸测量"></a>文本尺寸测量</h4><p>​        文本尺寸分为文本的宽度和高度，要根据文本大小分别进行计算。其中，文本宽度使用Paint类的measureText方法测量，具体代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">float</span> <span class="title">getTextWidth</span><span class="params">(String text, <span class="keyword">float</span> textSize)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (text==<span class="keyword">null</span> || text.length()&lt;=<span class="number">0</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		Paint paint = <span class="keyword">new</span> Paint();</span><br><span class="line">		paint.setTextSize(textSize);</span><br><span class="line">		<span class="keyword">return</span> paint.measureText(text);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p>文本高度的计算要烦琐一些，用到了FontMetrics类，该类提供了5个与高度相关的属性，详细说明见表6-3。</p>
+<p><img src="/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/4.png" alt></p>
+<h4 id="图形尺寸测量"><a href="#图形尺寸测量" class="headerlink" title="图形尺寸测量"></a>图形尺寸测量</h4><p>​        相对于文本尺寸，图形尺寸的计算反而简单些，因为Android提供了可以直接使用的宽、高获取方法。如果图形是Bitmap格式，就通过getWidth和getHeight方法获取位图对象的宽度和高度；如果图形是Drawable格式，就通过getIntrinsicWidth方法获取该图形的宽度，通过getIntrinsicHeight方法获取该图形的高度。</p>
+<h4 id="布局尺寸测量"><a href="#布局尺寸测量" class="headerlink" title="布局尺寸测量"></a>布局尺寸测量</h4><p>​        文本尺寸测量主要用于TextView、Button等文本控件，图形尺寸测量主要用于ImageView、ImageButton等图像控件。在实际开发中，有更多场合需要测量布局视图的尺寸。布局视图内部可能有文本控件、图像控件，还可能有padding和margin。如此一来，对布局视图的内部控件一个个单独测量变得不切实际。View类提供了一种对布局整体进行测量的思路。对应layout_width和layout_height的3种赋值方式，Android的视图提供了3种测量模式，具体取值说明见表6-4。</p>
+<p><img src="/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/5.png" alt></p>
+<p>​        围绕这3种模式衍生了相关度量方法，如ViewGroup类的getChildMeasureSpec方法、MeasureSpec类的makeMeasureSpec方法、View类的measure方法等。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//计算指定线性布局的实际高度</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">float</span> <span class="title">getRealHeight</span><span class="params">(View child)</span> </span>&#123;</span><br><span class="line">		LinearLayout llayout = (LinearLayout) child;</span><br><span class="line">    	<span class="comment">//获取线性布局的布局参数</span></span><br><span class="line">		LayoutParams params = llayout.getLayoutParams();</span><br><span class="line">		<span class="keyword">if</span> (params == <span class="keyword">null</span>) &#123;</span><br><span class="line">			params = <span class="keyword">new</span> LayoutParams(</span><br><span class="line">					LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);</span><br><span class="line">		&#125;</span><br><span class="line">    	<span class="comment">//获取布局参数里面的宽度规格</span></span><br><span class="line">		<span class="keyword">int</span> widthSpec = ViewGroup.getChildMeasureSpec(<span class="number">0</span>, <span class="number">0</span>, params.width);</span><br><span class="line">		<span class="keyword">int</span> heightSpec;</span><br><span class="line">		<span class="keyword">if</span> (params.height &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">//按照精确的数值的情况计算高度规格</span></span><br><span class="line">			heightSpec = MeasureSpec.makeMeasureSpec(params.height, MeasureSpec.EXACTLY);</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//MATCH_PARENT = -1,WRAP_CONTENT = -2</span></span><br><span class="line">			heightSpec = MeasureSpec.makeMeasureSpec(<span class="number">0</span>, MeasureSpec.UNSPECIFIED);</span><br><span class="line">		&#125;</span><br><span class="line">    	<span class="comment">//重新进行线性布局的宽高丈量</span></span><br><span class="line">		llayout.measure(widthSpec, heightSpec);</span><br><span class="line">    	<span class="comment">//获得并返回线性布局丈量之后的高度值。</span></span><br><span class="line">		<span class="keyword">return</span> llayout.getMeasuredHeight();</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="绘制视图"><a href="#绘制视图" class="headerlink" title="绘制视图"></a>绘制视图</h3><h4 id="onLayout"><a href="#onLayout" class="headerlink" title="onLayout"></a>onLayout</h4><p>​        在自定义视图中，可重写3个函数用于视图的绘制，分别是onLayout、onDraw和dispatchDraw。这3个函数的执行顺序是onLayout→onDraw→dispatchDraw。其中，onLayout和dispatchDraw通常用于布局类视图。</p>
+<p>​        <strong>onLayout方法用于定位子视图在本布局视图中的位置</strong>。该方法的入参表示本布局在上级视图的上、下、左、右位置，子视图在本布局中的位置要另行计算，计算完毕调用子视图的layout方法调整子视图的位置。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OffsetLayout</span></span>(context: Context,attributeSet: AttributeSet?):AbsoluteLayout(context,attributeSet) &#123;</span><br><span class="line">    <span class="comment">//水平方向的偏移量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mOffsetHorizontal = <span class="number">0</span></span><br><span class="line">    <span class="comment">//垂直方向的偏移量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mOffsetVertical = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//重写onLayout方法，意在调整下级视图的方位</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onLayout</span><span class="params">(changed: <span class="type">Boolean</span>, l: <span class="type">Int</span>, t: <span class="type">Int</span>, r: <span class="type">Int</span>, b: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">0</span> until childCount)&#123;</span><br><span class="line">            <span class="comment">//获得第i个子视图</span></span><br><span class="line">            <span class="keyword">val</span> childView = getChildAt(i)</span><br><span class="line">            <span class="keyword">if</span> (childView.visibility != GONE)&#123;</span><br><span class="line">                <span class="comment">//计算子视图的左边偏移数值</span></span><br><span class="line">                <span class="keyword">val</span> newLeft = (r-l)/<span class="number">2</span> - childView.measuredWidth/<span class="number">2</span> + mOffsetHorizontal</span><br><span class="line">                <span class="comment">//计算子视图的上方偏移数值</span></span><br><span class="line">                <span class="keyword">val</span> newTop = (b-t)/<span class="number">2</span> - childView.measuredHeight/<span class="number">2</span> + mOffsetVertical</span><br><span class="line">                <span class="comment">//根据最新的上下左右四周边界，重新放置该子视图</span></span><br><span class="line">                childView.layout(newLeft,newTop,newLeft+childView.measuredWidth,newTop+childView.measuredHeight)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//设置水平方向上的偏移量</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">setOffsetHorizontal</span><span class="params">(offset:<span class="type">Int</span>)</span></span>&#123;</span><br><span class="line">        mOffsetHorizontal = offset</span><br><span class="line">        mOffsetVertical = <span class="number">0</span></span><br><span class="line">        <span class="comment">//请求重新布局，此时会触发onLayout方法</span></span><br><span class="line">        requestLayout()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//设置垂直方向上的偏移量</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">setOffsetVertical</span><span class="params">(offset:<span class="type">Int</span>)</span></span>&#123;</span><br><span class="line">        mOffsetHorizontal = <span class="number">0</span></span><br><span class="line">        mOffsetVertical = offset</span><br><span class="line">        <span class="comment">//请求重新布局，此时会触发onLayout方法</span></span><br><span class="line">        requestLayout()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>xml:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:padding</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".ui.OnLayoutActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">RelativeLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"40dp"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/tv_offset"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_alignParentLeft</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"偏移大小"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Spinner</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/sp_offset"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_toRightOf</span>=<span class="string">"@id/tv_offset"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"left|center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:spinnerMode</span>=<span class="string">"dialog"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">RelativeLayout</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">com.example.chaptersix.ui.OffsetLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/olContent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"300dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:background</span>=<span class="string">"#00ff00"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">View</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"200dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"100dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:background</span>=<span class="string">"#000"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">com.example.chaptersix.ui.OffsetLayout</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>activity:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OnLayoutActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityOnLayoutBinding</span>&gt;</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> descArray = arrayOf(<span class="string">"无偏移"</span>, <span class="string">"向左偏移100"</span>, <span class="string">"向右偏移100"</span>, <span class="string">"向上偏移100"</span>, <span class="string">"向下偏移100"</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> offsetArray = arrayOf(<span class="number">0</span>, -<span class="number">100</span>, <span class="number">100</span>, -<span class="number">100</span>, <span class="number">100</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityOnLayoutBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> offsetAdapter = ArrayAdapter&lt;String&gt;(<span class="keyword">this</span><span class="symbol">@OnLayoutActivity</span>,R.layout.item_select,descArray)</span><br><span class="line">        mBinding.spOffset.prompt = <span class="string">"请选择偏移大小"</span></span><br><span class="line">        mBinding.spOffset.adapter = offsetAdapter</span><br><span class="line">        mBinding.spOffset.onItemSelectedListener = OffsetSelectedListener()</span><br><span class="line">        spOffset.setSelection(<span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">OffsetSelectedListener</span>:<span class="type">AdapterView.OnItemSelectedListener&#123;</span></span></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?, view: <span class="type">View</span>?, position: <span class="type">Int</span>, id: <span class="type">Long</span>)</span></span> &#123;</span><br><span class="line">            <span class="keyword">val</span> offset = offsetArray[position]</span><br><span class="line">            <span class="keyword">if</span> (position == <span class="number">0</span> || position == <span class="number">1</span> || position == <span class="number">2</span>)&#123;</span><br><span class="line">                mBinding.olContent.setOffsetHorizontal(offset)</span><br><span class="line">            &#125;<span class="keyword">else</span> <span class="keyword">if</span> (position == <span class="number">3</span> || position == <span class="number">4</span>)&#123;</span><br><span class="line">                mBinding.olContent.setOffsetVertical(offset)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onNothingSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/6.png" alt></p>
+<h4 id="onDraw"><a href="#onDraw" class="headerlink" title="onDraw"></a>onDraw</h4><p>​        onDraw是最常使用的绘图方法，<strong>该方法的入参为Canvas画布对象，在画布上绘图相当于在屏幕上绘图</strong>。绘图本身是个很大的课题，画布的用法也多种多样，如Canvas提供了3类方法，分别是划定可绘制的区域、在区域内部绘制图形和画布的控制操作。</p>
+<h5 id="划定可绘制的区域"><a href="#划定可绘制的区域" class="headerlink" title="划定可绘制的区域"></a>划定可绘制的区域</h5><p>​        虽然本视图内的所有区域都是可以绘制的，但是有时候开发者只想在某个矩形区域内部画画，这时在绘图之前就得指定允许绘图的区域界限，相关方法说明如下：</p>
+<ul>
+<li>clipPath：裁剪不规则曲线区域。</li>
+<li>clipRect：裁剪矩形区域。</li>
+<li>clipRegion：裁剪一块组合区域。</li>
+</ul>
+<h5 id="在区域内部绘制图形"><a href="#在区域内部绘制图形" class="headerlink" title="在区域内部绘制图形"></a>在区域内部绘制图形</h5><p>该类方法用来绘制各种基本几何图形，相关方法说明如下：</p>
+<ul>
+<li>drawArc：绘制扇形／弧形。第4个参数为true时画扇形、为false时画弧形。</li>
+<li>drawBitmap：绘制图像。</li>
+<li>drawCircle：绘制圆形。</li>
+<li>drawLine：绘制直线。</li>
+<li>drawOval：绘制椭圆。</li>
+<li>drawPath：绘制路径，即不规则曲线。</li>
+<li>drawPoint：绘制点。</li>
+<li>drawRect：绘制矩形。</li>
+<li>drawRoundRect：绘制圆角矩形。</li>
+<li>drawText：绘制文本。</li>
+</ul>
+<h5 id="画布的控制操作"><a href="#画布的控制操作" class="headerlink" title="画布的控制操作"></a>画布的控制操作</h5><p>控制操作包括旋转、缩放、平移以及存取画布状态的操作，相关方法说明如下：</p>
+<ul>
+<li>rotate：旋转画布。</li>
+<li>scale：缩放画布。</li>
+<li>translate：平移画布。</li>
+<li>save：保存画布状态。</li>
+<li>restore：恢复画布状态。</li>
+</ul>
+<p>​       上面绘图用的drawXXX方法只是指定绘制哪个几何图形，<strong>真正的细节描绘还要靠画笔Paint类实现</strong>。Paint类定义了画笔的颜色、样式、粗细、阴影等，常用方法说明如下：</p>
+<ul>
+<li>setAntiAlias：设置是否使用抗锯齿功能。主要用于画圆圈等曲线。</li>
+<li>setDither：设置是否使用防抖动功能。</li>
+<li>setColor：设置画笔的颜色。</li>
+<li>setShadowLayer：设置画笔的阴影区域与颜色。</li>
+<li>setStyle：设置画笔的样式。Style.STROKE表示线条，Style.FILL表示填充。</li>
+<li>setStrokeWidth：设置画笔线条的宽度。</li>
+</ul>
+<p>下面演示不同图形的绘制效果。调用drawRoundRect方法绘制圆角矩形。调用drawOval方法绘制椭圆:</p>
+<p>自定义布局：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BeforeRelativeLayout</span></span>(context: Context,attrs:AttributeSet?):RelativeLayout(context, attrs) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mDrawType = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> paint = Paint()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDraw</span><span class="params">(canvas: <span class="type">Canvas</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onDraw(canvas)</span><br><span class="line">        <span class="keyword">val</span> with = measuredWidth</span><br><span class="line">        <span class="keyword">val</span> height = measuredHeight</span><br><span class="line">        <span class="keyword">if</span> (width&gt;<span class="number">0</span> &amp;&amp; height&gt;<span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">when</span>(mDrawType)&#123;</span><br><span class="line">                <span class="number">1</span> -&gt; &#123;<span class="comment">//画矩形</span></span><br><span class="line">                    <span class="comment">// 在坐标(0,0)(width,height)之间绘制一个矩形</span></span><br><span class="line">                    <span class="comment">// 提供四个数值(对角线两个点的坐标)来确定一个矩形进行绘制</span></span><br><span class="line">                    <span class="keyword">val</span> rect = Rect(<span class="number">0</span>,<span class="number">0</span>,with,height)</span><br><span class="line">                    canvas?.drawRect(rect,paint)</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="number">2</span> -&gt; &#123;<span class="comment">//画圆角矩形</span></span><br><span class="line">                    <span class="keyword">val</span> rectF = RectF(<span class="number">0F</span>,<span class="number">0F</span>,with.toFloat(),height.toFloat())</span><br><span class="line">                    canvas?.drawRoundRect(rectF,<span class="number">30F</span>,<span class="number">30F</span>,paint)</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="number">3</span> -&gt; &#123;<span class="comment">//画圆圈</span></span><br><span class="line">                    <span class="keyword">val</span> radius = Math.min(with,height)/<span class="number">2</span></span><br><span class="line">                    canvas?.drawCircle((with/<span class="number">2</span>).toFloat(),(height/<span class="number">2</span>).toFloat(),radius.toFloat(),paint)</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="number">4</span> -&gt; &#123;<span class="comment">//画椭圆</span></span><br><span class="line">                    <span class="keyword">val</span> oval = RectF(<span class="number">0F</span>,<span class="number">0F</span>,with.toFloat(),height.toFloat())</span><br><span class="line">                    canvas?.drawOval(oval,paint)</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="number">5</span> -&gt; &#123; <span class="comment">//矩形里面画X</span></span><br><span class="line">                    <span class="keyword">val</span> rect = Rect(<span class="number">0</span>,<span class="number">0</span>,with,height)</span><br><span class="line">                    canvas?.drawRect(rect,paint)</span><br><span class="line">                    canvas?.drawLine(<span class="number">0F</span>,<span class="number">0F</span>,with.toFloat(),height.toFloat(),paint)</span><br><span class="line">                    canvas?.drawLine(<span class="number">0F</span>,height.toFloat(),with.toFloat(),<span class="number">0F</span>,paint)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span> &#123;</span><br><span class="line">        <span class="comment">//设置画笔为无锯齿</span></span><br><span class="line">        paint.isAntiAlias = <span class="literal">true</span></span><br><span class="line">        <span class="comment">//防抖动</span></span><br><span class="line">        paint.isDither = <span class="literal">true</span></span><br><span class="line">        <span class="comment">//设置画笔颜色</span></span><br><span class="line">        paint.color = Color.BLACK</span><br><span class="line">        <span class="comment">//线宽</span></span><br><span class="line">        paint.strokeWidth = <span class="number">3F</span></span><br><span class="line">        <span class="comment">//画笔类型 STROKE空心 FILL实心</span></span><br><span class="line">        paint.style = Paint.Style.STROKE</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">setDrawType</span><span class="params">(type:<span class="type">Int</span>)</span></span>&#123;</span><br><span class="line">        setBackgroundColor(Color.WHITE)</span><br><span class="line">        mDrawType = type</span><br><span class="line">        <span class="comment">//重新绘制</span></span><br><span class="line">        invalidate()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>xml:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:padding</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".ui.OnDrawActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">RelativeLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"40dp"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/tv_draw"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_alignParentLeft</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"绘图方式"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"17sp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Spinner</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/spDraw"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_toRightOf</span>=<span class="string">"@+id/tv_draw"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"left|center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:spinnerMode</span>=<span class="string">"dialog"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">RelativeLayout</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">com.example.chaptersix.widget.BeforeRelativeLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/brDraw"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"300dp"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/btn_center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:padding</span>=<span class="string">"20dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_centerInParent</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"我在中间"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"20sp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:visibility</span>=<span class="string">"gone"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;/<span class="name">com.example.chaptersix.widget.BeforeRelativeLayout</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>activity:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OnDrawActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityOnDrawBinding</span>&gt;</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> descArray = arrayOf(<span class="string">"不画图"</span>, <span class="string">"画矩形"</span>, <span class="string">"画圆角矩形"</span>, <span class="string">"画圆圈"</span>, <span class="string">"画椭圆"</span>, <span class="string">"画叉叉"</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> typeArray = arrayOf(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityOnDrawBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> adapter = ArrayAdapter&lt;String&gt;(<span class="keyword">this</span><span class="symbol">@OnDrawActivity</span>,R.layout.item_select,descArray)</span><br><span class="line">        mBinding.spDraw.adapter = adapter</span><br><span class="line">        spDraw.prompt = <span class="string">"请选择绘图方式"</span></span><br><span class="line">        spDraw.onItemSelectedListener = DrawSelectedListener()</span><br><span class="line">        spDraw.setSelection(<span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">DrawSelectedListener</span> : <span class="type">AdapterView.OnItemSelectedListener&#123;</span></span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?, view: <span class="type">View</span>?, position: <span class="type">Int</span>, id: <span class="type">Long</span>)</span></span> &#123;</span><br><span class="line">                <span class="keyword">val</span> type = typeArray[position]</span><br><span class="line">                <span class="keyword">if</span> (type == <span class="number">5</span>)&#123;</span><br><span class="line">                    mBinding.btnCenter.visibility = View.VISIBLE</span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    mBinding.btnCenter.visibility = View.GONE</span><br><span class="line">                &#125;</span><br><span class="line">            mBinding.brDraw.setDrawType(type)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onNothingSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/7.png" alt></p>
+<h4 id="dispatchDraw"><a href="#dispatchDraw" class="headerlink" title="dispatchDraw"></a>dispatchDraw</h4><p>​        dispatchDraw与onDraw函数一样都是绘图方法，<strong>区别在于onDraw的调用在绘制子视图之前，dispatchDraw的调用在绘制子视图之后。</strong>如果不想自身视图被子视图覆盖，就只能在dispatchDraw方法中进行绘图处理。</p>
+<p>AfterRelativeLayout:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AfterRelativeLayout</span></span>(context: Context,attributeSet: AttributeSet?) :RelativeLayout(context,attributeSet) &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> paint = Paint()</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mType = <span class="number">0</span></span><br><span class="line">    <span class="keyword">init</span> &#123;</span><br><span class="line">        <span class="comment">//设置画笔为无锯齿</span></span><br><span class="line">        paint.isAntiAlias = <span class="literal">true</span></span><br><span class="line">        <span class="comment">//防抖动</span></span><br><span class="line">        paint.isDither = <span class="literal">true</span></span><br><span class="line">        <span class="comment">//画笔颜色</span></span><br><span class="line">        paint.color = Color.BLACK</span><br><span class="line">        <span class="comment">//线宽</span></span><br><span class="line">        paint.strokeWidth = <span class="number">3F</span></span><br><span class="line">        <span class="comment">//画笔类型：STROKE空心 FILL 实心</span></span><br><span class="line">        paint.style = Paint.Style.STROKE</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//dispatchDraw的调用在绘制子视图之后</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">dispatchDraw</span><span class="params">(canvas: <span class="type">Canvas</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.dispatchDraw(canvas)</span><br><span class="line">        <span class="comment">//获取布局的实际宽高</span></span><br><span class="line">        <span class="keyword">val</span> width = measuredWidth</span><br><span class="line">        <span class="keyword">val</span> height = measuredHeight</span><br><span class="line">        <span class="keyword">if</span> (width&gt;<span class="number">0</span> &amp;&amp; height&gt;<span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">when</span>(mType)&#123;</span><br><span class="line">                <span class="number">1</span> -&gt; &#123;</span><br><span class="line">                    Log.d(<span class="string">"layout"</span>,<span class="string">"<span class="variable">$mType</span>"</span>)</span><br><span class="line">                    <span class="keyword">val</span> rect = Rect(<span class="number">0</span>,<span class="number">0</span>,width,height)</span><br><span class="line">                    canvas?.drawRect(rect,paint)</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="number">2</span> -&gt; &#123;</span><br><span class="line">                    <span class="keyword">val</span> rectF = RectF(<span class="number">0F</span>,<span class="number">0F</span>,width.toFloat(),height.toFloat())</span><br><span class="line">                    canvas?.drawRoundRect(rectF,<span class="number">30F</span>,<span class="number">30F</span>,paint)</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="number">3</span> -&gt; &#123;</span><br><span class="line">                    <span class="keyword">val</span> radius = Math.min(width,height)/<span class="number">2</span></span><br><span class="line">                    canvas?.drawCircle((width/<span class="number">2</span>).toFloat(),(height/<span class="number">2</span>).toFloat(),radius.toFloat(),paint)</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="number">4</span> -&gt; &#123;</span><br><span class="line">                    <span class="keyword">val</span> oval = RectF(<span class="number">0F</span>,<span class="number">0F</span>,width.toFloat(),height.toFloat())</span><br><span class="line">                    canvas?.drawOval(oval,paint)</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="number">5</span> -&gt; &#123;</span><br><span class="line">                    <span class="keyword">val</span> rect = Rect(<span class="number">0</span>,<span class="number">0</span>,width,height)</span><br><span class="line">                    canvas?.drawRect(rect,paint)</span><br><span class="line">                    canvas?.drawLine(<span class="number">0F</span>,<span class="number">0F</span>,width.toFloat(),height.toFloat(),paint)</span><br><span class="line">                    canvas?.drawLine(<span class="number">0F</span>,height.toFloat(),width.toFloat(),<span class="number">0F</span>,paint)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">setDrawType</span><span class="params">(type:<span class="type">Int</span>)</span></span>&#123;</span><br><span class="line">        <span class="comment">//背景置为白色，目的是把画布擦干净</span></span><br><span class="line">        setBackgroundColor(Color.WHITE)</span><br><span class="line">        mType = type</span><br><span class="line">        <span class="comment">//立即重新绘图，此时会触发onDraw方法和dispatchDraw方法</span></span><br><span class="line">        invalidate()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>xml:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:padding</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".ui.DispatchDraw"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">RelativeLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"40dp"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/tv_dispatch"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_alignParentLeft</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"绘图方式："</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Spinner</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/sp_dispatch"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_toRightOf</span>=<span class="string">"@id/tv_dispatch"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"left|center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:spinnerMode</span>=<span class="string">"dialog"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">RelativeLayout</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">com.example.chaptersix.widget.AfterRelativeLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/dispatch_draw"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"300dp"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/btn_center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:padding</span>=<span class="string">"20dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_centerInParent</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"我在中间"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"20sp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:visibility</span>=<span class="string">"gone"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">com.example.chaptersix.widget.AfterRelativeLayout</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>activity:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DispatchDraw</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityDispatchDrawBinding</span>&gt;</span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> descArray = arrayOf(<span class="string">"不画图"</span>, <span class="string">"画矩形"</span>, <span class="string">"画圆角矩形"</span>, <span class="string">"画圆圈"</span>, <span class="string">"画椭圆"</span>, <span class="string">"画叉叉"</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> typeArray = arrayOf(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>)</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityDispatchDrawBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> adapter = ArrayAdapter&lt;String&gt;(<span class="keyword">this</span><span class="symbol">@DispatchDraw</span>,R.layout.item_select,descArray)</span><br><span class="line">        mBinding.spDispatch.adapter = adapter</span><br><span class="line">        spDispatch.prompt = <span class="string">"请选择绘图方式"</span></span><br><span class="line">        spDispatch.onItemSelectedListener = DrawSelectedListener()</span><br><span class="line">        spDispatch.setSelection(<span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">DrawSelectedListener</span> : <span class="type">AdapterView.OnItemSelectedListener&#123;</span></span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?, view: <span class="type">View</span>?, position: <span class="type">Int</span>, id: <span class="type">Long</span>)</span></span> &#123;</span><br><span class="line">            <span class="keyword">val</span> type = typeArray[position]</span><br><span class="line">            <span class="keyword">if</span> (type == <span class="number">5</span>)&#123;</span><br><span class="line">                mBinding.btnCenter.visibility = View.VISIBLE</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                mBinding.btnCenter.visibility = View.GONE</span><br><span class="line">            &#125;</span><br><span class="line">            mBinding.dispatchDraw.setDrawType(type)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onNothingSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/8.png" alt></p>
+<p>总结一下onLayout、onDraw、dispatchDraw三个函数的区别：</p>
+<ol>
+<li><strong>onLayout只能调整子视图的位置，而onDraw和dispatchDraw允许绘制新图形。</strong></li>
+<li><strong>onDraw的调用在绘制子视图之前，而dispatchDraw的调用在绘制子视图之后。</strong></li>
+<li><strong>onLayout若想立即显示位置调整后的视图，则要调用requestLayout方法；onDraw和dispatchDraw若想立即显示图形绘制后的视图，则要调用invalidate方法。</strong></li>
+</ol>
+<h2 id="自定义动画"><a href="#自定义动画" class="headerlink" title="自定义动画"></a>自定义动画</h2><h3 id="任务Runnable"><a href="#任务Runnable" class="headerlink" title="任务Runnable"></a>任务Runnable</h3><p>​        调用Handler的postDelayed方法延迟若干时间再执行指定的Runnable任务。这几处延迟处理主要是为了避免资源冲突，不过延迟处理更多用于动画界面的渲染。</p>
+<p>​        尽管基本视图View提供了post与postDelayed方法用于启动Runnable任务，不过实际开发中经常利用Handler启动任务。下面是Handler处理Runnable任务的常见方法说明：</p>
+<ul>
+<li>post：立即启动Runnable任务。</li>
+<li>postDelayed：延迟若干时间后启动Runnable任务。</li>
+<li>postAtTime：在指定时间启动Runnable任务。</li>
+<li>removeCallbacks：移除指定的Runnable任务。</li>
+</ul>
+<p>​        计时器是Runnable的一个简单应用，与动画的实现原理相关，如电影每秒播放20帧画面，连起来就是会动的视频，动画的渲染与之同理。</p>
+<p>xml:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".ui.RunnableActivity"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:padding</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:ignore</span>=<span class="string">"MissingDefaultResource"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/btn_jishu"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">"开始计数"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/tv_result"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:padding</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>activity:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RunnableActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityRunnableBinding</span>&gt;</span>(),View.OnClickListener &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> handler = Handler(Looper.getMainLooper())</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> count = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> bStart = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityRunnableBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        mBinding.btnJishu.setOnClickListener(<span class="keyword">this</span><span class="symbol">@RunnableActivity</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onClick</span><span class="params">(v: <span class="type">View</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">when</span>(v?.id)&#123;</span><br><span class="line">            mBinding.btnJishu.id -&gt; &#123;</span><br><span class="line">                <span class="keyword">if</span> (!bStart)&#123;</span><br><span class="line">                    mBinding.btnJishu.text = <span class="string">"停止计数"</span></span><br><span class="line">                    handler.post(runnable)</span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    mBinding.btnJishu.text = <span class="string">"开始计数"</span></span><br><span class="line">                    handler.removeCallbacks(runnable)</span><br><span class="line">                &#125;</span><br><span class="line">                bStart = !bStart</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> runnable = <span class="keyword">object</span>:Runnable&#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">run</span><span class="params">()</span></span> &#123;</span><br><span class="line">            count ++</span><br><span class="line">            mBinding.tvResult.text = <span class="string">"当前计数值为：<span class="variable">$count</span>"</span></span><br><span class="line">            handler.postDelayed(<span class="keyword">this</span>,<span class="number">1000</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/9.png" alt></p>
+<h3 id="下拉刷新动画"><a href="#下拉刷新动画" class="headerlink" title="下拉刷新动画"></a>下拉刷新动画</h3><p>​        把计时器引入下拉刷新中，每隔若干时间展示逐步加大的视图偏移，从而实现下拉刷新头部的下拉动画。</p>
+<p>​        首先，计算下拉刷新头部的高度，这会用到“测量尺寸”的知识。接着，计时器每隔若干时间为padding设置逐步加大的高度偏移。不得不说，padding大法非常好用，当padding为负值时，表示当前视图被遮住了一部分。最后，高度的偏移值达到头部布局的高度时，停止Runnable的刷新任务，下拉动画完成。</p>
+<p>活动视图xml:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:padding</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".ui.PullRefreshActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">include</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/header"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">layout</span>=<span class="string">"@layout/drag_drop_header"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/btn_pull"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:paddingTop</span>=<span class="string">"10dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">"下拉刷新"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>drag_drop_header布局:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/ll_header"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:background</span>=<span class="string">"#eeeeee"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:gravity</span>=<span class="string">"center_horizontal"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:paddingBottom</span>=<span class="string">"15dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:paddingTop</span>=<span class="string">"15dp"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">ImageView</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:src</span>=<span class="string">"@drawable/icon_header"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/ll_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:orientation</span>=<span class="string">"horizontal"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">ImageView</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/iv_arrow"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:src</span>=<span class="string">"@drawable/icon_arrow"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_marginLeft</span>=<span class="string">"10dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"center_horizontal"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:orientation</span>=<span class="string">"vertical"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">                    <span class="attr">android:id</span>=<span class="string">"@+id/tv_tips"</span></span></span><br><span class="line"><span class="tag">                    <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                    <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                    <span class="attr">android:text</span>=<span class="string">"轻轻下拉，刷新精彩..."</span></span></span><br><span class="line"><span class="tag">                    <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">                    <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>activity:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PullRefreshActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityPullRefreshBinding</span>&gt;</span>(),View.OnClickListener &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> height = <span class="number">0</span></span><br><span class="line">    <span class="comment">//是否开始刷新</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> bStart = <span class="literal">false</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> handler = Handler(Looper.getMainLooper())</span><br><span class="line">    <span class="comment">//刷新过程中的下拉偏移量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> offset = <span class="number">0</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityPullRefreshBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        mBinding.header.llHeader.visibility = View.GONE</span><br><span class="line">        btnPull.setOnClickListener(<span class="keyword">this</span><span class="symbol">@PullRefreshActivity</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onClick</span><span class="params">(v: <span class="type">View</span>?)</span></span> &#123;</span><br><span class="line">        <span class="comment">//获取刷新页面的实际高度</span></span><br><span class="line">        height = MeasureUtil.getRealHeight(mBinding.header.llHeader).toInt()</span><br><span class="line">        <span class="keyword">when</span>(v?.id)&#123;</span><br><span class="line">            mBinding.btnPull.id -&gt; &#123;</span><br><span class="line">                <span class="comment">//未刷新时点击，则开始下拉刷新</span></span><br><span class="line">                <span class="keyword">if</span> (!bStart)&#123;</span><br><span class="line">                    offset = -height</span><br><span class="line">                    mBinding.btnPull.isEnabled = <span class="literal">false</span></span><br><span class="line">                    <span class="comment">//立即开始刷新任务</span></span><br><span class="line">                    handler.post(refreshRunnable)</span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;<span class="comment">//已刷新时，则停止下拉刷新</span></span><br><span class="line">                    mBinding.btnPull.text = <span class="string">"开始刷新"</span></span><br><span class="line">                    mBinding.header.llHeader.visibility = View.GONE</span><br><span class="line">                &#125;</span><br><span class="line">                bStart = !bStart</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//下拉刷新任务</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> refreshRunnable = <span class="keyword">object</span> : Runnable&#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">run</span><span class="params">()</span></span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (offset&lt;=<span class="number">0</span>)&#123;<span class="comment">//尚未下拉到位</span></span><br><span class="line">                <span class="comment">//通过设置视图上方的间隔，达到布局缩进的效果</span></span><br><span class="line">                mBinding.header.llHeader.setPadding(<span class="number">0</span>,offset,<span class="number">0</span>,<span class="number">0</span>)</span><br><span class="line">                mBinding.header.llHeader.visibility = View.VISIBLE</span><br><span class="line">                offset += <span class="number">8</span></span><br><span class="line">                <span class="comment">//延迟80ms后重复刷新任务</span></span><br><span class="line">                handler.postDelayed(<span class="keyword">this</span>,<span class="number">80</span>)</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;<span class="comment">//下拉到顶了</span></span><br><span class="line">                mBinding.btnPull.text = <span class="string">"恢复页面"</span></span><br><span class="line">                mBinding.btnPull.isEnabled = <span class="literal">true</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测量尺寸工具类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">class PullRefreshActivity : BaseActivity&lt;ActivityPullRefreshBinding&gt;(),View.OnClickListener &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> height = <span class="number">0</span></span><br><span class="line">    <span class="comment">//是否开始刷新</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> bStart = <span class="keyword">false</span></span><br><span class="line">    <span class="keyword">private</span> val handler = Handler(Looper.getMainLooper())</span><br><span class="line">    <span class="comment">//刷新过程中的下拉偏移量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> offset = <span class="number">0</span></span><br><span class="line">    override fun ActivityPullRefreshBinding.initBinding() &#123;</span><br><span class="line">        mBinding.header.llHeader.visibility = View.GONE</span><br><span class="line">        btnPull.setOnClickListener(<span class="keyword">this</span><span class="meta">@PullRefreshActivity</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">override fun <span class="title">onClick</span><span class="params">(v: View?)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//获取刷新页面的实际高度</span></span><br><span class="line">        height = MeasureUtil.getRealHeight(mBinding.header.llHeader).toInt()</span><br><span class="line">        when(v?.id)&#123;</span><br><span class="line">            mBinding.btnPull.id -&gt; &#123;</span><br><span class="line">                <span class="comment">//未刷新时点击，则开始下拉刷新</span></span><br><span class="line">                <span class="keyword">if</span> (!bStart)&#123;</span><br><span class="line">                    offset = -height</span><br><span class="line">                    mBinding.btnPull.isEnabled = <span class="keyword">false</span></span><br><span class="line">                    <span class="comment">//立即开始刷新任务</span></span><br><span class="line">                    handler.post(refreshRunnable)</span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;<span class="comment">//已刷新时，则停止下拉刷新</span></span><br><span class="line">                    mBinding.btnPull.text = <span class="string">"开始刷新"</span></span><br><span class="line">                    mBinding.header.llHeader.visibility = View.GONE</span><br><span class="line">                &#125;</span><br><span class="line">                bStart = !bStart</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//下拉刷新任务</span></span><br><span class="line">    <span class="keyword">private</span> val refreshRunnable = object : Runnable&#123;</span><br><span class="line">        <span class="function">override fun <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (offset&lt;=<span class="number">0</span>)&#123;<span class="comment">//尚未下拉到位</span></span><br><span class="line">                <span class="comment">//通过设置视图上方的间隔，达到布局缩进的效果</span></span><br><span class="line">                mBinding.header.llHeader.setPadding(<span class="number">0</span>,offset,<span class="number">0</span>,<span class="number">0</span>)</span><br><span class="line">                mBinding.header.llHeader.visibility = View.VISIBLE</span><br><span class="line">                offset += <span class="number">8</span></span><br><span class="line">                <span class="comment">//延迟80ms后重复刷新任务</span></span><br><span class="line">                handler.postDelayed(<span class="keyword">this</span>,<span class="number">80</span>)</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;<span class="comment">//下拉到顶了</span></span><br><span class="line">                mBinding.btnPull.text = <span class="string">"恢复页面"</span></span><br><span class="line">                mBinding.btnPull.isEnabled = <span class="keyword">true</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/10.png" alt></p>
+<h3 id="圆弧进度动画"><a href="#圆弧进度动画" class="headerlink" title="圆弧进度动画"></a>圆弧进度动画</h3><p>​        当用户下载文件或做其他事情时，往往想知道当前到什么进度了。在Windows系统中常用细长的进度条表示，在手机上因为屏幕限制，习惯展示圆形或弧形的进度圈。</p>
+<p>​        绘制圆弧动画的主要思路是在一段指定的时间内持续不断地绘制一个扇形或圆弧，连起来整个画面就会动起来。还要进行一些参数设置，如设置该圆圈的位置、开始和结束的角度、转动的速率，以及画笔的颜色、粗细、样式等。另外，为了区分处理动画的背景和前景，还要分别构造背景视图（用于衬托动画）和前景视图（用于展示圆弧）。</p>
+<p>自定义view:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CircleAnimation</span></span>(context: Context):RelativeLayout(context) &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mRect = RectF(<span class="number">100F</span>,<span class="number">10F</span>,<span class="number">400F</span>,<span class="number">310F</span>)</span><br><span class="line">    <span class="comment">//开始和结束的角度</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mBeginAngle = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mEndAngle = <span class="number">270</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mFrontColor = Color.BLUE</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mFloatLine = <span class="number">10</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mFrontStyle = Paint.Style.STROKE</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mShadeColor = Color.GRAY</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mShadeLine = <span class="number">10</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mShadeStyle = Paint.Style.STROKE</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mShadeView:ShadowView?  = <span class="literal">null</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mFrontView:FrontView? = <span class="literal">null</span></span><br><span class="line">    <span class="comment">//转动的速率</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mRate = <span class="number">2</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mDrawTimes:<span class="built_in">Int</span>? = <span class="literal">null</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mInterval = <span class="number">70</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mFactor:<span class="built_in">Int</span>? = <span class="literal">null</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mContext:Context = context</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mSeq = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mDrawingAngle = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">     <span class="function"><span class="keyword">fun</span> <span class="title">render</span><span class="params">()</span></span> &#123;</span><br><span class="line">        removeAllViews()</span><br><span class="line">        mShadeView = ShadowView(mContext)</span><br><span class="line">        addView(mShadeView)</span><br><span class="line">         mShadeView!!.invalidate()</span><br><span class="line">        mFrontView = FrontView(mContext)</span><br><span class="line">        addView(mFrontView)</span><br><span class="line">        play()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setRect</span><span class="params">(left:<span class="type">Int</span>,top:<span class="type">Int</span>,right:<span class="type">Int</span>,bottom:<span class="type">Int</span>)</span></span>&#123;</span><br><span class="line">        mRect = RectF(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat())</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setAngle</span><span class="params">(beginAngle:<span class="type">Int</span>,endAngle:<span class="type">Int</span>)</span></span>&#123;</span><br><span class="line">        mBeginAngle = beginAngle</span><br><span class="line">        mEndAngle = endAngle</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//speed:每次移动几个度数   frames:每秒移动几帧</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setmRate</span><span class="params">(speed:<span class="type">Int</span>,frames:<span class="type">Int</span>)</span></span>&#123;</span><br><span class="line">        mRate = speed</span><br><span class="line">        mInterval = <span class="number">1000</span>/frames</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setFront</span><span class="params">(color:<span class="type">Int</span>,line:<span class="type">Float</span>,style:<span class="type">Paint</span>.<span class="type">Style</span>)</span></span>&#123;</span><br><span class="line">        mFrontColor = color</span><br><span class="line">        mFloatLine = line.toInt()</span><br><span class="line">        mFrontStyle = style</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setShade</span><span class="params">(color:<span class="type">Int</span>,line:<span class="type">Float</span>,style:<span class="type">Paint</span>.<span class="type">Style</span>)</span></span>&#123;</span><br><span class="line">        mShadeColor = color</span><br><span class="line">        mShadeLine = line.toInt()</span><br><span class="line">        mShadeStyle = style</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">     <span class="function"><span class="keyword">fun</span> <span class="title">play</span><span class="params">()</span></span>&#123;</span><br><span class="line">        mSeq = <span class="number">0</span></span><br><span class="line">        mDrawingAngle = <span class="number">0</span></span><br><span class="line">        mDrawTimes = mEndAngle/mRate</span><br><span class="line">        mFactor = mDrawTimes!! /mInterval + <span class="number">1</span></span><br><span class="line">        mFrontView?.invalidateView()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">ShadowView</span></span>(context: Context):View(context)&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">var</span> mPaint:Paint = Paint()</span><br><span class="line">        <span class="keyword">init</span> &#123;</span><br><span class="line">            Log.d(<span class="string">"Shadow"</span>,<span class="string">"shadow init"</span>)</span><br><span class="line">            mPaint.isAntiAlias = <span class="literal">true</span></span><br><span class="line">            mPaint.isDither = <span class="literal">true</span></span><br><span class="line">            mPaint.color = mShadeColor</span><br><span class="line">            mPaint.strokeWidth = mShadeLine.toFloat()</span><br><span class="line">            mPaint.style = mShadeStyle</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDraw</span><span class="params">(canvas: <span class="type">Canvas</span>?)</span></span> &#123;</span><br><span class="line">            <span class="keyword">super</span>.onDraw(canvas)</span><br><span class="line">            canvas?.drawArc(mRect, mBeginAngle.toFloat(), <span class="number">360F</span>,<span class="literal">false</span>,mPaint)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">FrontView</span></span>(context: Context):View(context)&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">val</span> paint = Paint()</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">var</span> mHandler = Handler(Looper.getMainLooper())</span><br><span class="line"></span><br><span class="line">        <span class="keyword">init</span> &#123;</span><br><span class="line">            <span class="comment">//设置画笔为无锯齿</span></span><br><span class="line">            paint.isAntiAlias = <span class="literal">true</span></span><br><span class="line">            <span class="comment">//防抖动</span></span><br><span class="line">            paint.isDither = <span class="literal">true</span></span><br><span class="line">            <span class="comment">//设置画笔颜色</span></span><br><span class="line">            paint.color = mFrontColor.toInt()</span><br><span class="line">            <span class="comment">//线宽</span></span><br><span class="line">            paint.strokeWidth = mFloatLine.toFloat()</span><br><span class="line">            <span class="comment">//画笔类型 STROKE空心 FILL 实心</span></span><br><span class="line">            paint.style = mFrontStyle</span><br><span class="line">            <span class="comment">//paint.setStrokeJoin(Paint.Join.ROUND); //画笔接洽点类型 如影响矩形直角的外轮廓</span></span><br><span class="line">            <span class="comment">//画笔笔刷类型 如影响画笔的始末端</span></span><br><span class="line">            paint.strokeCap = Paint.Cap.ROUND</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDraw</span><span class="params">(canvas: <span class="type">Canvas</span>?)</span></span> &#123;</span><br><span class="line">            <span class="keyword">super</span>.onDraw(canvas)</span><br><span class="line">            canvas?.drawArc(mRect, mBeginAngle.toFloat(), mDrawingAngle.toFloat(),<span class="literal">false</span>,paint)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">invalidateView</span><span class="params">()</span></span> &#123;</span><br><span class="line">            mHandler.postDelayed(drawRunnable,<span class="number">0</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">val</span> drawRunnable = <span class="keyword">object</span> : Runnable&#123;</span><br><span class="line">            <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">run</span><span class="params">()</span></span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (mDrawingAngle &gt;= mEndAngle)&#123;</span><br><span class="line">                    mDrawingAngle = mEndAngle</span><br><span class="line">                    invalidate()</span><br><span class="line">                    mHandler.removeCallbacks(<span class="keyword">this</span>)</span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    mDrawingAngle = mSeq * mRate</span><br><span class="line">                    mSeq ++</span><br><span class="line">                    mHandler.postDelayed(<span class="keyword">this</span>,(mInterval - mSeq/ mFactor!!).toLong())</span><br><span class="line">                    invalidate()</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>布局:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".ui.CircleAnimationActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/btn_play"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">"播放圆弧动画"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/ll_layout"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"400dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:orientation</span>=<span class="string">"vertical"</span>&gt;</span><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>activity:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CircleAnimationActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityCircleAnimationBinding</span>&gt;</span>(),View.OnClickListener &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> circleAnimation: CircleAnimation</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityCircleAnimationBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        btnPlay.setOnClickListener(<span class="keyword">this</span><span class="symbol">@CircleAnimationActivity</span>)</span><br><span class="line">        circleAnimation = CircleAnimation(<span class="keyword">this</span><span class="symbol">@CircleAnimationActivity</span>)</span><br><span class="line">        mBinding.llLayout.addView(circleAnimation)</span><br><span class="line">        circleAnimation.render()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onClick</span><span class="params">(v: <span class="type">View</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">when</span>(v?.id)&#123;</span><br><span class="line">            mBinding.btnPlay.id -&gt; circleAnimation.play()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/11.png" alt></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/06/23/%E5%8D%8F%E7%A8%8BContext/" rel="prev" title="协程Context">
+      <i class="fa fa-chevron-left"></i> 协程Context
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/28/Compose%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" rel="next" title="Compose基础知识">
+      Compose基础知识 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义视图"><span class="nav-number">1.</span> <span class="nav-text">自定义视图</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#声明属性"><span class="nav-number">1.1.</span> <span class="nav-text">声明属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构造对象"><span class="nav-number">1.2.</span> <span class="nav-text">构造对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测量尺寸"><span class="nav-number">1.3.</span> <span class="nav-text">测量尺寸</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#文本尺寸测量"><span class="nav-number">1.3.1.</span> <span class="nav-text">文本尺寸测量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#图形尺寸测量"><span class="nav-number">1.3.2.</span> <span class="nav-text">图形尺寸测量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#布局尺寸测量"><span class="nav-number">1.3.3.</span> <span class="nav-text">布局尺寸测量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#绘制视图"><span class="nav-number">1.4.</span> <span class="nav-text">绘制视图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#onLayout"><span class="nav-number">1.4.1.</span> <span class="nav-text">onLayout</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#onDraw"><span class="nav-number">1.4.2.</span> <span class="nav-text">onDraw</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#划定可绘制的区域"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">划定可绘制的区域</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在区域内部绘制图形"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">在区域内部绘制图形</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#画布的控制操作"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">画布的控制操作</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dispatchDraw"><span class="nav-number">1.4.3.</span> <span class="nav-text">dispatchDraw</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义动画"><span class="nav-number">2.</span> <span class="nav-text">自定义动画</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#任务Runnable"><span class="nav-number">2.1.</span> <span class="nav-text">任务Runnable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下拉刷新动画"><span class="nav-number">2.2.</span> <span class="nav-text">下拉刷新动画</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#圆弧进度动画"><span class="nav-number">2.3.</span> <span class="nav-text">圆弧进度动画</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

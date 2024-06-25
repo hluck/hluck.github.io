@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="​        Android KTX 是作为 Kotlin 的扩展库存在的。它帮助开发者封装了一些常见的代码块。 ​        Android KTX 分为核心（Core）、集合（Collection）、视图碎片（Fragment）等方面，提供了面向 Android Jetpack 以及其他 Android API 更简单且易于理解和使用的增强 API。从源码上看，Android KTX">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android KTX扩展">
+<meta property="og:url" content="https://hluck.github.io/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="​        Android KTX 是作为 Kotlin 的扩展库存在的。它帮助开发者封装了一些常见的代码块。 ​        Android KTX 分为核心（Core）、集合（Collection）、视图碎片（Fragment）等方面，提供了面向 Android Jetpack 以及其他 Android API 更简单且易于理解和使用的增强 API。从源码上看，Android KTX">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/3.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/4.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/5.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/6.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/7.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/8.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/9.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/10.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/11.png">
+<meta property="article:published_time" content="2022-08-10T09:33:28.411Z">
+<meta property="article:modified_time" content="2022-08-10T15:33:26.772Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android KTX扩展 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android KTX扩展
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-08-10 17:33:28 / 修改时间：23:33:26" itemprop="dateCreated datePublished" datetime="2022-08-10T17:33:28+08:00">2022-08-10</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>​        Android KTX 是作为 Kotlin 的扩展库存在的。它帮助开发者封装了一些常见的代码块。</p>
+<p>​        Android KTX 分为核心（Core）、集合（Collection）、视图碎片（Fragment）等方面，提供了面向 Android Jetpack 以及其他 Android API 更简单且易于理解和使用的增强 API。从源码上看，Android KTX 充分利用了 Kotlin 编程语言的特性，包括扩展函数、扩展属性、Lambda 表达式、命名参数、参数默认值、协程等。</p>
+<h2 id="Core-KTX"><a href="#Core-KTX" class="headerlink" title="Core KTX"></a>Core KTX</h2><p>​        以 Kotlin 作为默认使用的编程语言创建新项目，则该库会被自动添加。</p>
+<h3 id="Animation"><a href="#Animation" class="headerlink" title="Animation"></a>Animation</h3><p>​        Animation 意为动画，在 Core KTX 中提供了一系列简化动画执行监听的 API，扩展了原有的 android.animation.Animator 类。</p>
+<p>​        在 Core KTX 中，当我们想要实现对动画的执行监听时，可使用 Animator 类提供的 doOnStart()、doOnEnd()、doOnPause()、doOnCancel() 等方法。</p>
+<p>​        举个例子，下面这段代码定义了名为 infiniteAlphaAnim 的对象，它定义了无限循环地执行透明度改变的动画效果。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> infiniteAlphaAnim = ObjectAnimator.ofFloat(demoTv, <span class="string">"alpha"</span>, <span class="number">1f</span>, <span class="number">0.3f</span>, <span class="number">1f</span>)</span><br><span class="line">     infiniteAlphaAnim.duration = <span class="number">1000</span></span><br><span class="line">     infiniteAlphaAnim.repeatMode = ValueAnimator.RESTART</span><br><span class="line">     infiniteAlphaAnim.repeatCount = ValueAnimator.INFINITE</span><br></pre></td></tr></table></figure>
+
+<p>接着，我们就可以添加动画执行监听器了：</p>
+<a id="more"></a>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">infiniteAlphaAnim.doOnEnd &#123; Log.d(localClassName, <span class="string">"onEnd"</span>) &#125;</span><br><span class="line">     infiniteAlphaAnim.doOnStart &#123; Log.d(localClassName, <span class="string">"onStart"</span>) &#125;</span><br><span class="line">     infiniteAlphaAnim.doOnPause &#123; Log.d(localClassName, <span class="string">"onPause"</span>) &#125;</span><br><span class="line">     infiniteAlphaAnim.doOnResume &#123; Log.d(localClassName, <span class="string">"onResume"</span>) &#125;</span><br><span class="line">     infiniteAlphaAnim.doOnCancel &#123; Log.d(localClassName, <span class="string">"onCancel"</span>) &#125;</span><br><span class="line">     infiniteAlphaAnim.doOnRepeat &#123; Log.d(localClassName, <span class="string">"onRepeat"</span>) &#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述代码分别实现了对动画结束、开始、暂停、继续、取消和重复执行的监听。</p>
+<h3 id="Content"><a href="#Content" class="headerlink" title="Content"></a>Content</h3><p>​        Content 意为内容，Core KTX 提供了获取系统级服务、首选项以及属性索引方面的扩展。</p>
+<h4 id="获取系统级服务"><a href="#获取系统级服务" class="headerlink" title="获取系统级服务"></a>获取系统级服务</h4><p>在调用系统级服务前，通常会先取得相应的服务对象。Core KTX 提供了非常简单的获取方式。例如，想要调用有关电源方面的系统级服务时，仅需简单地执行下面一行语句即可：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> powerManagerKtx = ContextCompat.getSystemService(<span class="keyword">this</span>,</span><br><span class="line">PowerManager::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>)</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="保存首选项值"><a href="#保存首选项值" class="headerlink" title="保存首选项值"></a>保存首选项值</h4><p>​        首选项通常用来保存程序的设置和某些特殊的键值（key-value）对，在实际开发中经常被使用。Core KTX 提供了保存首选项值的简单写法，我们来看下面的代码片段：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sharedPreferences.edit(<span class="literal">false</span>) &#123; putString(<span class="string">"username"</span>, <span class="string">"13800000000"</span>) &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        上面的代码中，sharedPreferences 是 SharedPreferences 对象。其中的 false 值表示是否为 commit() 操作，当值为 false 时，执行 apply()；反之，执行 commit()，默认为 false。大括号里面的内容就是实际的键值对。</p>
+<p>其实就是对相应的 API 进行封装：</p>
+<h4 id="属性索引值检索"><a href="#属性索引值检索" class="headerlink" title="属性索引值检索"></a>属性索引值检索</h4><p>​        属性索引值检索通常多见于自定义 View 中，和传统 TypedArray API 相比，Core KTX 提供了强制使用某个值的方法。换言之，当索引中未定义相应值时，将抛出 IllegalArgumentException 异常。</p>
+<p>​        下面通过对比来说明，先来看传统写法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> backGroundColor = getColor(R.styleable.PersonInfo_bgColor, Color.BLACK)</span><br></pre></td></tr></table></figure>
+
+<p>​        上面的代码的意思是获取索引名为 PersonInfo_bgColor 的值，当该值未定义时，使用 Color.BLACK 作为默认值赋给 backGroundColor。</p>
+<p>​        再来看 Core KTX 中新增的写法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> backGroundColor = getColorOrThrow(R.styleable.PersonInfo_bgColor)</span><br></pre></td></tr></table></figure>
+
+<p>​        上面的代码依旧是获取索引名为 PersonInfo_bgColor 的值。不同的是，当该值未定义时，程序将抛出 IllegalArgumentException 异常。</p>
+<p>​        和 TypedArray API 紧密相关的还有 Context 类中新增的 <strong>withStyledAttributes</strong>() 方法，它对应传统 Context 类中的 obtainStyledAttributes() 方法，我们依旧通过对比来阐述二者的区别。</p>
+<p>先来看传统写法：</p>
+<p><img src="/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/1.png" alt></p>
+<p>​        传统写法要求在完成取值后调用 TypedArray 对象的 recycle() 方法。由于该方法调用存在普适性，因此 Core KTX 对其进行了封装。新的写法如下：</p>
+<p><img src="/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/2.png" alt></p>
+<h3 id="Database"><a href="#Database" class="headerlink" title="Database"></a>Database</h3><h4 id="Null-值判定"><a href="#Null-值判定" class="headerlink" title="Null 值判定"></a>Null 值判定</h4><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> cursor.getDoubleOrNull(index)</span><br></pre></td></tr></table></figure>
+
+<h4 id="事务操作"><a href="#事务操作" class="headerlink" title="事务操作"></a>事务操作</h4><p>​        事务操作要求我们依次执行开启事务操作、执行数据库操作、设置操作成功、结束事务操作，总共 4 个步骤。其中，除了执行数据库操作是可变代码外，剩下的 3 个步骤都是固定不变的。因此，Core KTX 对这 3 个步骤进行了封装。下面的代码片段是简化后的实现：</p>
+<p><img src="/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/3.png" alt></p>
+<p>​        这里要特别注意，exclusive 是用来表示该操作是否独占的布尔变量，其默认值为 true，即独占操作。当我们无须独占时，记得将其赋值为 false。</p>
+<h3 id="Graphics"><a href="#Graphics" class="headerlink" title="Graphics"></a>Graphics</h3><h4 id="绘制任意图形"><a href="#绘制任意图形" class="headerlink" title="绘制任意图形"></a>绘制任意图形</h4><p>​        Core KTX 对 Bitmap 类进行了扩充，为其新增了 applyCanvas() 方法。我们可以通过调用此方法在自定义的 Bitmap 范围内自由地绘制图形。</p>
+<p>例如，想画两个同心圆，仅需要编写以下代码片段即可：</p>
+<p><img src="/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/4.png" alt></p>
+<p>paint 是 Paint 对象，定义了画笔的颜色和线条风格：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> paint = Paint()</span><br><span class="line">     paint.color = Color.BLUE</span><br><span class="line">     paint.style = Paint.Style.STROKE</span><br><span class="line">     paint.strokeWidth = <span class="number">10F</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/5.png" alt></p>
+<h4 id="获取／改变特定像素点的颜色值"><a href="#获取／改变特定像素点的颜色值" class="headerlink" title="获取／改变特定像素点的颜色值"></a>获取／改变特定像素点的颜色值</h4><p>​        当我们想要获取或者改变 Bitmap 对象中特定像素点的颜色值时，可以使用 Core KTX 提供的封装好的方法。这些方法非常易于理解，下面的代码片段分别为我们展示了获取以及改变特定像素点颜色的方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取颜色值 </span></span><br><span class="line">bitmap.<span class="keyword">get</span>(<span class="number">100</span>, <span class="number">200</span>)</span><br><span class="line"><span class="comment">// 改变颜色值 </span></span><br><span class="line">bitmap.<span class="keyword">set</span>（<span class="number">100</span>, <span class="number">200</span>, Color.RED）</span><br></pre></td></tr></table></figure>
+
+<p>上述代码中，100， 200 分别对应 x 坐标与 y 坐标，这个坐标值是相对 Bitmap 对象而言的。</p>
+<p>​        当然，在获取以及设置颜色值之前，我们可能需要判断该点是否存在于 Bitmap 对象中，避免其超出范围导致操作失败。判断某个像素点是否存在的方法是 contain()。对于本例而言，写法是：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bitmap.contains(Point(<span class="number">100</span>, <span class="number">200</span>))</span><br></pre></td></tr></table></figure>
+
+<h4 id="Color-Int-与-ARGB-互转"><a href="#Color-Int-与-ARGB-互转" class="headerlink" title="Color Int 与 ARGB 互转"></a>Color Int 与 ARGB 互转</h4><p>​        在 Android 8.0 及以上版本的 API 中，我们可以直接采用 Core KTX 封装好的 Int.toColor() 方法得到 Color 对象，然后即可通过 Color 对象的方法获取每条通道的颜色值。反之，也可以通过 Color 对象的 toArgb() 方法获得 Color Int 值，且后者不要求 API 必须满足 8.0 版本。</p>
+<p>​        那么，对于低版本 Android API，就要我们手动实现从 Int 到 Color 的转换了。这个过程，Google 官方给出了答案：</p>
+<p><img src="/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/6.png" alt></p>
+<p>​        当我们分别传入 - 16776961 和 - 65536 时，前者对应的 ARGB 值为 255,0,0,255，即不透明蓝色，后者对应的 ARGB 值为 255,255,0,0，即不透明红色。</p>
+<h4 id="图像缩放"><a href="#图像缩放" class="headerlink" title="图像缩放"></a>图像缩放</h4><p>Core KTX 提供了对 Bitmap 对象进行缩放的简单实现方法，仅需一行代码即可搞定：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bitmap.scale(<span class="number">100</span>, <span class="number">100</span>, <span class="literal">true</span>)</span><br></pre></td></tr></table></figure>
+
+<p>​        在 scale() 方法中依次传入了 3 个值，分别表示缩放后的宽度、高度以及是否进行双线性插值处理，可以起到反锯齿的优化作用，默认值为 true。</p>
+<p>要特别注意，该方法并不对原 Bitmap 对象进行修改，它会返回一个新创建的缩放后的 Bitmap 对象。</p>
+<h4 id="画布变换"><a href="#画布变换" class="headerlink" title="画布变换"></a>画布变换</h4><p>​        前面通过调用 Bitmap 对象的 Scale() 方法实现了对图像的缩放。接下来将介绍画布（Canvas）API 的使用，以实现图像的变换。在进行这种变换时，Bitmap 本身不会有任何变化，它改变的是画布。</p>
+<p>​        在传统 Android API 中，我们可以对画布进行缩放、裁剪、旋转等操作。它的调用过程通常如下面的代码片段所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">canvas.save()</span><br><span class="line">canvas.clipRect(<span class="number">0f</span>,<span class="number">0f</span>,<span class="number">200f</span>,<span class="number">200f</span>)</span><br><span class="line">canvas.drawRect(<span class="number">10f</span>, <span class="number">10f</span>, <span class="number">300f</span>, <span class="number">100f</span>, paint_dark)</span><br><span class="line">canvas.restore()</span><br></pre></td></tr></table></figure>
+
+<p>​        实际上，无论进行怎样的变换，都需要在开始和结尾调用 save() 和 restore() 方法。现在，通过调用 Core API 简化处理上述代码如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">canvas.withClip(<span class="number">0f</span>, <span class="number">0f</span>, <span class="number">200f</span>, <span class="number">200f</span>) &#123; drawRect(<span class="number">10f</span>, <span class="number">10f</span>, <span class="number">300f</span>, <span class="number">200f</span>,</span><br><span class="line">paint_dark) &#125;</span><br></pre></td></tr></table></figure>
+
+<p>其他类型的变换方式的实现与此例基本一致</p>
+<h4 id="混合两种颜色"><a href="#混合两种颜色" class="headerlink" title="混合两种颜色"></a>混合两种颜色</h4><p>在某些需求下，我们可能需要混合两种颜色，进而得到一种新的颜色。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> color = Color.BLUE</span><br><span class="line">color = color.plus(Color.RED)</span><br></pre></td></tr></table></figure>
+
+<p>​        从代码本身去理解即可。本例是将蓝色（RGB 值为 0,0,255）与红色（RGB 值为 255,0,0）混合，最终将得到玫红色（RGB 值分别为 255,0,255）。</p>
+<h4 id="Drawable-对象转换为-Bitmap-对象"><a href="#Drawable-对象转换为-Bitmap-对象" class="headerlink" title="Drawable 对象转换为 Bitmap 对象"></a>Drawable 对象转换为 Bitmap 对象</h4><p>​        如果要获取资源目录下图像的 Bitmap 对象，该怎样实现呢？</p>
+<p>​        Core KTX 对 Drawable 类进行了扩展，提供了名为 toBitmap() 的方法。它可以轻松地帮我们完成从 Drawable 对象到 Bitmap 对象的转换。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> bitmap = getDrawable(R.mipmap.android_icon)?.toBitmap()</span><br></pre></td></tr></table></figure>
+
+<h3 id="Util"><a href="#Util" class="headerlink" title="Util"></a>Util</h3><p>​        在 Core KTX 中的 Util 包里最值得讲得莫过于 AtomicFile。概括地说，AtomicFile 是对文件进行原子操作的工具类。</p>
+<p>​        在进行文件写操作时，AtomicFile 会使用两个文件来确保原子性：一个文件是原始文件本身，另一个文件则扮演备份的角色。</p>
+<h4 id="写文本文件"><a href="#写文本文件" class="headerlink" title="写文本文件"></a>写文本文件</h4><p>​        借助 Core KTX，我们可以轻松地向文件写入数据。写入的方式有 3 种：文本、byte 数组和文件流，其方法分别为 writeText()、writeBytes() 和 tryWrite()。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> targetFile = File(filesDir.toString() + File.separator + 「test.txt」)</span><br><span class="line"><span class="keyword">val</span> atomicFileExp = AtomicFile（targetFile）</span><br><span class="line">atomicFileExp.writeText（「这是一个测试文本」）</span><br></pre></td></tr></table></figure>
+
+<p>​        通过调用 AtomicFile 对象的 writeText() 方法，我们完成了在 App 的 Data 目录下创建 test.txt 文件，并写入一些文字的操作，而传统的写法只允许我们以输出流的方式写文件。该方法默认采用 UTF-8 编码形式将文本写入文件。</p>
+<h4 id="读文本文件"><a href="#读文本文件" class="headerlink" title="读文本文件"></a>读文本文件</h4><p>​        使用 Core KTX 封装的读文件方法非常简单，只需调用 AtomicFile 对象的 readText() 方法即可，代码如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> targetFile = File(filesDir.toString() + File.separator + <span class="string">"test.txt"</span>)</span><br><span class="line"><span class="keyword">val</span> atomicFileExp = AtomicFile(targetFile)</span><br><span class="line">Log.d(localClassName,atomicFileExp.readText())</span><br></pre></td></tr></table></figure>
+
+<p>​        前面我们向文件中写入了一些文本字符，上述代码的作用即读取这个文件的内容，并输出到 Logcat 中。</p>
+<p>​        需要注意的是，该方法将返回文件的全部内容。readFully() 在原始的 AtomicFile.java 类中，该方法封装了以输入流的方式读取文件全部内容的方法。需要注意的是，在调用该方法时，请权衡内存资源消耗。</p>
+<h3 id="View"><a href="#View" class="headerlink" title="View"></a>View</h3><p>​        View 意为视图，Core KTX 扩展了传统的 android.view.View、android.view.ViewGroup 等类，在某些特定的场景下，为开发者提供了极大的方便。</p>
+<h4 id="简化的监听器实现"><a href="#简化的监听器实现" class="headerlink" title="简化的监听器实现"></a>简化的监听器实现</h4><p>​        Core KTX 提供了简化的 View 监听器实现，除了前文中提到的 doOnPreDraw() 方法外，还有 doOnAttach()、doOnDetach()、doOnLayout() 和 doOnNextLayout()。它们分别对应传统写法中的 addOnAttachStateChangeListener() 和 addOnLayoutChangeListener() 方法及其回调。</p>
+<p>​    例如，我们想对某个 View 添加 attach 监听：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">demoTv.doOnAttach &#123; Log.d(localClassName, <span class="string">"doOnAttach"</span>) &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="View-截图转-Bitmap"><a href="#View-截图转-Bitmap" class="headerlink" title="View 截图转 Bitmap"></a>View 截图转 Bitmap</h4><p>​        在某些产品需求中，需要将指定的 View 保存为图片，而要实现这个功能，首要任务就是将其转换为 Bitmap，再将 Bitmap 对象编码为 base64 进行传输或存为图片以备后用。后面这一步较为简单，仅需调用 bitmap 对象的 compress() 方法即可。接下来讨论前一步，即如何将 View 截图为 Bitmap 对象。</p>
+<p>​        Core KTX 封装了该步骤的实现，我们仅需调用 view 对象的 drawToBitmap() 方法即可。下面的代码为我们演示截取 TextView 为 Bitmap 并显示在 TextView 下方的实现：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">demoIv.setImageBitmap(demoTv.drawToBitmap())</span><br></pre></td></tr></table></figure>
+
+<p>​    没错，只需要一行代码。demoIv 是 ImageView 对象，在 demoTv 的下方。demoTv 是 TextView 对象，显示的文本是「Hello World!」。给 TextView 截个图。</p>
+<p>​        这里需要注意一点，当 View 还没有完成绘制时，调用该方法会引发崩溃，其原因是：View needs to be laid out before calling drawToBitmap()，即 View 需要完成绘制后才能调用 drawToBitmap() 方法。比较保险的做法是借助 View 的 postDelayed() 方法实现，具体写法如下：</p>
+<p><img src="/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/7.png" alt></p>
+<h2 id="Collection"><a href="#Collection" class="headerlink" title="Collection"></a>Collection</h2><p>​        Collection KTX 扩展了 SparseArrayCompat（SparseArray 的低版本兼容 API）和 LongSparseArray，提供了某些常用操作的封装，为日常使用提供了方便。扩展的方法对 SparseArrayCompat 和 LongSparseArray 大体相同。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation "androidx.collection:collection-ktx:1.1.0"</span><br></pre></td></tr></table></figure>
+
+<h4 id="获取集合中所有的-Key-和-Value"><a href="#获取集合中所有的-Key-和-Value" class="headerlink" title="获取集合中所有的 Key 和 Value"></a>获取集合中所有的 Key 和 Value</h4><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">// 获取所有 Key</span></span><br><span class="line"><span class="keyword">val</span> intIt = map.keyIterator()</span><br><span class="line"><span class="comment">// 获取所有 Value</span></span><br><span class="line"><span class="keyword">val</span> valueIt = map.valueIterator()</span><br></pre></td></tr></table></figure>
+
+<p>​        在使用时，我们可以使用 Iterator 的 hasNext() 方法作为遍历条件，使用 next() 方法取值。下面的代码将演示如何获取并使用 Key 值和 Value 值：</p>
+<p><img src="/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/8.png" alt></p>
+<h4 id="集合的遍历"><a href="#集合的遍历" class="headerlink" title="集合的遍历"></a>集合的遍历</h4><p>​        Collection KTX 提供的遍历方法名为 forEach()，下面的代码将为我们演示遍历的方法：</p>
+<p><img src="/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/9.png" alt></p>
+<p>​        上面的代码是得分获奖的示例。其中，Key 代表分数，是 Int 类型值；Value 表示名字，是 String 类型值。在 forEach() 遍历中，通过对分数的条件筛选得到获奖结果。要特别注意的是，程序在一开始指明了整个集合的大小为 10，并不意味着 Key 值的范围是 0~9，它只代表集合中元素的个数。</p>
+<h4 id="集合元素的增加与替换"><a href="#集合元素的增加与替换" class="headerlink" title="集合元素的增加与替换"></a>集合元素的增加与替换</h4><p>​        为了完成某些特定的需求，我们需要对集合中的元素进行增加或替换。SparseArrayCompat 和 LongSparseArray 中提供了相应的方法：putIfAbsent()，该方法会通过对原有集合进行修改达到元素增加或替换的效果。当我们不想修改原集合，而是想要得到一个新的集合时，Collection KTX 中提供的方法就派上用场了。<strong>在 Collection KTX 中提供了名为 plus() 的方法，它用于合并两个集合，并生成包含合并结果的新的集合。</strong></p>
+<p>举个例子，现有两个集合 map 和 map2，它们按照如下代码赋值：</p>
+<p><img src="/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/10.png" alt></p>
+<p>接下来，调用 map 对象的 plus() 方法将其与 map2 对象数据合并，并将结果赋值给 map3 对象。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> map3 = map.plus(map2)</span><br></pre></td></tr></table></figure>
+
+<p> map 和 map2 中同时包含 Key 为 3 的数据，当发生合并时，map2 的数据会覆盖 map 中的数据。</p>
+<p>如果调用 map2 对象的 plus() 方法，与 map 对象发生合并    </p>
+<p>由于 Key 的值在集合发生插入时被自动以升序排序，因此无论以何种方式合并，其结果都是升序的。</p>
+<h2 id="Fragment"><a href="#Fragment" class="headerlink" title="Fragment"></a>Fragment</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation "androidx.fragment:fragment-ktx:1.2.5"</span><br></pre></td></tr></table></figure>
+
+<h4 id="Fragment-事务操作"><a href="#Fragment-事务操作" class="headerlink" title="Fragment 事务操作"></a>Fragment 事务操作</h4><p><img src="/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/11.png" alt></p>
+<p>​        很显然，beginTransaction() 方法被简化掉了，最终的提交方式由一个布尔值来选择。当该值为 true 时，执行 commitAllowingStateLoss()；反之，执行 commit()，默认值为 false。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/" rel="prev" title="Appcompat UI组件">
+      <i class="fa fa-chevron-left"></i> Appcompat UI组件
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/08/11/WeatherMvvm%E9%A1%B9%E7%9B%AE%E7%AC%94%E8%AE%B0/" rel="next" title="WeatherMvvm项目笔记">
+      WeatherMvvm项目笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Core-KTX"><span class="nav-number">1.</span> <span class="nav-text">Core KTX</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Animation"><span class="nav-number">1.1.</span> <span class="nav-text">Animation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Content"><span class="nav-number">1.2.</span> <span class="nav-text">Content</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#获取系统级服务"><span class="nav-number">1.2.1.</span> <span class="nav-text">获取系统级服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#保存首选项值"><span class="nav-number">1.2.2.</span> <span class="nav-text">保存首选项值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#属性索引值检索"><span class="nav-number">1.2.3.</span> <span class="nav-text">属性索引值检索</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Database"><span class="nav-number">1.3.</span> <span class="nav-text">Database</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Null-值判定"><span class="nav-number">1.3.1.</span> <span class="nav-text">Null 值判定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#事务操作"><span class="nav-number">1.3.2.</span> <span class="nav-text">事务操作</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Graphics"><span class="nav-number">1.4.</span> <span class="nav-text">Graphics</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#绘制任意图形"><span class="nav-number">1.4.1.</span> <span class="nav-text">绘制任意图形</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获取／改变特定像素点的颜色值"><span class="nav-number">1.4.2.</span> <span class="nav-text">获取／改变特定像素点的颜色值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Color-Int-与-ARGB-互转"><span class="nav-number">1.4.3.</span> <span class="nav-text">Color Int 与 ARGB 互转</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#图像缩放"><span class="nav-number">1.4.4.</span> <span class="nav-text">图像缩放</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#画布变换"><span class="nav-number">1.4.5.</span> <span class="nav-text">画布变换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#混合两种颜色"><span class="nav-number">1.4.6.</span> <span class="nav-text">混合两种颜色</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Drawable-对象转换为-Bitmap-对象"><span class="nav-number">1.4.7.</span> <span class="nav-text">Drawable 对象转换为 Bitmap 对象</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Util"><span class="nav-number">1.5.</span> <span class="nav-text">Util</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#写文本文件"><span class="nav-number">1.5.1.</span> <span class="nav-text">写文本文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#读文本文件"><span class="nav-number">1.5.2.</span> <span class="nav-text">读文本文件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#View"><span class="nav-number">1.6.</span> <span class="nav-text">View</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#简化的监听器实现"><span class="nav-number">1.6.1.</span> <span class="nav-text">简化的监听器实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#View-截图转-Bitmap"><span class="nav-number">1.6.2.</span> <span class="nav-text">View 截图转 Bitmap</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Collection"><span class="nav-number">2.</span> <span class="nav-text">Collection</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#获取集合中所有的-Key-和-Value"><span class="nav-number">2.0.1.</span> <span class="nav-text">获取集合中所有的 Key 和 Value</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#集合的遍历"><span class="nav-number">2.0.2.</span> <span class="nav-text">集合的遍历</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#集合元素的增加与替换"><span class="nav-number">2.0.3.</span> <span class="nav-text">集合元素的增加与替换</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fragment"><span class="nav-number">3.</span> <span class="nav-text">Fragment</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Fragment-事务操作"><span class="nav-number">3.0.1.</span> <span class="nav-text">Fragment 事务操作</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="RedisRedis环境搭建与数据结构原理Redis缓存框架基本介绍Redis是完全开源免费的，是一个高性能的key-value数据库，目前市面上主流的非关系型数据库Redis,Memcache,Tair(淘宝自研发) 关系数据库存放在硬盘中，查询实现io操作 Redis应用场景 Token令牌生成  短信验证码的code  可以实现缓存查询数据  Redis帮助实现计数器  分布式锁  延迟操作">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis">
+<meta property="og:url" content="https://hluck.github.io/2021/11/06/Redis/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="RedisRedis环境搭建与数据结构原理Redis缓存框架基本介绍Redis是完全开源免费的，是一个高性能的key-value数据库，目前市面上主流的非关系型数据库Redis,Memcache,Tair(淘宝自研发) 关系数据库存放在硬盘中，查询实现io操作 Redis应用场景 Token令牌生成  短信验证码的code  可以实现缓存查询数据  Redis帮助实现计数器  分布式锁  延迟操作">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2021/11/06/Redis/E:%5Cblog%5Csource_posts%5CRedis%5C1.png">
+<meta property="og:image" content="https://hluck.github.io/2021/11/06/Redis/E:%5Cblog%5Csource_posts%5CRedis%5C2.png">
+<meta property="og:image" content="https://hluck.github.io/2021/11/06/Redis/E:%5Cblog%5Csource_posts%5CRedis%5C3.png">
+<meta property="og:image" content="https://hluck.github.io/2021/11/06/Redis/E:%5Cblog%5Csource_posts%5CRedis%5C4.png">
+<meta property="article:published_time" content="2021-11-06T02:23:32.414Z">
+<meta property="article:modified_time" content="2021-11-14T02:51:41.923Z">
+<meta property="article:author" content="余一">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2021/11/06/Redis/E:%5Cblog%5Csource_posts%5CRedis%5C1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2021/11/06/Redis/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Redis | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2021/11/06/Redis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-11-06 10:23:32" itemprop="dateCreated datePublished" datetime="2021-11-06T10:23:32+08:00">2021-11-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-11-14 10:51:41" itemprop="dateModified" datetime="2021-11-14T10:51:41+08:00">2021-11-14</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h1><h2 id="Redis环境搭建与数据结构原理"><a href="#Redis环境搭建与数据结构原理" class="headerlink" title="Redis环境搭建与数据结构原理"></a>Redis环境搭建与数据结构原理</h2><h3 id="Redis缓存框架基本介绍"><a href="#Redis缓存框架基本介绍" class="headerlink" title="Redis缓存框架基本介绍"></a>Redis缓存框架基本介绍</h3><p>Redis是完全开源免费的，是一个高性能的key-value数据库，目前市面上主流的非关系型数据库Redis,Memcache,Tair(淘宝自研发)</p>
+<p>关系数据库存放在硬盘中，查询实现io操作</p>
+<h3 id="Redis应用场景"><a href="#Redis应用场景" class="headerlink" title="Redis应用场景"></a>Redis应用场景</h3><ol>
+<li><p>Token令牌生成</p>
+</li>
+<li><p>短信验证码的code</p>
+</li>
+<li><p>可以实现缓存查询数据</p>
+</li>
+<li><p>Redis帮助实现计数器</p>
+</li>
+<li><p>分布式锁</p>
+</li>
+<li><p>延迟操作</p>
+<p>减轻数据库的访问压力</p>
+</li>
+</ol>
+<h3 id="Redis线程模型IO多路复用"><a href="#Redis线程模型IO多路复用" class="headerlink" title="Redis线程模型IO多路复用"></a>Redis线程模型IO多路复用</h3><h4 id="Redis单线程模型"><a href="#Redis单线程模型" class="headerlink" title="Redis单线程模型"></a>Redis单线程模型</h4><p>首先Redis官方是没有windows版本的，只有linux版本</p>
+<p>Redis底层采用Nio中的多路IO复用原则，能够很好的支持并发，从而保证线程安全问题。</p>
+<p><strong>Redis单线程，也就是底层采用一个线程维护多个不同的客户端io操作。</strong></p>
+<p>为什么nginx、redis都能够非常高的支持高并发，最终都是linux中的IO多路复用机制epoll.</p>
+<p>Redis底层采用 nio epoll实现</p>
+<p><a href="https://blog.csdn.net/qq_36520235/article/details/81318189" target="_blank" rel="noopener">什么是NIO?</a></p>
+<h3 id="Redis前台启动环境安装"><a href="#Redis前台启动环境安装" class="headerlink" title="Redis前台启动环境安装"></a>Redis前台启动环境安装</h3><h4 id="1-环境安装Redis"><a href="#1-环境安装Redis" class="headerlink" title="1.环境安装Redis"></a>1.环境安装Redis</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>.上传Redis的安装包</span><br><span class="line">redis-<span class="number">5.0</span><span class="number">.6</span>.tar.gz</span><br><span class="line"><span class="number">2</span>.解压我们的Redis安装包</span><br><span class="line">tar -zxvf redis-<span class="number">5.0</span><span class="number">.6</span>.tar.gz</span><br><span class="line"><span class="number">3</span>. mkdir/usr/redis</span><br><span class="line"><span class="number">4</span>.make install PREFIX = /usr/redis</span><br><span class="line"><span class="number">5</span>.启动Redis cd/usr/redis/bin   ./redis-server</span><br></pre></td></tr></table></figure>
+
+<h3 id="Redis设置允许外界访问"><a href="#Redis设置允许外界访问" class="headerlink" title="Redis设置允许外界访问"></a>Redis设置允许外界访问</h3><h4 id="1-将Redis设置为后台启动"><a href="#1-将Redis设置为后台启动" class="headerlink" title="1.将Redis设置为后台启动"></a>1.将Redis设置为后台启动</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cp /usr/redis-<span class="number">5.0</span><span class="number">.6</span>/redis.conf  /usr/redis/bin</span><br><span class="line">vi redis.conf daemonize yes</span><br><span class="line">ps aux | grep <span class="string">'redis'</span>      kill -<span class="number">9</span> <span class="number">7178</span></span><br><span class="line">./redis-server  redis-conf  重新启动redis</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-设置Redis帐号密码"><a href="#2-设置Redis帐号密码" class="headerlink" title="2.设置Redis帐号密码"></a>2.设置Redis帐号密码</h4><p>redis.conf配置文件搜索(vi进入配置文件输入  / 搜索文本)：# requirepass foobared      requirepass  123456</p>
+<h4 id="3-设置Redis允许ip访问"><a href="#3-设置Redis允许ip访问" class="headerlink" title="3.设置Redis允许ip访问"></a>3.设置Redis允许ip访问</h4><p>注释掉 bind 127.0.0.1</p>
+<p>protected-mode no  ###允许外界访问</p>
+<p>systemctl stop firewalld   ### 关闭防火墙</p>
+<p><strong>Redis默认情况下分为16个库(0-15)</strong></p>
+<h3 id="Redis的五种数据类型"><a href="#Redis的五种数据类型" class="headerlink" title="Redis的五种数据类型"></a>Redis的五种数据类型</h3><h4 id="1-String类型"><a href="#1-String类型" class="headerlink" title="1.String类型"></a>1.String类型</h4><p>​        String是redis最基本的类型，一个key对应一个value，sring类型是二进制安全的。意思是redis的string可以包含任何数据。比如jpg图片或者序列化的对象, Sring类型是Redis最基本的数据类型，一个键最大能存储512MB。</p>
+<p>set name tom</p>
+<p>get tom</p>
+<h4 id="2-Hash类型"><a href="#2-Hash类型" class="headerlink" title="2.Hash类型"></a>2.Hash类型</h4><p>​       我们可以将Redis中的Hash类型看成具有&lt;key,&lt;key1,value&gt;&gt;,其中同一个key可以有多个不同key值的&lt;key1,value&gt;，所以该类型非常适合于存储值对象的信息。如Username、Password和Age等。如果Hash中包含很少的字段，那么该类型的数据也将仅占用很少的磁盘空间。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HMSET man_hash tom <span class="number">21</span> jom <span class="number">22</span> <span class="comment">//tom 21表示一个hash</span></span><br><span class="line">HGETALL man</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-List类型"><a href="#3-List类型" class="headerlink" title="3.List类型"></a>3.List类型</h4><p>Redis列表是简单的字符串列表，按照插入顺序排序。你可以添加一个元素到列表的头部（左边）或者尾部（右边）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">LPUSH namelist tom jack tony</span><br><span class="line">LRANGE namelist <span class="number">0</span> <span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="4-Set集合"><a href="#4-Set集合" class="headerlink" title="4.Set集合"></a>4.Set集合</h4><p>Redis 的 Set 是 String 类型的无序集合。集合成员是唯一的，这就意味着集合中不能出现重复的数据。</p>
+<p>Redis 中集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是 O(1)。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SADD nameset tom lucy jany owen</span><br><span class="line">SMEMBERS  nameset</span><br></pre></td></tr></table></figure>
+
+<h4 id="5-有序集合-sorted-set"><a href="#5-有序集合-sorted-set" class="headerlink" title="5.有序集合(sorted  set)"></a>5.有序集合(sorted  set)</h4><p>Redis 有序集合和集合一样也是string类型元素的集合,且不允许重复的成员。</p>
+<p>不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。</p>
+<p>有序集合的成员是唯一的,但分数(score)却可以重复。</p>
+<p>集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是O(1)。 集合中最大的成员数为 232 - 1 (4294967295, 每个集合可存储40多亿个成员)。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ZADD mset <span class="number">1</span> redis</span><br><span class="line">ZRANGE mset2 <span class="number">0</span> <span class="number">10</span> WITHSCORES</span><br></pre></td></tr></table></figure>
+
+<p>Redis如何存放一个java对象 直接存放json类型即可</p>
+<p>Set key=user value=｛”userid”:100,”username”:yushengjun｝</p>
+<p>Xxl-sso 底层如何存放对象 存放二进制</p>
+<h3 id="SpringBoot整合Redis框架"><a href="#SpringBoot整合Redis框架" class="headerlink" title="SpringBoot整合Redis框架"></a>SpringBoot整合Redis框架</h3><p>在Redis存放一个对象 使用json序列化与反序列化</p>
+<h4 id="1-maven依赖"><a href="#1-maven依赖" class="headerlink" title="1.maven依赖"></a>1.maven依赖</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">java.version</span>&gt;</span>1.8<span class="tag">&lt;/<span class="name">java.version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.build.sourceEncoding</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">project.reporting.outputEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.reporting.outputEncoding</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">spring-boot.version</span>&gt;</span>2.3.7.RELEASE<span class="tag">&lt;/<span class="name">spring-boot.version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!-- 集成commons工具类 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.commons<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-lang3<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!-- fastjson --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>fastjson<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2.30<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">exclusions</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">exclusion</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.junit.vintage<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>junit-vintage-engine<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">exclusion</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">exclusions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-Redis工具类-方式一"><a href="#2-Redis工具类-方式一" class="headerlink" title="2.Redis工具类(方式一)"></a>2.Redis工具类(方式一)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/11/7  10:56</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisUtils</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> StringRedisTemplate stringRedisTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setString</span><span class="params">(String key, String value)</span> </span>&#123;</span><br><span class="line">        setString(key, value, <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setString</span><span class="params">(String key, String value, Long timeOut)</span> </span>&#123;</span><br><span class="line">        stringRedisTemplate.opsForValue().set(key, value);</span><br><span class="line">        <span class="keyword">if</span> (timeOut != <span class="keyword">null</span>) &#123;</span><br><span class="line">            stringRedisTemplate.expire(key, timeOut, TimeUnit.SECONDS);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getString</span><span class="params">(String key)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> stringRedisTemplate.opsForValue().get(key);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-2Redis工具类-方式二"><a href="#2-2Redis工具类-方式二" class="headerlink" title="2.2Redis工具类(方式二)"></a>2.2Redis工具类(方式二)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/11/7  10:56</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisTemplateUtils</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> RedisTemplate&lt;String,Object&gt; redisTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setObject</span><span class="params">(String key, Object value)</span> </span>&#123;</span><br><span class="line">        setObject(key, value, <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setObject</span><span class="params">(String key, Object value, Long timeOut)</span> </span>&#123;</span><br><span class="line">        redisTemplate.opsForValue().set(key, value);</span><br><span class="line">        <span class="keyword">if</span> (timeOut != <span class="keyword">null</span>) &#123;</span><br><span class="line">            redisTemplate.expire(key, timeOut, TimeUnit.SECONDS);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">getObject</span><span class="params">(String key)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> redisTemplate.opsForValue().get(key);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-Controller"><a href="#3-Controller" class="headerlink" title="3.Controller"></a>3.Controller</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/11/7  10:59</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IndexController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RedisUtils redisUtils;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"/setUser"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">setRedisKey</span><span class="params">(UserEntity userEntity)</span></span>&#123;</span><br><span class="line">       <span class="comment">//        redisUtils.setString("userEntity", JSONObject.toJSONString(userEntity));</span></span><br><span class="line">        redisTemplateUtils.setObject(<span class="string">"userEntity"</span>, userEntity);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"添加成功"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"/getUser"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> UserEntity <span class="title">setRedisKey</span><span class="params">(String key)</span></span>&#123;</span><br><span class="line">        <span class="comment">//        String uerEntityJson = redisUtils.getString(key);</span></span><br><span class="line"><span class="comment">//        UserEntity userEntity = JSONObject.parseObject(uerEntityJson, UserEntity.class);</span></span><br><span class="line">        <span class="keyword">return</span> (UserEntity) redisTemplateUtils.getObject(key);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-配置文件"><a href="#4-配置文件" class="headerlink" title="4.配置文件"></a>4.配置文件</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  redis:</span><br><span class="line">    host: localhost</span><br><span class="line">    port: <span class="number">6379</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="SpringBoot整合Redis的注解版本"><a href="#SpringBoot整合Redis的注解版本" class="headerlink" title="SpringBoot整合Redis的注解版本"></a>SpringBoot整合Redis的注解版本</h3><ol>
+<li><p>启动类开启我们的@EnableCaching</p>
+</li>
+<li><p>Controller</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MemberController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UserMapper userMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"/findMemberAll"</span>)</span><br><span class="line">    <span class="meta">@Cacheable</span>(cacheNames = <span class="string">"member"</span>, key = <span class="string">"'findMemberAll'"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;MemberEntity&gt; <span class="title">findMemberAll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> userMapper.findMemberAll();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h3 id="MySQL与Redis的数据同步的问题如何解决？"><a href="#MySQL与Redis的数据同步的问题如何解决？" class="headerlink" title="MySQL与Redis的数据同步的问题如何解决？"></a>MySQL与Redis的数据同步的问题如何解决？</h3><ol>
+<li>直接清理Redis的缓存，重新查询数据库即可~~</li>
+<li>直接采用mq订阅mysql binlog日志文件增量同步到Redis中，整个过程采用最终一致性方案.</li>
+<li>使用alibaba的canal</li>
+</ol>
+<h2 id="Redis持久化与集群机制"><a href="#Redis持久化与集群机制" class="headerlink" title="Redis持久化与集群机制"></a>Redis持久化与集群机制</h2><p>Redis提供了两种持久化的机制，分别为RDB、AOF实现，<strong>RDB</strong>采用定时（全量）持久化机制，但是服务器因为某种原因宕机后可能数据会丢失，<strong>AOF</strong>是基于数据日志操作实现的持久化，所以AOF采用增量同步的方案。</p>
+<p>Redis已经帮助我默认开启了rdb存储。</p>
+<p>Redis因为某种原因的情况下宕机之后，数据是不会丢失的,原理就是持久化。</p>
+<p>Ehcache</p>
+<p>大部分的缓存框架都会基本功能淘汰策略、持久机制</p>
+<p><strong>Redis的持久化的机制有两种：aof、rdb（默认）</strong></p>
+<p><strong>全量同步与增量同步区别：</strong></p>
+<ol>
+<li>全量同步就是每天定时(避开高峰期)或者是采用一种周期的实现将数据拷贝另外一个地方。</li>
+</ol>
+<p>频率不是很大，但是可能会造成数据的丢失。</p>
+<ol start="2">
+<li>增量同步采用行为操作对数据的实现同步</li>
+</ol>
+<p>频率非常高、对服务器同步的压力也是非常大的、保证数据不丢失。</p>
+<h3 id="RDB同步"><a href="#RDB同步" class="headerlink" title="RDB同步"></a>RDB同步</h3><p><strong>Redis默认采用rdb方式实现数据的持久化，以快照的形式将数据持久化到磁盘的是一个二进制的文件dump.rdb</strong>。</p>
+<p><img src="/2021/11/06/Redis/E:%5Cblog%5Csource_posts%5CRedis%5C1.png" alt></p>
+<p>Redis会将数据集的快照dump到dump.rdb文件中。</p>
+<p>此外，我们也可以通过配置文件来修改Redis服务器dump快照的频率，在打开redis.conf文件之后，我们搜索save，可以看到下面的配置信息：</p>
+<p>save 900 1  #在900秒(15分钟)之后，如果至少有1个key发生变化，则dump内存快照。</p>
+<p>save 300 10  #在300秒(5分钟)之后，如果至少有10个key发生变化，则dump内存快照。</p>
+<p>save 60 10000 #在60秒(1分钟)之后，如果至少有10000个key发生变化，则dump内存快照。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Set(包含增加和覆盖)、del</span><br><span class="line">Set name yushengjun</span><br><span class="line">Set name mayikt</span><br><span class="line">Del name</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/06/Redis/E:%5Cblog%5Csource_posts%5CRedis%5C2.png" alt></p>
+<h3 id="Aof同步"><a href="#Aof同步" class="headerlink" title="Aof同步"></a>Aof同步</h3><p>Aof是以执行命令的形式实现同步</p>
+<p>在Redis的配置文件中存在三种同步方式，它们分别是：</p>
+<p><strong>appendfsync always</strong>   每次有数据修改发生时都会写入到AOF文件，能够保证数据不丢失，但是效率非常低。</p>
+<p><img src="/2021/11/06/Redis/E:%5Cblog%5Csource_posts%5CRedis%5C3.png" alt></p>
+<p><strong>appendfsync everysec</strong> 每秒钟同步一次，可能会丢失1s内的数据，但是效率非常高。</p>
+<p><img src="/2021/11/06/Redis/E:%5Cblog%5Csource_posts%5CRedis%5C4.png" alt></p>
+<p><strong>appendfsync no</strong>  从不同步。高效但是数据不会被持久化。</p>
+<p>直接修改redis.conf中 appendonly yes</p>
+<p>建议最好还是使用everysec 既能够保证数据的同步、效率也还可以。</p>
+<h3 id="RDB和AOF各自的优缺点"><a href="#RDB和AOF各自的优缺点" class="headerlink" title="RDB和AOF各自的优缺点"></a>RDB和AOF各自的优缺点</h3><ol>
+<li><p>RDB属于全量同步（定时同步）</p>
+<ul>
+<li>优点：同步效率非常高</li>
+<li>缺点：数据可能会丢失</li>
+</ul>
+</li>
+<li><p>AOF属于增量同步，优点偏向实时（每隔1秒同步一次）</p>
+<ul>
+<li>优点：最多只会丢失1s的数据</li>
+<li>缺点：同步效率比较低</li>
+</ul>
+</li>
+</ol>
+<p>如果AOF与RDB都开启，会优先使用AOF。</p>
+<h2 id="Redis六大淘汰策略-amp-事务原理-amp-过期key事件监听"><a href="#Redis六大淘汰策略-amp-事务原理-amp-过期key事件监听" class="headerlink" title="Redis六大淘汰策略&amp;事务原理&amp;过期key事件监听"></a>Redis六大淘汰策略&amp;事务原理&amp;过期key事件监听</h2><p>将Redis用作缓存时，如果内存空间用满，就会自动驱逐老的数据。</p>
+<h3 id="Redis六种淘汰策略"><a href="#Redis六种淘汰策略" class="headerlink" title="Redis六种淘汰策略"></a>Redis六种淘汰策略</h3><p><strong>noeviction：</strong>当内存使用达到阈值的时候，所有引起申请内存的命令会报错（默认）。</p>
+<p><strong>allkeys-lru：</strong>在所有的key中，优先移除最近未使用的key。（推荐）</p>
+<p><strong>volatile-lru：</strong>在设置了过期时间的键的空间中，优先移除最近未使用的key。</p>
+<p><strong>allkeys-random：</strong>在所有的key中，随机移除某个key。</p>
+<p><strong>volatile-random：</strong>在设置了过期时间的键空间中，随机移除某个key。</p>
+<p><strong>volatile-ttl：</strong>在设置了过期时间的键空间中，具有更早过期时间的key优先移除。</p>
+<h3 id="如何配置Resdis淘汰策略"><a href="#如何配置Resdis淘汰策略" class="headerlink" title="如何配置Resdis淘汰策略"></a>如何配置Resdis淘汰策略</h3><ol>
+<li><p>在redis.conf文件中，*<em>maxmemory &lt; bytes &gt; *</em> 设置Redis内存大小的限制，当数据达到限定大小后，会选择配置的策略淘汰数据。</p>
+<p>比如：maxmemory 300mb。</p>
+</li>
+<li><p>通过配置<strong>maxmemory-policy  noeviction</strong>设置Redis的淘汰策略。</p>
+<p>比如：maxmemory-policy volatile-lru</p>
+</li>
+</ol>
+<h3 id="Redis-key自动过期机制的使用"><a href="#Redis-key自动过期机制的使用" class="headerlink" title="Redis key自动过期机制的使用"></a>Redis key自动过期机制的使用</h3><p>当我们的key失效时，可以执行我们的客户端回调监听的方法。</p>
+<p>需要在Redis中配置：<strong>notify-keyspace-events “Ex”</strong></p>
+<h4 id="SpringBoot整合key失效监听"><a href="#SpringBoot整合key失效监听" class="headerlink" title="SpringBoot整合key失效监听"></a>SpringBoot整合key失效监听</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisListenerConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function">RedisMessageListenerContainer <span class="title">container</span><span class="params">(RedisConnectionFactory connectionFactory)</span> </span>&#123;</span><br><span class="line">        RedisMessageListenerContainer container = <span class="keyword">new</span> RedisMessageListenerContainer();</span><br><span class="line">        container.setConnectionFactory(connectionFactory);</span><br><span class="line">        <span class="keyword">return</span> container;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisKeyExpirationListener</span> <span class="keyword">extends</span> <span class="title">KeyExpirationEventMessageListener</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">RedisKeyExpirationListener</span><span class="params">(RedisMessageListenerContainer listenerContainer)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(listenerContainer);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 待支付</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Integer ORDER_STAYPAY = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 失效</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Integer ORDER_INVALID = <span class="number">2</span>;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> OrderMapper orderMapper;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Redis失效事件 key</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> message</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> pattern</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onMessage</span><span class="params">(Message message, <span class="keyword">byte</span>[] pattern)</span> </span>&#123;</span><br><span class="line">        String expiraKey = message.toString();</span><br><span class="line">        <span class="comment">// 根据key查询 value 如果还还是为待支付状态 将订单改为已经超时~~</span></span><br><span class="line">        OrderEntity orderNumber = orderMapper.getOrderNumber(expiraKey);</span><br><span class="line">        System.out.println(expiraKey);</span><br><span class="line">        <span class="keyword">if</span> (orderNumber == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (orderNumber.getOrderStatus().equals(ORDER_STAYPAY)) &#123;</span><br><span class="line">            <span class="comment">// 将订单状态改为已经失效</span></span><br><span class="line">            orderMapper.updateOrderStatus(expiraKey, ORDER_INVALID);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OrderController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> OrderMapper orderMapper;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RedisUtils redisUtils;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping</span>(<span class="string">"/saveOrder"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">saveOrder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 1.生成token</span></span><br><span class="line">        String orderToken = UUID.randomUUID().toString();</span><br><span class="line">        String orderId = System.currentTimeMillis() + <span class="string">""</span>;</span><br><span class="line">        <span class="comment">//2. 将该token存放到redis中</span></span><br><span class="line">        redisUtils.setString(orderToken, orderId, <span class="number">5L</span>);</span><br><span class="line">        OrderEntity orderEntity = <span class="keyword">new</span> OrderEntity(<span class="keyword">null</span>, <span class="string">"永久会员"</span>, orderId, orderToken);</span><br><span class="line">        <span class="keyword">int</span> result = orderMapper.insertOrder(orderEntity);</span><br><span class="line">        <span class="keyword">return</span> result &gt; <span class="number">0</span> ? <span class="string">"success"</span> : <span class="string">"fail"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OrderEntity</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line">    <span class="keyword">private</span> String orderName;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 0 待支付 1 已经支付</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Integer orderStatus;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String orderToken;</span><br><span class="line">    <span class="keyword">private</span> String orderId;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">OrderEntity</span><span class="params">(Long id, String orderName, String orderId, String orderToken)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">        <span class="keyword">this</span>.orderName = orderName;</span><br><span class="line">        <span class="keyword">this</span>.orderId = orderId;</span><br><span class="line">        <span class="keyword">this</span>.orderToken = orderToken;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">OrderMapper</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Insert</span>(<span class="string">"insert into order_number values (null,#&#123;orderName&#125;,0,#&#123;orderToken&#125;,#&#123;orderId&#125;)"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">insertOrder</span><span class="params">(OrderEntity OrderEntity)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Select</span>(<span class="string">"SELECT ID AS ID ,order_name AS ORDERNAME ,order_status AS orderstatus,order_token as ordertoken,order_id as  orderid FROM order_number\n"</span> +</span><br><span class="line">            <span class="string">"where order_token=#&#123;orderToken&#125;;"</span>)</span><br><span class="line">    <span class="function">OrderEntity <span class="title">getOrderNumber</span><span class="params">(String orderToken)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Update</span>(<span class="string">"\n"</span> +</span><br><span class="line">            <span class="string">"\n"</span> +</span><br><span class="line">            <span class="string">"update order_number set order_status=#&#123;orderStatus&#125; where order_token=#&#123;orderToken&#125;;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">updateOrderStatus</span><span class="params">(String orderToken, Integer orderStatus)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Redis事务操作"><a href="#Redis事务操作" class="headerlink" title="Redis事务操作"></a>Redis事务操作</h3><p><strong>Multi</strong>  命令开启事务</p>
+<p><strong>EXEC</strong> 提交事务</p>
+<p>Watch  可以监听一个或多个key,在提交事务之前是否有发生了变化 如果发生了变化就不会提交事务，没有发生变化才可以提交事务 版本号码 乐观锁</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">watch</span> <span class="string">name</span></span><br><span class="line"><span class="attr">multi</span></span><br><span class="line"><span class="attr">set</span> <span class="string">name owen</span></span><br><span class="line"><span class="attr">exec</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Discard</strong>  取消提交事务</p>
+<p><strong>注意：Redis</strong>官方是没有提供回滚方法， 只提供了取消事务。</p>
+<h2 id="Redis实现分布式锁"><a href="#Redis实现分布式锁" class="headerlink" title="Redis实现分布式锁"></a>Redis实现分布式锁</h2><h3 id="乐观锁和悲观锁"><a href="#乐观锁和悲观锁" class="headerlink" title="乐观锁和悲观锁"></a>乐观锁和悲观锁</h3><p><strong>悲观锁(Pessimistic Lock)：</strong>顾名思义，就是很悲观，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，这样别人想拿这个数据会block直到它拿到锁。传统的关系型数据库里面就用到了很多这种锁机制，比如行锁，表锁等，读锁，写锁等，都是在操作之前先上锁。</p>
+<p><strong>乐观锁(Optimistic Lock)：</strong>顾名思义，就很乐观，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号等机制。乐观锁适用于多读的应用类型，这样可以提高吞吐量。</p>
+<p>乐观锁策略：提交版本必须大于记录当前版本才能执行更新。</p>
+<h3 id="什么是分布式锁"><a href="#什么是分布式锁" class="headerlink" title="什么是分布式锁"></a>什么是分布式锁</h3><p><strong>本地锁：</strong>在多个线程中保证只有一个线程执行（线程安全问题）</p>
+<p><strong>分布锁：</strong>在分布式中，保证只有一个Jvm执行（多个jvm线程安全问题）</p>
+<p>如果我们服务器是集群的时候，定时任务可能会重复执行  可以采用分布式锁解决</p>
+<p><strong>解决分布式锁核心思路</strong></p>
+<ol>
+<li><p>获取锁</p>
+<p>多个不同的jvm同时创建一个相同的标记（全局唯一的）只要谁能够创建成功谁就能获取锁。</p>
+</li>
+<li><p>释放锁</p>
+<p> 释放该全局唯一的标记，其他的jvm重新进入到获取锁资源。</p>
+</li>
+<li><p>超时锁（没有获取锁、已经获取锁）</p>
+<p>等待获取锁的超时时间</p>
+<p>已经获取到锁 锁的有效期5s</p>
+</li>
+</ol>
+<p><strong>分析：基于Redis实现分布式锁思路</strong></p>
+<p>1.获取锁</p>
+<p>多个不同的jvm 同时创建一个相同的标记使用Setnx命令，因为Rediskey必须保证是唯一的，只要谁能够创建成功谁就能够获取锁</p>
+<p>Set命令的时候：如果key不存在则创建，如果key已经存在则修改原值；</p>
+<p>SetNx命令: 如果key不存在则创建 返回1,如果已经存在则不执行任何操作返回0</p>
+<p>1 不存在创建成功 0 已经存在 不执行任何操作。</p>
+<p>2.释放锁</p>
+<p>对我们的redis的key设置一个有效期（或者是主动删除该key）可以灵活的自动的释放该全局唯一的标记，其他的jvm重新进入到获取锁资源。</p>
+<p>3.超时锁（没有获取锁、已经获取锁）</p>
+<p>等待获取锁的超时时间</p>
+<p>已经获取到锁 锁的有效期 5s</p>
+<p><strong>分析基于Zk实现分布式锁思路</strong></p>
+<ol>
+<li>获取锁</li>
+</ol>
+<p>多个不同的jvm在zk集群上创建一个相同的全局唯一的临时路径，只要谁能够创建成功谁就能够获取到锁。</p>
+<p> 分析：临时节点对我们节点设置有效期</p>
+<ol start="2">
+<li><p>释放锁</p>
+<p>人为主动删除该节点或者使用Session有效期</p>
+</li>
+<li><p>超时锁（没有获取锁、已经获取锁）</p>
+</li>
+</ol>
+<p>等待获取锁的超时时间</p>
+<p>已经获取到锁 锁的有效期 5s </p>
+<p>Redis也类似于zk事件通知</p>
+<p>Redis官网是有了一个redis解决分布锁框架redission</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/02/Java%E5%8F%8D%E5%B0%84/" rel="prev" title="Java反射">
+      <i class="fa fa-chevron-left"></i> Java反射
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/14/%E9%87%8D%E6%8B%BESpring5/" rel="next" title="重拾Spring5">
+      重拾Spring5 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis"><span class="nav-number">1.</span> <span class="nav-text">Redis</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis环境搭建与数据结构原理"><span class="nav-number">1.1.</span> <span class="nav-text">Redis环境搭建与数据结构原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis缓存框架基本介绍"><span class="nav-number">1.1.1.</span> <span class="nav-text">Redis缓存框架基本介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis应用场景"><span class="nav-number">1.1.2.</span> <span class="nav-text">Redis应用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis线程模型IO多路复用"><span class="nav-number">1.1.3.</span> <span class="nav-text">Redis线程模型IO多路复用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Redis单线程模型"><span class="nav-number">1.1.3.1.</span> <span class="nav-text">Redis单线程模型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis前台启动环境安装"><span class="nav-number">1.1.4.</span> <span class="nav-text">Redis前台启动环境安装</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-环境安装Redis"><span class="nav-number">1.1.4.1.</span> <span class="nav-text">1.环境安装Redis</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis设置允许外界访问"><span class="nav-number">1.1.5.</span> <span class="nav-text">Redis设置允许外界访问</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-将Redis设置为后台启动"><span class="nav-number">1.1.5.1.</span> <span class="nav-text">1.将Redis设置为后台启动</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-设置Redis帐号密码"><span class="nav-number">1.1.5.2.</span> <span class="nav-text">2.设置Redis帐号密码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-设置Redis允许ip访问"><span class="nav-number">1.1.5.3.</span> <span class="nav-text">3.设置Redis允许ip访问</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis的五种数据类型"><span class="nav-number">1.1.6.</span> <span class="nav-text">Redis的五种数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-String类型"><span class="nav-number">1.1.6.1.</span> <span class="nav-text">1.String类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Hash类型"><span class="nav-number">1.1.6.2.</span> <span class="nav-text">2.Hash类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-List类型"><span class="nav-number">1.1.6.3.</span> <span class="nav-text">3.List类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-Set集合"><span class="nav-number">1.1.6.4.</span> <span class="nav-text">4.Set集合</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-有序集合-sorted-set"><span class="nav-number">1.1.6.5.</span> <span class="nav-text">5.有序集合(sorted  set)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringBoot整合Redis框架"><span class="nav-number">1.1.7.</span> <span class="nav-text">SpringBoot整合Redis框架</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-maven依赖"><span class="nav-number">1.1.7.1.</span> <span class="nav-text">1.maven依赖</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Redis工具类-方式一"><span class="nav-number">1.1.7.2.</span> <span class="nav-text">2.Redis工具类(方式一)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2Redis工具类-方式二"><span class="nav-number">1.1.7.3.</span> <span class="nav-text">2.2Redis工具类(方式二)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-Controller"><span class="nav-number">1.1.7.4.</span> <span class="nav-text">3.Controller</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-配置文件"><span class="nav-number">1.1.7.5.</span> <span class="nav-text">4.配置文件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringBoot整合Redis的注解版本"><span class="nav-number">1.1.8.</span> <span class="nav-text">SpringBoot整合Redis的注解版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL与Redis的数据同步的问题如何解决？"><span class="nav-number">1.1.9.</span> <span class="nav-text">MySQL与Redis的数据同步的问题如何解决？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis持久化与集群机制"><span class="nav-number">1.2.</span> <span class="nav-text">Redis持久化与集群机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RDB同步"><span class="nav-number">1.2.1.</span> <span class="nav-text">RDB同步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Aof同步"><span class="nav-number">1.2.2.</span> <span class="nav-text">Aof同步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RDB和AOF各自的优缺点"><span class="nav-number">1.2.3.</span> <span class="nav-text">RDB和AOF各自的优缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis六大淘汰策略-amp-事务原理-amp-过期key事件监听"><span class="nav-number">1.3.</span> <span class="nav-text">Redis六大淘汰策略&amp;事务原理&amp;过期key事件监听</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis六种淘汰策略"><span class="nav-number">1.3.1.</span> <span class="nav-text">Redis六种淘汰策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何配置Resdis淘汰策略"><span class="nav-number">1.3.2.</span> <span class="nav-text">如何配置Resdis淘汰策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-key自动过期机制的使用"><span class="nav-number">1.3.3.</span> <span class="nav-text">Redis key自动过期机制的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SpringBoot整合key失效监听"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">SpringBoot整合key失效监听</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis事务操作"><span class="nav-number">1.3.4.</span> <span class="nav-text">Redis事务操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis实现分布式锁"><span class="nav-number">1.4.</span> <span class="nav-text">Redis实现分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#乐观锁和悲观锁"><span class="nav-number">1.4.1.</span> <span class="nav-text">乐观锁和悲观锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是分布式锁"><span class="nav-number">1.4.2.</span> <span class="nav-text">什么是分布式锁</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

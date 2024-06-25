@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="笔记出自朱涛 · Kotlin编程第一课 委托类它常常用于实现类的“委托模式”: 12345678910111213141516171819202122232425interface DB &amp;#123;    fun save()&amp;#125;class SqlDB() : DB &amp;#123;    override fun save() &amp;#123; println(&quot;save to sql&quot;)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kotlin委托">
+<meta property="og:url" content="https://hluck.github.io/2022/06/07/Kotlin%E5%A7%94%E6%89%98/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="笔记出自朱涛 · Kotlin编程第一课 委托类它常常用于实现类的“委托模式”: 12345678910111213141516171819202122232425interface DB &amp;#123;    fun save()&amp;#125;class SqlDB() : DB &amp;#123;    override fun save() &amp;#123; println(&quot;save to sql&quot;)">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/06/07/Kotlin%E5%A7%94%E6%89%98/1.png">
+<meta property="article:published_time" content="2022-06-07T02:46:59.976Z">
+<meta property="article:modified_time" content="2022-06-07T14:15:33.513Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Kotlin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/06/07/Kotlin%E5%A7%94%E6%89%98/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/06/07/Kotlin%E5%A7%94%E6%89%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Kotlin委托 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/06/07/Kotlin%E5%A7%94%E6%89%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kotlin委托
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-06-07 10:46:59 / 修改时间：22:15:33" itemprop="dateCreated datePublished" datetime="2022-06-07T10:46:59+08:00">2022-06-07</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>笔记出自<a href="https://time.geekbang.org/column/article/479112" target="_blank" rel="noopener">朱涛 · Kotlin编程第一课</a></p>
+<h2 id="委托类"><a href="#委托类" class="headerlink" title="委托类"></a>委托类</h2><p>它常常用于实现类的“委托模式”:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">DB</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">save</span><span class="params">()</span></span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SqlDB</span></span>() : DB &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">save</span><span class="params">()</span></span> &#123; println(<span class="string">"save to sql"</span>) &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GreenDaoDB</span></span>() : DB &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">save</span><span class="params">()</span></span> &#123; println(<span class="string">"save to GreenDao"</span>) &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//               参数  通过 by 将接口实现委托给 db </span></span><br><span class="line"><span class="comment">//                ↓            ↓</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UniversalDB</span></span>(db: DB) : DB <span class="keyword">by</span> db</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    UniversalDB(SqlDB()).save()</span><br><span class="line">    UniversalDB(GreenDaoDB()).save()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出：</span></span><br><span class="line"><span class="comment">save to sql</span></span><br><span class="line"><span class="comment">save to GreenDao</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>以上委托类的写法，等价于以下 Java 代码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UniversalDB</span> <span class="keyword">implements</span> <span class="title">DB</span> </span>&#123;</span><br><span class="line">    DB db;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">UniversalDB</span><span class="params">(DB db)</span> </span>&#123; <span class="keyword">this</span>.db = db; &#125;</span><br><span class="line">             <span class="comment">//  手动重写接口，将 save 委托给 db.save()</span></span><br><span class="line">    <span class="meta">@Override</span><span class="comment">//            ↓</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">save</span><span class="params">()</span> </span>&#123; db.save(); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        Kotlin 的委托类提供了语法层面的委托模式。通过这个 <strong>by</strong> 关键字，就可以自动将接口里的方法委托给一个对象，从而可以帮我们省略很多接口方法适配的模板代码。</p>
+<h2 id="委托属性"><a href="#委托属性" class="headerlink" title="委托属性"></a>委托属性</h2><p>​        <strong>Kotlin“委托类”委托的是接口方法，而“委托属性”委托的，则是属性的 getter、setter</strong>,们知道 val 定义的属性，它只有 get() 方法；而 var 定义的属性，既有 get() 方法，也有 set() 方法。</p>
+<h2 id="标准委托"><a href="#标准委托" class="headerlink" title="标准委托"></a>标准委托</h2><p>​        Kotlin 提供了好几种标准委托，其中包括两个属性之间的直接委托、by lazy 懒加载委托、Delegates.observable 观察者委托，以及 by map 映射委托。前面两个的使用频率比较高，后面两个频率比较低。</p>
+<h3 id="将属性-A-委托给属性-B"><a href="#将属性-A-委托给属性-B" class="headerlink" title="将属性 A 委托给属性 B"></a>将属性 A 委托给属性 B</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Item</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> count: <span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line">    <span class="comment">//              ①  ②</span></span><br><span class="line">    <span class="comment">//              ↓   ↓</span></span><br><span class="line">    <span class="keyword">var</span> total: <span class="built_in">Int</span> <span class="keyword">by</span> ::count</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        以上代码定义了两个变量，count 和 total，其中 total 的值与 count 完全一致，因为我们把 total 这个属性的 getter 和 setter 都委托给了 count。</p>
+<ul>
+<li>注释①，代表 total 属性的 getter、setter 会被委托出去</li>
+<li>注释②，::count，代表 total 被委托给了 count。这里的“::count”是<strong>属性的引用</strong>,跟函数引用是一样的概念</li>
+</ul>
+<p>total 和 count 两者之间的委托关系一旦建立，就代表了它们两者的 getter 和 setter 会完全绑定在一起:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 近似逻辑，实际上，底层会生成一个Item$total$2类型的delegate来实现</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Item</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> count: <span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> total: <span class="built_in">Int</span></span><br><span class="line">        <span class="keyword">get</span>() = count</span><br><span class="line"></span><br><span class="line">        <span class="keyword">set</span>(value: <span class="built_in">Int</span>) &#123;</span><br><span class="line">            count = value</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        也就是，当 total 的 get() 方法被调用时，它会直接返回 count 的值，也就意味着会调用 count 的 get() 方法；而当 total 的 set() 方法被调用时，它会将 value 传递给 count，也就意味着会调用 count 的 set() 方法。</p>
+<p>​        这个特性，其实对我们软件版本之间的兼容很有帮助。假设 Item 是服务端接口的返回数据，1.0 版本的时候，我们的 Item 当中只 count 这一个变量：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.0 版本</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Item</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> count: <span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        而到了 2.0 版本的时候，我们需要将 count 修改成 total，这时候问题就出现了，如果我们直接将 count 修改成 total，我们的老用户就无法正常使用了。但如果我们借助委托，就可以很方便地实现这种兼容。我们可以定义一个新的变量 total，然后将其委托给 count，这样的话，2.0 的用户访问 total，而 1.0 的用户访问原来的 count，由于它们是委托关系，也不必担心数值不一致的问题。</p>
+<h3 id="懒加载委托"><a href="#懒加载委托" class="headerlink" title="懒加载委托"></a>懒加载委托</h3><p>​        懒加载，顾名思义，就是对于一些需要消耗计算机资源的操作，我们希望它在被访问的时候才去触发，从而避免不必要的资源开销:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//            定义懒加载委托</span></span><br><span class="line"><span class="comment">//               ↓   ↓</span></span><br><span class="line"><span class="keyword">val</span> <span class="keyword">data</span>: String <span class="keyword">by</span> lazy &#123;</span><br><span class="line">    request()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">request</span><span class="params">()</span></span>: String &#123;</span><br><span class="line">    println(<span class="string">"执行网络请求"</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"网络数据"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    println(<span class="string">"开始"</span>)</span><br><span class="line">    println(<span class="keyword">data</span>)</span><br><span class="line">    println(<span class="keyword">data</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">结果：</span><br><span class="line">开始</span><br><span class="line">执行网络请求</span><br><span class="line">网络数据</span><br><span class="line">网络数据</span><br></pre></td></tr></table></figure>
+
+<p>​        上面的代码中，我们要用到 data 的时候，request() 才会被触发执行。到了main()方法中第三行代码，由于前面我们已经知道了 data 的值，因此也不必重复计算，直接返回结果即可。</p>
+<p>懒加载委托的源代码，你会发现，它其实是一个高阶函数：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">actual</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">lazy</span><span class="params">(initializer: () -&gt; <span class="type">T</span>)</span></span>: Lazy&lt;T&gt; = SynchronizedLazyImpl(initializer)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">actual</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">lazy</span><span class="params">(mode: <span class="type">LazyThreadSafetyMode</span>, initializer: () -&gt; <span class="type">T</span>)</span></span>: Lazy&lt;T&gt; =</span><br><span class="line">    <span class="keyword">when</span> (mode) &#123;</span><br><span class="line">        LazyThreadSafetyMode.SYNCHRONIZED -&gt; SynchronizedLazyImpl(initializer)</span><br><span class="line">        LazyThreadSafetyMode.PUBLICATION -&gt; SafePublicationLazyImpl(initializer)</span><br><span class="line">        LazyThreadSafetyMode.NONE -&gt; UnsafeLazyImpl(initializer)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        除了这两种标准委托以外，Kotlin 也还提供了<a href="https://kotlinlang.org/docs/delegated-properties.html#observable-properties" target="_blank" rel="noopener">Delegates.observable 观察者委托</a>、<a href="https://kotlinlang.org/docs/delegated-properties.html#storing-properties-in-a-map" target="_blank" rel="noopener">by map 映射委托</a>，这两种委托比较简单，可以点击链接了解它们的定义与用法。</p>
+<h2 id="自定义委托"><a href="#自定义委托" class="headerlink" title="自定义委托"></a>自定义委托</h2><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StringDelegate</span></span>(<span class="keyword">private</span> <span class="keyword">var</span> s: String = <span class="string">"Hello"</span>) &#123;</span><br><span class="line"><span class="comment">//     ①                           ②                              ③</span></span><br><span class="line"><span class="comment">//     ↓                            ↓                               ↓</span></span><br><span class="line">    <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="title">getValue</span><span class="params">(thisRef: <span class="type">Owner</span>, property: <span class="type">KProperty</span>&lt;*&gt;)</span></span>: String &#123;</span><br><span class="line">        <span class="keyword">return</span> s</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//      ①                          ②                                     ③ </span></span><br><span class="line"><span class="comment">//      ↓                           ↓                                      ↓</span></span><br><span class="line">    <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="title">setValue</span><span class="params">(thisRef: <span class="type">Owner</span>, property: <span class="type">KProperty</span>&lt;*&gt;, value: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">            s = value</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//      ②</span></span><br><span class="line"><span class="comment">//      ↓</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Owner</span> </span>&#123;</span><br><span class="line"><span class="comment">//               ③</span></span><br><span class="line"><span class="comment">//               ↓     </span></span><br><span class="line">    <span class="keyword">var</span> text: String <span class="keyword">by</span> StringDelegate()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>首先，看到两处注释①对应的代码，对于 var 修饰的属性，我们必须要有 getValue、setValue 这两个方法，同时，这两个方法必须有 operator 关键字修饰。</li>
+<li>其次，看到三处注释②对应的代码，我们的 text 属性是处于 Owner 这个类当中的，因此 getValue、setValue 这两个方法中的 thisRef 的类型，必须要是 Owner，或者是 Owner 的父类。也就是说，我们将 thisRef 的类型改为 Any 也是可以的。</li>
+<li>最后，看到三处注释③对应的代码，由于我们的 text 属性是 String 类型的，为了实现对它的委托，getValue 的返回值类型，以及 setValue 的参数类型，都必须是 String 类型或者是它的父类。大部分情况下，这三处的类型都应该是一致的。</li>
+</ol>
+<p>​       上面这段代码,只需要把它当作一个固定格式就行了。你在自定义委托的时候，只需要关心 3 个注释标注出来的地方即可。</p>
+<p>也可以借助 Kotlin 提供的 <strong>ReadWriteProperty、ReadOnlyProperty</strong> 这两个接口，来自定义委托。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="keyword">interface</span> ReadOnlyProperty<span class="type">&lt;in T, out V&gt;</span> &#123;</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="title">getValue</span><span class="params">(thisRef: <span class="type">T</span>, property: <span class="type">KProperty</span>&lt;*&gt;)</span></span>: V</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ReadWriteProperty</span>&lt;<span class="type">in T, V</span>&gt; : <span class="type">ReadOnlyProperty</span>&lt;<span class="type">T, V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="title">getValue</span><span class="params">(thisRef: <span class="type">T</span>, property: <span class="type">KProperty</span>&lt;*&gt;)</span></span>: V</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="title">setValue</span><span class="params">(thisRef: <span class="type">T</span>, property: <span class="type">KProperty</span>&lt;*&gt;, value: <span class="type">V</span>)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        如果我们需要为 <strong>val 属性定义委托，我们就去实现 ReadOnlyProperty 这个接口；</strong>如果我们需要为 <strong>var 属性定义委托，我们就去实现 ReadWriteProperty 这个接口</strong>。IntelliJ 可以帮我们自动生成 override 的 getValue、setValue 方法。</p>
+<p>​        以前面的代码为例，我们的 StringDelegate，也可以通过实现 ReadWriteProperty 接口来编写：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StringDelegate</span></span>(<span class="keyword">private</span> <span class="keyword">var</span> s: String = <span class="string">"Hello"</span>): ReadWriteProperty&lt;Owner, String&gt; &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="title">getValue</span><span class="params">(thisRef: <span class="type">Owner</span>, property: <span class="type">KProperty</span>&lt;*&gt;)</span></span>: String &#123;</span><br><span class="line">        <span class="keyword">return</span> s</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="title">setValue</span><span class="params">(thisRef: <span class="type">Owner</span>, property: <span class="type">KProperty</span>&lt;*&gt;, value: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">        s = value</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="提供委托（provideDelegate）"><a href="#提供委托（provideDelegate）" class="headerlink" title="提供委托（provideDelegate）"></a>提供委托（provideDelegate）</h2><p>​        接着前面的例子，假设我们现在有一个这样的需求：我们希望 StringDelegate(s: String) 传入的初始值 s，可以根据委托属性的名字的变化而变化。我们应该怎么做？</p>
+<p>​        要想在属性委托之前再做一些额外的判断工作，我们可以使用 <strong>provideDelegate</strong> 来实现。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StringDelegate</span></span>(<span class="keyword">private</span> <span class="keyword">var</span> s: String = <span class="string">"Hello"</span>): ReadWriteProperty&lt;Owner, String&gt; &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="title">getValue</span><span class="params">(thisRef: <span class="type">Owner</span>, property: <span class="type">KProperty</span>&lt;*&gt;)</span></span>: String &#123;</span><br><span class="line">        <span class="keyword">return</span> s</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="title">setValue</span><span class="params">(thisRef: <span class="type">Owner</span>, property: <span class="type">KProperty</span>&lt;*&gt;, value: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">        s = value</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SmartDelegator</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="title">provideDelegate</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        thisRef: <span class="type">Owner</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">        prop: <span class="type">KProperty</span>&lt;*&gt;</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span></span>: ReadWriteProperty&lt;Owner, String&gt; &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">if</span> (prop.name.contains(<span class="string">"log"</span>)) &#123;</span><br><span class="line">            StringDelegate(<span class="string">"log"</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            StringDelegate(<span class="string">"normal"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Owner</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> normalText: String <span class="keyword">by</span> SmartDelegator()</span><br><span class="line">    <span class="keyword">var</span> logText: String <span class="keyword">by</span> SmartDelegator()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> owner = Owner()</span><br><span class="line">    println(owner.normalText)</span><br><span class="line">    println(owner.logText)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">结果：</span><br><span class="line">normal</span><br><span class="line">log</span><br></pre></td></tr></table></figure>
+
+<h2 id="案例1：属性可见性封装"><a href="#案例1：属性可见性封装" class="headerlink" title="案例1：属性可见性封装"></a>案例1：属性可见性封装</h2><p>​        我们会遇到这样的需求：对于某个成员变量 data，我们希望类的外部可以访问它的值，但不允许类的外部修改它的值。因此我们经常会写出类似这样的代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Model</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> <span class="keyword">data</span>: String = <span class="string">""</span></span><br><span class="line">        <span class="comment">// ①</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">set</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">load</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="comment">// 网络请求</span></span><br><span class="line">        <span class="keyword">data</span> = <span class="string">"请求结果"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当我们的 data 类型从 String 变成集合以后，问题就不一样了。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Model</span> </span>&#123;</span><br><span class="line">    <span class="keyword">val</span> <span class="keyword">data</span>: MutableList&lt;String&gt; = mutableListOf()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">load</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="comment">// 网络请求</span></span><br><span class="line">        <span class="keyword">data</span>.add(<span class="string">"Hello"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> model = Model()</span><br><span class="line">    <span class="comment">// 类的外部仍然可以修改data</span></span><br><span class="line">    model.<span class="keyword">data</span>.add(<span class="string">"World"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>采用两个数据之间的委托：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Model</span> </span>&#123;</span><br><span class="line">    <span class="keyword">val</span> <span class="keyword">data</span>: List&lt;String&gt; <span class="keyword">by</span> ::_data</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> _data: MutableList&lt;String&gt; = mutableListOf()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">load</span><span class="params">()</span></span> &#123;</span><br><span class="line">        _data.add(<span class="string">"Hello"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        在上面的代码中，我们定义了两个变量，一个变量是公开的“data”，它的类型是 List，这是 Kotlin 当中不可修改的 List，它是没有 add、remove 等方法的。</p>
+<p>​        接着，我们通过委托语法，将 data 的 getter 委托给了 _data 这个属性。而 _data 这个属性的类型是 MutableList，这是 Kotlin 当中的可变集合，它是有 add、remove 方法的。由于它是 private 修饰的，类的外部无法直接访问，通过这种方式，我们就成功地将修改权保留在了类的内部，而类的外部访问是不可变的 List，因此类的外部只能访问数据。</p>
+<h2 id="案例-2：数据与-View-的绑定"><a href="#案例-2：数据与-View-的绑定" class="headerlink" title="案例 2：数据与 View 的绑定"></a>案例 2：数据与 View 的绑定</h2><p>​        在 Android 当中，如果我们要对“数据”与“View”进行绑定，我们可以用 DataBinding，不过 DataBinding 太重了，也会影响编译速度。其实，除了 DataBinding 以外，我们还可以借助 Kotlin 的自定义委托属性来实现类似的功能。</p>
+<p>以 TextView 为例：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> TextView.<span class="title">provideDelegate</span><span class="params">(value: <span class="type">Any</span>?, property: <span class="type">KProperty</span>&lt;*&gt;)</span></span> = <span class="keyword">object</span> : ReadWriteProperty&lt;Any?, String?&gt; &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getValue</span><span class="params">(thisRef: <span class="type">Any</span>?, property: <span class="type">KProperty</span>&lt;*&gt;)</span></span>: String? = text</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">setValue</span><span class="params">(thisRef: <span class="type">Any</span>?, property: <span class="type">KProperty</span>&lt;*&gt;, value: <span class="type">String</span>?)</span></span> &#123;</span><br><span class="line">        text = value</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        以上的代码，我们为 TextView 定义了一个扩展函数 TextView.provideDelegate，而这个扩展函数的返回值类型是 ReadWriteProperty。通过这样的方式，我们的 TextView 就相当于支持了 String 属性的委托了。</p>
+<p>它的使用方式也很简单：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> textView = findViewById&lt;textView&gt;(R.id.textView)</span><br><span class="line"></span><br><span class="line"><span class="comment">// ①</span></span><br><span class="line"><span class="keyword">var</span> message: String? <span class="keyword">by</span> textView</span><br><span class="line"></span><br><span class="line"><span class="comment">// ②</span></span><br><span class="line">textView.text = <span class="string">"Hello"</span></span><br><span class="line">println(message)</span><br><span class="line"></span><br><span class="line"><span class="comment">// ③</span></span><br><span class="line">message = <span class="string">"World"</span></span><br><span class="line">println(textView.text)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">结果：</span><br><span class="line">Hello</span><br><span class="line">World</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在注释①处的代码，我们通过委托的方式，将 message 委托给了 textView。这意味着，message 的 getter 和 setter 都将与 TextView 关联到一起。</li>
+<li>在注释②处，我们修改了 textView 的 text 属性，由于我们的 message 也委托给了 textView，因此这时候，println(message) 的结果也会变成“Hello”。</li>
+<li>在注释③处，我们改为修改 message 的值，由于 message 的 setter 也委托给了 textView，因此这时候，println(textView.text) 的结果会跟着变成“World”。</li>
+</ul>
+<h2 id="案例-3：ViewModel-委托"><a href="#案例-3：ViewModel-委托" class="headerlink" title="案例 3：ViewModel 委托"></a>案例 3：ViewModel 委托</h2><p>​        在 Android 当中，我们会经常用到 ViewModel 来存储界面数据。同时，我们不会直接创建 ViewModel 的实例，而对应的，我们会使用委托的方式来实现。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// MainActivity.kt</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> mainViewModel: MainViewModel <span class="keyword">by</span> viewModels()</span><br></pre></td></tr></table></figure>
+
+<p>来看看 viewModels() 是如何实现的：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;<span class="keyword">reified</span> VM : ViewModel&gt;</span> ComponentActivity.<span class="title">viewModels</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">noinline</span> factoryProducer: (() -&gt; <span class="type">Factory</span>)? = <span class="literal">null</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>: Lazy&lt;VM&gt; &#123;</span><br><span class="line">    <span class="keyword">val</span> factoryPromise = factoryProducer ?: &#123;</span><br><span class="line">        defaultViewModelProviderFactory</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ViewModelLazy(VM::<span class="class"><span class="keyword">class</span>, <span class="type">&#123; viewModelStore &#125;</span>, <span class="type">factoryPromise)</span></span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Lazy</span>&lt;<span class="type">out T</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">val</span> value: T</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">isInitialized</span><span class="params">()</span></span>: <span class="built_in">Boolean</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        viewModels() 是 Activity 的一个扩展函数,另外，我们注意到，viewModels() 这个方法的返回值类型是 Lazy,再看看它是如何实现委托功能的：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public inline operator fun &lt;T&gt; Lazy&lt;T&gt;.getValue(thisRef: Any?, property: KProperty&lt;*&gt;): T = value</span><br></pre></td></tr></table></figure>
+
+<p>​        实际上，Lazy 类在外部还定义了一个扩展函数 getValue()，这样，我们的只读属性的委托就实现了。而 Android 官方这样的代码设计，就再一次体现了职责划分、关注点分离的原则。Lazy 类只包含核心的成员，其他附属功能，以扩展的形式在 Lazy 外部提供。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><ul>
+<li>委托类，委托的是接口的方法，它在语法层面支持了“委托模式”。</li>
+<li>委托属性，委托的是属性的 getter、setter。虽然它的核心理念很简单，但我们借助这个特性可以设计出非常复杂的代码。</li>
+<li>另外，Kotlin 官方还提供了几种标准的属性委托，它们分别是：两个属性之间的直接委托、by lazy 懒加载委托、Delegates.observable 观察者委托，以及 by map 映射委托；</li>
+<li>两个属性之间的直接委托，它是 Kotlin 1.4 提供的新特性，它在属性版本更新、可变性封装上，有着很大的用处</li>
+<li>by lazy 懒加载委托，可以让我们灵活地使用懒加载，它一共有三种线程同步模式，默认情况下，它就是线程安全的；Android 当中的 viewModels() 这个扩展函数在它的内部实现的懒加载委托，从而实现了功能强大的 ViewModel；</li>
+<li>除了标准委托以外，Kotlin 可以让我们开发者自定义委托。自定义委托，我们需要遵循 Kotlin 提供的一套语法规范，只要符合这套语法规范，就没问题；</li>
+<li>在自定义委托的时候，如果我们有灵活的需求时，可以使用 provideDelegate 来动态调整委托逻辑。</li>
+</ul>
+<p><img src="/2022/06/07/Kotlin%E5%A7%94%E6%89%98/1.png" alt></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/06/07/Kotlin%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B/" rel="prev" title="Kotlin函数式编程">
+      <i class="fa fa-chevron-left"></i> Kotlin函数式编程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/07/ViewModel%E6%97%A5%E5%B8%B8%E4%BD%BF%E7%94%A8%E5%B0%81%E8%A3%85/" rel="next" title="ViewModel日常使用封装">
+      ViewModel日常使用封装 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#委托类"><span class="nav-number">1.</span> <span class="nav-text">委托类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#委托属性"><span class="nav-number">2.</span> <span class="nav-text">委托属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标准委托"><span class="nav-number">3.</span> <span class="nav-text">标准委托</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#将属性-A-委托给属性-B"><span class="nav-number">3.1.</span> <span class="nav-text">将属性 A 委托给属性 B</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#懒加载委托"><span class="nav-number">3.2.</span> <span class="nav-text">懒加载委托</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义委托"><span class="nav-number">4.</span> <span class="nav-text">自定义委托</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#提供委托（provideDelegate）"><span class="nav-number">5.</span> <span class="nav-text">提供委托（provideDelegate）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#案例1：属性可见性封装"><span class="nav-number">6.</span> <span class="nav-text">案例1：属性可见性封装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#案例-2：数据与-View-的绑定"><span class="nav-number">7.</span> <span class="nav-text">案例 2：数据与 View 的绑定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#案例-3：ViewModel-委托"><span class="nav-number">8.</span> <span class="nav-text">案例 3：ViewModel 委托</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">9.</span> <span class="nav-text">小结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

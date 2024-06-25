@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Jetpack Compose是什么​        Jetpack Compose（简称Compose）是Android新一代UI开发框架，致力于帮助开发者用更少的代码和更直观的API完成Native UI开发。 相对于传统的UI开发方式的优势：  先进的开发范式：Compose采用声明式的开发范式，开发者只需要聚焦在对UI界面的描述上，当需要渲染的数据发生变化时，框架将自动完成UI刷新。 直观">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初识Compose">
+<meta property="og:url" content="https://hluck.github.io/2022/12/28/%E5%88%9D%E8%AF%86Compose/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="Jetpack Compose是什么​        Jetpack Compose（简称Compose）是Android新一代UI开发框架，致力于帮助开发者用更少的代码和更直观的API完成Native UI开发。 相对于传统的UI开发方式的优势：  先进的开发范式：Compose采用声明式的开发范式，开发者只需要聚焦在对UI界面的描述上，当需要渲染的数据发生变化时，框架将自动完成UI刷新。 直观">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/12/28/%E5%88%9D%E8%AF%86Compose/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/12/28/%E5%88%9D%E8%AF%86Compose/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/12/28/%E5%88%9D%E8%AF%86Compose/3.png">
+<meta property="og:image" content="https://hluck.github.io/2022/12/28/%E5%88%9D%E8%AF%86Compose/4.png">
+<meta property="og:image" content="https://hluck.github.io/2022/12/28/%E5%88%9D%E8%AF%86Compose/5.png">
+<meta property="og:image" content="https://hluck.github.io/2022/12/28/%E5%88%9D%E8%AF%86Compose/6.png">
+<meta property="og:image" content="https://hluck.github.io/2022/12/28/%E5%88%9D%E8%AF%86Compose/7.png">
+<meta property="og:image" content="https://hluck.github.io/2022/12/28/%E5%88%9D%E8%AF%86Compose/8.png">
+<meta property="og:image" content="https://hluck.github.io/2022/12/28/%E5%88%9D%E8%AF%86Compose/9.png">
+<meta property="article:published_time" content="2022-12-28T02:00:09.273Z">
+<meta property="article:modified_time" content="2022-12-28T14:00:30.829Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Compose">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/12/28/%E5%88%9D%E8%AF%86Compose/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/12/28/%E5%88%9D%E8%AF%86Compose/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>初识Compose | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/12/28/%E5%88%9D%E8%AF%86Compose/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          初识Compose
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-12-28 10:00:09 / 修改时间：22:00:30" itemprop="dateCreated datePublished" datetime="2022-12-28T10:00:09+08:00">2022-12-28</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Jetpack-Compose是什么"><a href="#Jetpack-Compose是什么" class="headerlink" title="Jetpack Compose是什么"></a>Jetpack Compose是什么</h2><p>​        Jetpack Compose（简称Compose）是Android新一代UI开发框架，致力于帮助开发者用更少的代码和更直观的API完成Native UI开发。</p>
+<p>相对于传统的UI开发方式的优势：</p>
+<ul>
+<li>先进的开发范式：Compose采用<strong>声明式</strong>的开发范式，开发者只需要聚焦在对UI界面的描述上，<strong>当需要渲染的数据发生变化时，框架将自动完成UI刷新</strong>。</li>
+<li>直观易用的API: 基于Kotlin DSL打造的API紧贴<strong>函数式编程思想</strong>，相对于传统的视图开发方式，代码效率更高，实现同样的功能只需要以前一半的代码量。</li>
+<li><strong>良好的兼容性</strong>：Compose代码与基于Android View系统的传统代码可以共存，用户可以按照喜欢的节奏将既有代码逐步过渡到Compose。</li>
+<li>广泛的适用性：Compose最低兼容到API 21，支持市面上绝大多数手机设备的使用；Jetpack以及各种常用三方库也都第一时间与Compose进行了适配。</li>
+</ul>
+<h3 id="命令式UI与声明式UI"><a href="#命令式UI与声明式UI" class="headerlink" title="命令式UI与声明式UI"></a>命令式UI与声明式UI</h3><p>​        命令式用命令的方式告诉计算机如何去做事情(how to do)，计算机通过执行命令达到结果，而声明式直接告诉计算机用户想要的结果(what to do)，计算机自己去想该怎么做。</p>
+<p>​        Compose采用声明式编程范式，开发者只需要根据状态描述UI，当状态变化时，UI会自动更新。</p>
+<a id="more"></a>
+<h3 id="Compose-API设计原则"><a href="#Compose-API设计原则" class="headerlink" title="Compose API设计原则"></a>Compose API设计原则</h3><p>无论是Compose预置的Composable还是开发者自己定义的Composable，都应该遵守这些原则。</p>
+<h4 id="1-一切皆为函数"><a href="#1-一切皆为函数" class="headerlink" title="1.一切皆为函数"></a>1.一切皆为函数</h4><p>​        Compose声明式UI的基础是Composable函数。Composable函数通过多级嵌套形成结构化的函数调用链，函数调用链经过运行后生成一颗UI视图树。</p>
+<p>​        <strong>视图树一旦生成便不可随意改变。视图的刷新依靠Composable函数的反复执行来实现。</strong>当需要显示的数据发生变化时，Compoable基于新参数再次执行，更新底层的视图树，最终完成视图的刷新。这个通过反复执行更新视图树的过程称为<strong>重组</strong>.</p>
+<p><img src="/2022/12/28/%E5%88%9D%E8%AF%86Compose/1.png" alt></p>
+<p>​        Composable函数只能在Composable函数中调用，这与挂起函数只能在协程或其他挂起函数中调用类似，都是在编译期保证的。</p>
+<p>​        在Compose的世界中，一切组件都是函数，由于没有类的概念，因此不会有任何继承的层次结构，<strong>所有组件都是顶层函数</strong>，可以在DSL中直接调用。</p>
+<p>​        Compose推荐Composable使用首字母大写的名词来命名，且不允许有返回值。这样在DSL中书写时可读性更好。有的Composable函数并不代表UI组件，此时可以遵循一般的函数命名规范。</p>
+<h4 id="2-组合优于继承"><a href="#2-组合优于继承" class="headerlink" title="2.组合优于继承"></a>2.组合优于继承</h4><p>​        Composable作为函数相互没有继承关系，有利于促使开发者使用组合的视角去思考问题</p>
+<p>相互继承”的View（左）与“组合使用”的Composable（右）:</p>
+<p><img src="/2022/12/28/%E5%88%9D%E8%AF%86Compose/2.png" alt></p>
+<p>Compose中为一个按钮添加文字的代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">CustomButton</span><span class="params">(text:<span class="type">String</span>)</span></span>&#123;</span><br><span class="line">    Button&#123;</span><br><span class="line">        Text($text)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        在传统视图体系中，按钮的文字可能是Button类的一个属性。而Compose中需要通过Text这个Composable来组合实现。虽然按钮显示文字是一个常见需求，但是对于一个只需要显示图片的IconButton来说，文字的属性就是多余的。Button真正必要的能力就是接收用户点击而已，Compose通过组合的方式让组件的职责更加单一。</p>
+<h4 id="3-单一数据源"><a href="#3-单一数据源" class="headerlink" title="3.单一数据源"></a>3.单一数据源</h4><p>​        传统视图的EditText，它的文字变化可能来自用户的输入，也可能来自代码某处的setText。状态变化可能不止一个来源，即所谓的多数据源。多数据源下的状态变化不容易跟踪，而且状态源过度分散会增加状态同步的工作量。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">HelloScreen</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name <span class="keyword">by</span> rememberSavable&#123;mutableStateOf(<span class="string">""</span>)&#125;</span><br><span class="line">    HelloContent(name = name,onNameChange = &#123; name = it &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//OutlinedTextField响应用户输入后，通过onNameChanged更新外部状态name，</span></span><br><span class="line"><span class="comment">//当name变化时会驱动HelloContent重新执行，重组中OutlinedTextField也会显示最新的name。</span></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">HelloContent</span><span class="params">(name:<span class="type">String</span>,onNameChange:(<span class="type">String</span>) -&gt; <span class="type">Unit</span>)</span></span>&#123;</span><br><span class="line">    Column &#123;</span><br><span class="line">        Text(</span><br><span class="line">        	text = <span class="string">"Hello,<span class="variable">$name</span>"</span>,</span><br><span class="line">        )</span><br><span class="line">        OutlinedTextField(</span><br><span class="line">        	value = name,</span><br><span class="line">            onValueChange = onNameChange,</span><br><span class="line">            label = &#123;Text(<span class="string">"Name"</span>)&#125;</span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        <strong>单一数据源决定了Composable数据流的单向流动，数据(name)总是自上而下流动，而事件(onNameChange)总是自下而上传递</strong>。</p>
+<h3 id="Compose与View的关系"><a href="#Compose与View的关系" class="headerlink" title="Compose与View的关系"></a>Compose与View的关系</h3><p><a href="https://mp.weixin.qq.com/s/Rl497tSplXT1bBdZl1MqVA" target="_blank" rel="noopener">【辨析】Jetpack Compose完全脱离View系统了吗？</a></p>
+<p>​        结论： Compose在渲染时并不会转化成View，而是只有一个入口View，即AndroidComposeView我们声明的Compose布局在渲染时会转化成NodeTree，AndroidComposeView中会触发NodeTree的布局与绘制。<br>总得来说，Compose会有一个View的入口，但它的布局与渲染还是在LayoutNode上完成的，基本脱离了View。</p>
+<p><img src="/2022/12/28/%E5%88%9D%E8%AF%86Compose/3.png" alt></p>
+<p>​        传统视图体系中由View与ViewGroup构成视图树，而Compose中也有同样一颗视图树，它由LayoutNode构成，由Composition负责管理。使用Android Studio自带的Layout Inspector可以看到这个连接点就是<strong>ComposeView，它就是连接View与Compose的桥梁</strong>。</p>
+<p>​        <strong>ComposeView</strong>有一个唯一子节点<strong>AndroidComposeView</strong>，它既是一个ViewGroup，也是LayoutNode视图树的持有者，它实现了LayoutNode视图结构与View视图结构的连接。</p>
+<p>​        ComposeView继承自AbstractComposeView，而后者有三个子类，分别对应着Activity窗口、Dialog窗口与PopupWindow窗口。</p>
+<p>​        <strong>ComposeView负责对Android平台的Activity窗口的适配，AndroidComposeView负责连接LayoutNode视图系统与View视图系统。</strong></p>
+<p>​        Composition是视图树的创建者。从Composable函数到视图树的生成经历这个过程：第一步Composable函数执行后填充SlotTable, SlotTable中记录着Composable执行过程的状态信息；第二步基于SlotTable生成和更新LayoutNode视图树。Composition负责从Composable执行到视图树生成（更新）的整个过程。</p>
+<p>​        <strong>ComposeView</strong>接入View视图后，内部的UI工作都在Compose侧闭环处理，来自<strong>AndroidComposeView</strong>的绘制、测量布局与手势事件分发等都下沉到<strong>LayoutNode</strong>去完成。ComposeView作为View可以挂载到原有View视图树中的任意位置。因此一个传统视图项目可以通过ComposeView阶段性地接入Compose。<strong>一个纯Compose页面就是将ComposeView直接挂载到ContentView上面</strong></p>
+<p><img src="/2022/12/28/%E5%88%9D%E8%AF%86Compose/4.png" alt></p>
+<h3 id="不只是Android-UI框架"><a href="#不只是Android-UI框架" class="headerlink" title="不只是Android UI框架"></a>不只是Android UI框架</h3><p>Compose并非一个简单的SDK，它是由一系列库及配套工具组成的完整的UI解决方案：</p>
+<p><img src="/2022/12/28/%E5%88%9D%E8%AF%86Compose/5.png" alt></p>
+<p>​        在开发阶段，Android Studio为我们提供了代码的实时静态检查，以及对Compose UI的实时预览功能，在编译阶段，Compose Compiler Plugin会对@Composable注解进行预处理，通过插入代码，提升了编码效率。在<strong>运行阶段，Compose从上到下分为四层，每一层都可以被单独使用</strong>，在不同维度提供能力支持</p>
+<p><img src="/2022/12/28/%E5%88%9D%E8%AF%86Compose/6.png" alt></p>
+<h2 id="第一个Compose应用"><a href="#第一个Compose应用" class="headerlink" title="第一个Compose应用"></a>第一个Compose应用</h2><p>Android Studio帮生成的HelloWorld演示程序，MainActivity.kt默认代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> android.os.Bundle</span><br><span class="line"><span class="keyword">import</span> androidx.activity.ComponentActivity</span><br><span class="line"><span class="keyword">import</span> androidx.activity.compose.setContent</span><br><span class="line"><span class="keyword">import</span> androidx.compose.foundation.layout.fillMaxSize</span><br><span class="line"><span class="keyword">import</span> androidx.compose.material3.MaterialTheme</span><br><span class="line"><span class="keyword">import</span> androidx.compose.material3.Surface</span><br><span class="line"><span class="keyword">import</span> androidx.compose.material3.Text</span><br><span class="line"><span class="keyword">import</span> androidx.compose.runtime.Composable</span><br><span class="line"><span class="keyword">import</span> androidx.compose.ui.Modifier</span><br><span class="line"><span class="keyword">import</span> androidx.compose.ui.tooling.preview.Preview</span><br><span class="line"><span class="keyword">import</span> com.study.hellocompose.ui.theme.HelloComposeTheme</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">ComponentActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        setContent &#123;</span><br><span class="line">            HelloComposeTheme &#123;</span><br><span class="line">                <span class="comment">// A surface container using the 'background' color from the theme</span></span><br><span class="line">                Surface(</span><br><span class="line">                    modifier = Modifier.fillMaxSize(),</span><br><span class="line">                    color = MaterialTheme.colorScheme.background</span><br><span class="line">                ) &#123;</span><br><span class="line">                    Greeting(<span class="string">"Android"</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">Greeting</span><span class="params">(name: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">    Text(text = <span class="string">"Hello <span class="variable">$name</span>!"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Preview(showBackground = true)</span></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">DefaultPreview</span><span class="params">()</span></span> &#123;</span><br><span class="line">    HelloComposeTheme &#123;</span><br><span class="line">        Greeting(<span class="string">"Android"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Compose使用Kotlin DSL而非XML描述UI，所以这里不再出现setContentView的调用.</p>
+<p>​        Kotlin DSL由Composable组件构成。例如HelloWorld中有一个名为Greeting的Composable组件。<strong>Composable组件实际上就是一个带有@Composable注解的函数。</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">Greeting</span><span class="params">(name: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">//ext也是一个带有@Composable注解的函数，</span></span><br><span class="line">    <span class="comment">//这里将要展示的文本信息作为参数传入Text函数进行调用，Composble UI组件都是顶级函数，可以在任意位置调用</span></span><br><span class="line">    Text(text = <span class="string">"Hello <span class="variable">$name</span>!"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        <strong>Composable函数只能在Composable函数中调用，所以肯定存在一个根Composable，这个根Composable实际上是setContent提供的。</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">setContent &#123;</span><br><span class="line">    <span class="comment">//setContent内的第一个Composable组件是HelloWorldTheme，</span></span><br><span class="line">    <span class="comment">//它由Android Studio根据项目名称自动生成，为界面提供默认主题。内部的子组件都继承其主题的样式。</span></span><br><span class="line">    HelloComposeTheme &#123;</span><br><span class="line">        <span class="comment">// A surface container using the 'background' color from the theme</span></span><br><span class="line">        <span class="comment">//一个摆放内容的布局类组件</span></span><br><span class="line">        Surface(</span><br><span class="line">            modifier = Modifier.fillMaxSize(),</span><br><span class="line">            color = MaterialTheme.colorScheme.background</span><br><span class="line">        ) &#123;</span><br><span class="line">            <span class="comment">//调用Greeting组件，将其内部的Text绘制出来。</span></span><br><span class="line">            Greeting(<span class="string">"Android"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>setContent{…}的block内部的代码就执行在根Composable中。</p>
+<h3 id="对Compose应用进行预览"><a href="#对Compose应用进行预览" class="headerlink" title="对Compose应用进行预览"></a>对Compose应用进行预览</h3><p>​        Android Studio支持对Composable组件进行预览，只需要为希望预览的Composable函数再增加一个@Preview注解即可。需要注意预览效果要编译之后才会生效。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Preview(showBackground = true)</span></span><br><span class="line"><span class="meta">@Composable</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">DefaultPreview</span><span class="params">()</span></span> &#123;</span><br><span class="line">    HelloComposeTheme &#123;</span><br><span class="line">        Greeting(<span class="string">"Android"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        当一个文件中有多个添加@Preview的Composable时，在预览面板中可以同时看到它们，这可以带来高效的开发体验，比如可以同时预览不同主题、不同分辨率下的显示效果。@Preview也允许通过参数来设置这些不同的预览效果。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//设置预览的界面带有背景色</span></span><br><span class="line"><span class="meta">@Preview(showBackground = true, backgroundColor = 0xff00ff00)</span></span><br><span class="line"><span class="comment">//设置预览的界面大小</span></span><br><span class="line"><span class="meta">@Preview(widthDp = 50, heightDp = 50)</span></span><br><span class="line"><span class="comment">//设置预览中的语言</span></span><br><span class="line"><span class="meta">@Preview(locale = <span class="meta-string">"fr-rFR"</span>)</span></span><br><span class="line"><span class="comment">//显示状态栏</span></span><br><span class="line"><span class="meta">@Preview(showSystemUi = true)</span></span><br><span class="line"><span class="comment">//启动夜间模式</span></span><br><span class="line"><span class="meta">@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)</span></span><br><span class="line"><span class="comment">//Pixel设备中预览</span></span><br><span class="line"><span class="meta">@Preview(device = Devices.PIXEL)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="已有项目引入Compose"><a href="#已有项目引入Compose" class="headerlink" title="已有项目引入Compose"></a>已有项目引入Compose</h3><p>Compose与View视图体系有良好的兼容性，允许我们阶段性地将传统视图项目改造成Compose项目。</p>
+<h4 id="1-在工程中引入Compose"><a href="#1-在工程中引入Compose" class="headerlink" title="1.在工程中引入Compose"></a>1.在工程中引入Compose</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">implementation "androidx.compose.ui:ui:$compose_version"</span><br><span class="line">implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"</span><br><span class="line">implementation 'androidx.compose.material3:material3:1.0.0-alpha02'</span><br><span class="line">debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"</span><br><span class="line">debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"</span><br></pre></td></tr></table></figure>
+
+<p>还需要在主模块的android闭包中添加Compose的编译参数:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">buildFeatures &#123;</span><br><span class="line">	compose true</span><br><span class="line">&#125;</span><br><span class="line">composeOptions &#123;</span><br><span class="line">	kotlinCompilerExtensionVersion '1.1.1'</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        Compose实际上都承载在ComposeView上，如果想要在旧项目中使用Compose开发，就需要在使用处添加一个ComposeView。</p>
+<p><img src="/2022/12/28/%E5%88%9D%E8%AF%86Compose/7.png" alt></p>
+<p>接下来仅需在MainActivity中查找该View并使用setContent即可:</p>
+<p><img src="/2022/12/28/%E5%88%9D%E8%AF%86Compose/8.png" alt></p>
+<p>​        <strong>Compose代码逻辑都承载在ComposeView之上，对原有基于View的代码侵入极小。可以大胆地将自己的已有项目逐步迁移到Compose。</strong></p>
+<h4 id="2-在Compose中使用View组件"><a href="#2-在Compose中使用View组件" class="headerlink" title="2.在Compose中使用View组件"></a>2.在Compose中使用View组件</h4><p>​        不少功能性的传统视图控件在Compose中没有对应的Composable实现，例如SurfaceView、WebView、MapView等。因此在Compose中可能会有使用传统View控件的需求。<strong>Compose提供了名为AndroidView的Composable组件，允许在Composable中插入任意基于继承自View的传统视图控件。</strong></p>
+<p>使用AndroidView在Composable中显示一个WebView：</p>
+<p><img src="/2022/12/28/%E5%88%9D%E8%AF%86Compose/9.png" alt></p>
+<p>​        为AndroidView传入一个工厂的实现，工厂方法中可以获取Composable所在的Context，并基于其构建View视图控件。<strong>AndroidView可以有效补充Compose目前能力上的不足，扩展Composable的使用场景。</strong></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Compose/" rel="tag"># Compose</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/12/26/Activity%E9%AB%98%E7%BA%A7%E9%83%A8%E5%88%86/" rel="prev" title="Activity高级部分">
+      <i class="fa fa-chevron-left"></i> Activity高级部分
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/12/29/%E5%B8%B8%E7%94%A8UI%E7%BB%84%E4%BB%B6/" rel="next" title="常用UI组件">
+      常用UI组件 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Jetpack-Compose是什么"><span class="nav-number">1.</span> <span class="nav-text">Jetpack Compose是什么</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#命令式UI与声明式UI"><span class="nav-number">1.1.</span> <span class="nav-text">命令式UI与声明式UI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Compose-API设计原则"><span class="nav-number">1.2.</span> <span class="nav-text">Compose API设计原则</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-一切皆为函数"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.一切皆为函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-组合优于继承"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.组合优于继承</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-单一数据源"><span class="nav-number">1.2.3.</span> <span class="nav-text">3.单一数据源</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Compose与View的关系"><span class="nav-number">1.3.</span> <span class="nav-text">Compose与View的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不只是Android-UI框架"><span class="nav-number">1.4.</span> <span class="nav-text">不只是Android UI框架</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第一个Compose应用"><span class="nav-number">2.</span> <span class="nav-text">第一个Compose应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#对Compose应用进行预览"><span class="nav-number">2.1.</span> <span class="nav-text">对Compose应用进行预览</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#已有项目引入Compose"><span class="nav-number">2.2.</span> <span class="nav-text">已有项目引入Compose</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-在工程中引入Compose"><span class="nav-number">2.2.1.</span> <span class="nav-text">1.在工程中引入Compose</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-在Compose中使用View组件"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.在Compose中使用View组件</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="屏幕显示像素​        Android支持的像素单位有: px(像素)、in (英寸)、mm (毫米)、pt(磅，1&#x2F;72英寸)、dp (与设备无关的显示单位)、dip (就是dp)、sp (用于设置字体大小)。其中，常用的有px、dp和sp三种。  px :是屏幕上可显示的最小单位，与物理设备的显示屏有关。像素的密度越高，以px计量的分辨率也越大。  dp: 与物理设备无关，只与屏幕的尺寸">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初级控件">
+<meta property="og:url" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="屏幕显示像素​        Android支持的像素单位有: px(像素)、in (英寸)、mm (毫米)、pt(磅，1&#x2F;72英寸)、dp (与设备无关的显示单位)、dip (就是dp)、sp (用于设置字体大小)。其中，常用的有px、dp和sp三种。  px :是屏幕上可显示的最小单位，与物理设备的显示屏有关。像素的密度越高，以px计量的分辨率也越大。  dp: 与物理设备无关，只与屏幕的尺寸">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/3.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/4.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/5.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/6.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/8.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/7.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/9.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/10.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/11.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/12.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/13.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/14.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/15.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/16.png">
+<meta property="article:published_time" content="2022-05-30T09:25:12.852Z">
+<meta property="article:modified_time" content="2022-06-07T14:20:40.117Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>初级控件 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          初级控件
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-30 17:25:12" itemprop="dateCreated datePublished" datetime="2022-05-30T17:25:12+08:00">2022-05-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-07 22:20:40" itemprop="dateModified" datetime="2022-06-07T22:20:40+08:00">2022-06-07</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>22k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>20 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="屏幕显示"><a href="#屏幕显示" class="headerlink" title="屏幕显示"></a>屏幕显示</h2><h3 id="像素"><a href="#像素" class="headerlink" title="像素"></a>像素</h3><p>​        Android支持的像素单位有: px(像素)、in (英寸)、mm (毫米)、pt(磅，1/72英寸)、<strong>dp (与设备无关的显示单位)、dip (就是dp)、sp (用于设置字体大小)。其中，常用的有px、dp和sp三种。</strong></p>
+<ul>
+<li><p>px :<strong>是屏幕上可显示的最小单位，与物理设备的显示屏有关。</strong>像素的密度越高，以px计量的分辨率也越大。</p>
+</li>
+<li><p>dp: <strong>与物理设备无关，只与屏幕的尺寸有关。</strong>一般来说，同样尺寸的屏幕，以dp计量的分辨率是一样的。</p>
+</li>
+<li><p>sp: sp的原理跟dp差不多，<strong>专门用于设置字体大小。</strong>手机在系统设置里可以调整字体的大小(小、普通、大、超大)。设置普通字体时，同数值dp和sp的文字看起来一样大;如果设置为大字体，用dp设置的文字没有变<br>化，用sp设置的文字就变大了。</p>
+<p>​        dp和px之间的联系取决于具体设备上的像素密度，像素密度就是DisplayMetrics里的density 参数。当density=1.0 时，表示一个dp值对应一个px值;当density=1.5时，表示两个dp值对应3个pX值;当density=2.0时，表示一个dp值对应两个px值。具体的转换函数如下:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Utils</span> </span>&#123;</span><br><span class="line">	<span class="comment">//根据手机的分辨率从 dp 的单位 转成为 px(像素)</span></span><br><span class="line">	<span class="keyword">public</span> static int dip2px(Context context, float dpValue) &#123;</span><br><span class="line">		<span class="keyword">final</span> float scale = context.getResources().getDisplayMetrics().density;</span><br><span class="line">		<span class="keyword">return</span> (int) (dpValue * scale + <span class="number">0.5f</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//根据手机的分辨率从 px(像素) 的单位 转成为 dp</span></span><br><span class="line">	<span class="keyword">public</span> static int px2dip(Context context, float pxValue) &#123;</span><br><span class="line">		<span class="keyword">final</span> float scale = context.getResources().getDisplayMetrics().density;</span><br><span class="line">		<span class="keyword">return</span> (int) (pxValue / scale + <span class="number">0.5f</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>​        为了让不同设备屏幕拥有统一的显示效果，除了sp用于设置文字大小外，其余要用大小的地方都用dp。在代码中情况又有所不同，Android用于设置大小的函数都以px为单位。</p>
+</li>
+</ul>
+<h3 id="颜色"><a href="#颜色" class="headerlink" title="颜色"></a>颜色</h3><p>​        在Android中，颜色值由透明度alpha和RGB（红、绿、蓝）三原色定义，有八位十六进制数与六位十六进制数两种编码，例如八位编码FFEEDDCC, FF表示透明度，EE表示红色的浓度，DD表示绿色的浓度，CC表示蓝色的浓度。透明度为FF表示完全不透明，为00表示完全透明。RGB三色的数值越大颜色越浓也就越亮，数值越小颜色越暗。亮到极致就是白色，暗到极致就是黑色，这样记就不会搞混了。</p>
+<p>​        六位十六进制编码有两种情况，在XML文件中默认不透明（透明度为FF），在代码中默认透明（透明度为00）。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//六进制</span></span><br><span class="line">mBinding.tvCodeSix.setBackgroundColor(<span class="number">0x00ff00</span>)</span><br><span class="line"><span class="comment">//八位十六进制</span></span><br><span class="line">mBinding.tvCodeEight.setBackgroundColor(<span class="number">0xff00ff00</span>.toInt())</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-使用系统已定义的颜色常量。"><a href="#1-使用系统已定义的颜色常量。" class="headerlink" title="1.使用系统已定义的颜色常量。"></a>1.使用系统已定义的颜色常量。</h4><p>​        Android系统有12种已经定义好的颜色，具体的类型定义在Color类中：</p>
+<p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/1.png" alt></p>
+<h4 id="2-使用十六进制的颜色编码。"><a href="#2-使用十六进制的颜色编码。" class="headerlink" title="2.使用十六进制的颜色编码。"></a>2.使用十六进制的颜色编码。</h4><p>​        在布局文件中设置颜色需要在色值前面加“#”，如android:textColor=”#000000”。在代码中设置颜色可以直接填八位的十六进制数值（如setTextColor(0xff00ff00);）也可以通过Color.rgb(intred,intgreen,intblue)和Color.argb(intalpha,intred,intgreen,intblue)这两种方法指定颜色。在代码中一般不要用六位编码，因为六位编码在代码中默认透明，所以代码用六位编码跟不用没什么区别。</p>
+<h4 id="3-使用colors-xml中定义的颜色。"><a href="#3-使用colors-xml中定义的颜色。" class="headerlink" title="3.使用colors.xml中定义的颜色。"></a>3.使用colors.xml中定义的颜色。</h4><p>​        res/values目录下有个colors.xml文件，是颜色常量的定义文件。如果要在布局文件中使用XML颜色常量，可引用“@color/常量名”；如果要在代码中使用XML颜色常量，可通过这行代码获取：getResources().getColor(R.color．常量名)。</p>
+<h3 id="屏幕分辨率"><a href="#屏幕分辨率" class="headerlink" title="屏幕分辨率"></a>屏幕分辨率</h3><p>​        在App编码中时常要取手机的屏幕分辨率（如当前屏幕的宽和高），然后动态调整界面上的布局。在代码中获取分辨率就是想办法获得DisplayMetrics对象，然后从该对象中获得宽度、高度、像素密度等信息。下面是DisplayMetrics类的常用属性说明。</p>
+<ul>
+<li>widthPixels：以px为单位计量的宽度值。</li>
+<li>heightPixels：以px为单位计量的高度值。</li>
+<li>density：像素密度，即一个dp单位包含多少个px单位。</li>
+</ul>
+<p>下面是获取当前屏幕的宽度、高度、像素密度的代码示例。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DisplayUtil</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getScreenWidth</span><span class="params">(Context ctx)</span> </span>&#123;</span><br><span class="line">		WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);</span><br><span class="line">		DisplayMetrics dm = <span class="keyword">new</span> DisplayMetrics();</span><br><span class="line">		wm.getDefaultDisplay().getMetrics(dm);</span><br><span class="line">		<span class="keyword">return</span> dm.widthPixels;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getScreenHeight</span><span class="params">(Context ctx)</span> </span>&#123;</span><br><span class="line">		WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);</span><br><span class="line">		DisplayMetrics dm = <span class="keyword">new</span> DisplayMetrics();</span><br><span class="line">		wm.getDefaultDisplay().getMetrics(dm);</span><br><span class="line">		<span class="keyword">return</span> dm.heightPixels;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">float</span> <span class="title">getScreenDensity</span><span class="params">(Context ctx)</span> </span>&#123;</span><br><span class="line">		WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);</span><br><span class="line">		DisplayMetrics dm = <span class="keyword">new</span> DisplayMetrics();</span><br><span class="line">		wm.getDefaultDisplay().getMetrics(dm);</span><br><span class="line">		<span class="keyword">return</span> dm.density;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ScreenActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityScreenBinding</span>&gt;</span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityScreenBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> width = DisplayUtil.getScreenWidth(<span class="keyword">this</span><span class="symbol">@ScreenActivity</span>)</span><br><span class="line">        <span class="keyword">val</span> height = DisplayUtil.getScreenHeight(<span class="keyword">this</span><span class="symbol">@ScreenActivity</span>)</span><br><span class="line">        <span class="keyword">val</span> density = DisplayUtil.getScreenDensity(<span class="keyword">this</span><span class="symbol">@ScreenActivity</span>)</span><br><span class="line">        mBinding.tvScreen.text = <span class="string">"当前屏幕宽度是：<span class="variable">$width</span>,高度是<span class="variable">$height</span>,像素密度是：<span class="variable">$density</span>"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/2.png" alt></p>
+<h2 id="简单布局"><a href="#简单布局" class="headerlink" title="简单布局"></a>简单布局</h2><h3 id="视图View的基本属性"><a href="#视图View的基本属性" class="headerlink" title="视图View的基本属性"></a>视图View的基本属性</h3><p>视图在XML布局文件中常用的属性定义说明：</p>
+<ul>
+<li><p>id：指定该视图的编号。</p>
+</li>
+<li><p>layout_width：指定该视图的宽度。</p>
+</li>
+<li><p>layout_height：指定该视图的高度。</p>
+</li>
+<li><p>layout_margin：外边距</p>
+</li>
+<li><p>minWidth：指定该视图的最小宽度。</p>
+</li>
+<li><p>minHeight：指定该视图的最小高度。</p>
+</li>
+<li><p>background：指定该视图的背景。背景可以是颜色，也可以是图片。</p>
+</li>
+<li><p>layout_gravity：指定该视图与上级视图的对齐方式。若同时适用多种对齐方式，则可使用竖线“|”把多种对齐方式拼接起来。</p>
+</li>
+<li><p>padding：内边距。</p>
+</li>
+<li><p>visibility：指定该视图的可视类型。</p>
+<p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/3.png" alt></p>
+</li>
+</ul>
+<p>下面是视图在代码中常用的设置方法说明：</p>
+<ul>
+<li>setLayoutParams：设置该视图的布局参数。参数对象的构造函数可以设置视图的宽度和高度。其中，LayoutParams.MATCH_PARENT表示与上级视图一样宽，也可以是LayoutParams.WRAP_CONTENT，表示与内部内容一样宽；参数对象的setMargins方法可以设置该视图与周围视图之间的空白距离。</li>
+<li>setMinimumWidth：设置该视图的最小宽度。</li>
+<li>setMinimumHeight：设置该视图的最小高度。</li>
+<li>setBackgroundColor：设置该视图的背景颜色。</li>
+<li>setBackgroundDrawable：设置该视图的背景图片。</li>
+<li>setBackgroundResource：设置该视图的背景资源id。</li>
+<li>setBackgroundResource：设置该视图的背景资源id。</li>
+<li>setPadding：设置该视图边缘与内部内容之间的空白距离。</li>
+<li>setVisibility：设置该视图的可视类型。</li>
+</ul>
+<p>视图组<strong>ViewGroup</strong>是一类特殊视图，所有布局视图类都是从它派生而来的。</p>
+<p>ViewGroup有3个方法，这3个方法也是所有布局类视图共同拥有的。</p>
+<ul>
+<li>addView：往布局中添加一个视图。</li>
+<li>removeView：从布局中删除指定视图。</li>
+<li>removeAllViews：删除该布局下的所有视图。</li>
+</ul>
+<h3 id="LinearLayout"><a href="#LinearLayout" class="headerlink" title="LinearLayout"></a>LinearLayout</h3><p>layout_gravity和gravity的区别：</p>
+<ul>
+<li>layout_gravity指定该视图与上级视图的对齐方式</li>
+<li>gravity指定布局内部视图与本布局的对齐方式</li>
+</ul>
+<h3 id="ScrollView"><a href="#ScrollView" class="headerlink" title="ScrollView"></a>ScrollView</h3><p>垂直滚动的视图名是ScrollView，水平滚动的视图名是HorizontalScrollView:</p>
+<ol>
+<li>垂直方向滚动时，layout_width要设置为match_parent，layout_height要设置为wrap_content。</li>
+<li>水平方向滚动时，layout_width要设置为wrap_content，layout_height要设置为match_parent。</li>
+<li>滚动视图节点下面必须且只能挂着一个子布局节点，否则会在运行时报错Caused by: java.lang.IllegalStateException: ScrollView can host only onedirect child。</li>
+</ol>
+<p>​       有时ScrollView的实际内容不够，又想让它充满屏幕,正确的做法是再增加一行fillViewport的属性设置（该属性为true表示允许填满视图窗口）</p>
+<h2 id="简单控件"><a href="#简单控件" class="headerlink" title="简单控件"></a>简单控件</h2><h3 id="文本视图TextView"><a href="#文本视图TextView" class="headerlink" title="文本视图TextView"></a>文本视图TextView</h3><p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/4.png" alt></p>
+<p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/5.png" alt></p>
+<p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/6.png" alt></p>
+<h4 id="跑马灯"><a href="#跑马灯" class="headerlink" title="跑马灯"></a>跑马灯</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">layout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">data</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">data</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".MarqueeActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_marginTop</span>=<span class="string">"20dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">"跑马灯效果，点击暂停，再点击恢复"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/tv_marquee"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_marginTop</span>=<span class="string">"20dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:singleLine</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:ellipsize</span>=<span class="string">"marquee"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:focusable</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:focusableInTouchMode</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textColor</span>=<span class="string">"#000"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textSize</span>=<span class="string">"17sp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">"快讯：红色预警，超强台风“莫兰蒂”即将登陆，请居民关紧门窗、备足粮草，做好防汛救灾准备！"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">layout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MarqueeActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityMarqueeBinding</span>&gt;</span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> pause = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequiresApi(Build.VERSION_CODES.O)</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityMarqueeBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        mBinding.tvMarquee.setOnClickListener &#123;</span><br><span class="line">            pause = !pause</span><br><span class="line">            <span class="keyword">if</span> (pause)&#123;</span><br><span class="line">                mBinding.tvMarquee.isFocusable = <span class="literal">false</span></span><br><span class="line">                mBinding.tvMarquee.isFocusableInTouchMode = <span class="literal">false</span></span><br><span class="line">                Log.i(<span class="string">"Marquee"</span>,<span class="string">"<span class="subst">$&#123;mBinding.tvMarquee.isFocusable&#125;</span>"</span>)</span><br><span class="line">                Log.i(<span class="string">"Marquee"</span>,<span class="string">"<span class="subst">$&#123;mBinding.tvMarquee.isFocusableInTouchMode&#125;</span>"</span>)</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                mBinding.tvMarquee.isFocusable = <span class="literal">true</span></span><br><span class="line">                mBinding.tvMarquee.isFocusableInTouchMode = <span class="literal">true</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/8.png" alt></p>
+<h4 id="聊天室或者文字直播间效果"><a href="#聊天室或者文字直播间效果" class="headerlink" title="聊天室或者文字直播间效果"></a>聊天室或者文字直播间效果</h4><p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/7.png" alt></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">layout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">data</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">data</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".BbsActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/tv_control"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_marginTop</span>=<span class="string">"20dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">"聊天室效果，点击添加聊天记录，长按删除聊天记录"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"200dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:orientation</span>=<span class="string">"vertical"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/tv_bbs"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_marginTop</span>=<span class="string">"20dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:scrollbars</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"#000"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">layout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BbsActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityBbsBinding</span>&gt;</span>(),View.OnClickListener,View.OnLongClickListener &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> strs = arrayOf(<span class="string">"你吃饭了吗？"</span>, <span class="string">"今天天气真好呀。"</span>,</span><br><span class="line">        <span class="string">"我中奖啦！"</span>, <span class="string">"我们去看电影吧"</span>, <span class="string">"晚上干什么好呢？"</span>)</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityBbsBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        mBinding.tvBbs.setOnClickListener(<span class="keyword">this</span><span class="symbol">@BbsActivity</span>)</span><br><span class="line">        mBinding.tvBbs.setOnLongClickListener(<span class="keyword">this</span><span class="symbol">@BbsActivity</span>)</span><br><span class="line">        mBinding.tvControl.setOnLongClickListener(<span class="keyword">this</span><span class="symbol">@BbsActivity</span>)</span><br><span class="line">        mBinding.tvControl.setOnLongClickListener(<span class="keyword">this</span><span class="symbol">@BbsActivity</span>)</span><br><span class="line">        mBinding.tvBbs.gravity = Gravity.LEFT or Gravity.BOTTOM</span><br><span class="line">        mBinding.tvBbs.setLines(<span class="number">8</span>)</span><br><span class="line">        mBinding.tvBbs.maxLines = <span class="number">8</span></span><br><span class="line">        mBinding.tvBbs.movementMethod = ScrollingMovementMethod()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onClick</span><span class="params">(v: <span class="type">View</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (v?.id == R.id.tv_control || v?.id == R.id.tv_bbs)&#123;</span><br><span class="line">            <span class="keyword">val</span> random = (Math.random()*<span class="number">10</span>) % <span class="number">5</span></span><br><span class="line">            <span class="keyword">val</span> newStr = String.format(</span><br><span class="line">                <span class="string">"%s\n%s %s"</span>,</span><br><span class="line">                mBinding.tvBbs.text.toString(), DateUtil.getNowTime(), strs[random.toInt()]</span><br><span class="line">            )</span><br><span class="line">            mBinding.tvBbs.text = newStr</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onLongClick</span><span class="params">(v: <span class="type">View</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (v?.id == R.id.tv_control || v?.id == R.id.tv_bbs)&#123;</span><br><span class="line">            mBinding.tvBbs.text = <span class="string">""</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/9.png" alt></p>
+<h3 id="按钮Button"><a href="#按钮Button" class="headerlink" title="按钮Button"></a>按钮Button</h3><p>​        Button派生自TextView，二者在UI上的区别主要是Button控件有个按钮外观，提示用户点击这里。如果把background属性设置为@null，就会去除Button控件的背景样式，此时的Button看起来跟TextView没什么区别。</p>
+<h3 id="图像视图ImageView"><a href="#图像视图ImageView" class="headerlink" title="图像视图ImageView"></a>图像视图ImageView</h3><ul>
+<li><p>scaleType：指定图形的拉伸类型，默认是fitCenter。</p>
+<p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/10.png" alt></p>
+</li>
+<li><p>src：指定图形来源，src图形按照scaleType拉伸。注意背景图不按scaleType指定的方式拉伸，背景默认以fitXY方式拉伸。</p>
+</li>
+</ul>
+<p>ImageView在代码中调用的方法说明如下。</p>
+<ul>
+<li>setScaleType：设置图形的拉伸类型。</li>
+<li>setImageDrawable：设置图形的Drawable对象。</li>
+<li>setImageResource：设置图形的资源ID。</li>
+<li>setImageBitmap：设置图形的位图对象。</li>
+</ul>
+<h4 id="操作截图功能"><a href="#操作截图功能" class="headerlink" title="操作截图功能"></a>操作截图功能</h4><p>使用截图功能必须通过代码完成，相关方法如下（这些方法都来自于View类）。</p>
+<ul>
+<li>setDrawingCacheEnabled：设置绘图缓存的可用状态。true表示打开，false表示关闭。</li>
+<li>isDrawingCacheEnabled：判断该控件的绘图缓存是否可用。</li>
+<li>setDrawingCacheQuality：设置绘图缓存的质量。</li>
+<li>getDrawingCache：获取该控件的绘图缓存结果，返回值为Bitmap类型。</li>
+<li>setDrawingCacheBackgroundColor：设置绘图缓存的背景颜色。大家可能会奇怪为何要提供该方法，因为绘图缓存默认背景色是黑色，如果不提前设置缓存的背景色，截图的结果就是黑乎乎一片，所以需要将背景色设置为默认颜色（通常是白色）。</li>
+</ul>
+<p>操作截图功能的具体步骤如下：</p>
+<ol>
+<li>开始截图前，先调用setDrawingCacheEnabled方法，设置绘图缓存为可用状态。注意该方法在一开始就得调用，因为先开启绘图缓存，之后变更的界面才会记录到缓存中；如果先变更界面再开启绘图缓存，缓存里就是空的。</li>
+<li>调用getDrawingCache方法获取缓存中的图像数据。</li>
+<li>完成截图，延迟若干毫秒后调用setDrawingCacheEnabled方法关闭绘图缓存。如果接下来还要截图，就再次调用setDrawingCacheEnabled方法重新开启绘图缓存。</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">layout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">data</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">data</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".CaptureActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"200dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_marginTop</span>=<span class="string">"10dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:orientation</span>=<span class="string">"horizontal"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/tv_capture"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:background</span>=<span class="string">"#fff"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"#000"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">ImageView</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/iv_capture"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_weight</span>=<span class="string">"1"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_marginTop</span>=<span class="string">"10dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:orientation</span>=<span class="string">"horizontal"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/btn_chat"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"聊天"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"#000"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/btn_capture"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"截图"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"#000"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">layout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CaptureActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityCaptureBinding</span>&gt;</span>(),View.OnClickListener,View.OnLongClickListener &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> strings = arrayOf(<span class="string">"你吃饭了吗？"</span>, <span class="string">"今天天气真好呀。"</span>,</span><br><span class="line">        <span class="string">"我中奖啦！"</span>, <span class="string">"我们去看电影吧。"</span>, <span class="string">"晚上干什么好呢？"</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> handler = Handler(Looper.getMainLooper());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityCaptureBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        mBinding.tvCapture.isDrawingCacheEnabled = <span class="literal">true</span></span><br><span class="line">        mBinding.btnChat.setOnClickListener(<span class="keyword">this</span><span class="symbol">@CaptureActivity</span>)</span><br><span class="line">        mBinding.btnChat.setOnLongClickListener(<span class="keyword">this</span><span class="symbol">@CaptureActivity</span>)</span><br><span class="line">        mBinding.btnCapture.setOnClickListener(<span class="keyword">this</span><span class="symbol">@CaptureActivity</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onClick</span><span class="params">(v: <span class="type">View</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">when</span>(v?.id)&#123;</span><br><span class="line">            R.id.btn_chat -&gt; &#123;</span><br><span class="line">                <span class="keyword">val</span> random:<span class="built_in">Int</span> = (Math.random()*<span class="number">10</span> % <span class="number">5</span>).toInt()</span><br><span class="line">                <span class="keyword">val</span> msg = <span class="string">"""<span class="subst">$&#123;mBinding.tvCapture.text.toString()&#125;</span></span></span><br><span class="line"><span class="string">                    <span class="subst">$&#123;DateUtil.getNowTime()&#125;</span> <span class="subst">$&#123;strings[random]&#125;</span></span></span><br><span class="line"><span class="string">                """</span>.trimMargin()</span><br><span class="line">                mBinding.tvCapture.text = msg</span><br><span class="line">            &#125;</span><br><span class="line">            R.id.btn_capture -&gt; &#123;</span><br><span class="line">                <span class="keyword">val</span> bitmap = mBinding.tvCapture.drawingCache</span><br><span class="line">                mBinding.ivCapture.setImageBitmap(bitmap)</span><br><span class="line">                <span class="comment">// 注意这里在截图完毕后不能马上关闭绘图缓存，因为画面渲染需要时间，</span></span><br><span class="line">                <span class="comment">// 如果立即关闭缓存，渲染画面就会找不到位图对象，会报错</span></span><br><span class="line">                <span class="comment">// “java.lang.IllegalArgumentException: Cannot draw recycled bitmaps”。</span></span><br><span class="line">                handler.postDelayed(&#123;</span><br><span class="line">                    mBinding.tvCapture.isDrawingCacheEnabled = <span class="literal">false</span></span><br><span class="line">                    mBinding.tvCapture.isDrawingCacheEnabled = <span class="literal">true</span></span><br><span class="line">                &#125;,<span class="number">200</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onLongClick</span><span class="params">(v: <span class="type">View</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (v?.id == R.id.btn_chat)&#123;</span><br><span class="line">            mBinding.tvCapture.text = <span class="string">""</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/11.png" alt></p>
+<h3 id="图像按钮ImageButton"><a href="#图像按钮ImageButton" class="headerlink" title="图像按钮ImageButton"></a>图像按钮ImageButton</h3><p>​        ImageButton其实派生自ImageView，而不是派生自Button，ImageView拥有的属性和方法，ImageButton统统拥有，只是ImageButton有个默认的按钮外观。不同的是Button是文本按钮，ImageButton是图像按钮，这两个按钮的主要区别在于：</p>
+<ol>
+<li>Button既可显示文本也可显示图形（通过设置背景图），而ImageButton只能显示图形不能显示文本。</li>
+<li>ImageButton上的图像可按比例拉伸，而Button上的大图会拉伸变形（因为背景图无法按比例拉伸）。</li>
+<li>Button只能在背景显示一张图形，而<strong>ImageButton可分别在前景和背景显示两张图形，实现图片叠加的效果。</strong></li>
+</ol>
+<p>要想在文字周围放置图片,可在XML布局文件中设置以下5个属性。</p>
+<ul>
+<li>drawableTop：指定文本上方的图形。</li>
+<li>drawableBottom：指定文本下方的图形</li>
+<li>drawableLeft：指定文本左边的图形。</li>
+<li>drawableRight：指定文本右边的图形。</li>
+<li>drawablePadding：指定图形与文本的间距。</li>
+</ul>
+<p>若在代码中实现，则可调用如下方法。</p>
+<ul>
+<li>setCompoundDrawables：设置文本周围的图形。可分别设置左边、上边、右边、下边的图形。</li>
+<li>setCompoundDrawablePadding：设置图形与文本的间距。</li>
+</ul>
+<h4 id="在按钮中变换图标位置"><a href="#在按钮中变换图标位置" class="headerlink" title="在按钮中变换图标位置"></a>在按钮中变换图标位置</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">layout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">data</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">data</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".IconActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/btn_icon"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_marginTop</span>=<span class="string">"10dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:drawableLeft</span>=<span class="string">"@mipmap/ic_launcher"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:drawablePadding</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">"知行合一"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textColor</span>=<span class="string">"#000"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_marginTop</span>=<span class="string">"10dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:orientation</span>=<span class="string">"horizontal"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/btn_left"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"图标在左"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"#000"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"15sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/btn_top"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"图标在上"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"#000"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"15sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/btn_right"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"图标在右"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"#000"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"15sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/btn_bottom"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"图标在下"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"#000"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"15sp"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">layout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IconActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityIconBinding</span>&gt;</span>(),View.OnClickListener &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> drawable:Drawable? = <span class="literal">null</span></span><br><span class="line">    <span class="meta">@SuppressLint(<span class="meta-string">"UseCompatLoadingForDrawables"</span>)</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityIconBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        drawable = getDrawable(R.mipmap.ic_launcher)</span><br><span class="line">        <span class="comment">//必须设置图片大小，否则不显示图片</span></span><br><span class="line">        drawable?.setBounds(<span class="number">0</span>,<span class="number">0</span>, drawable!!.minimumWidth, drawable!!.minimumHeight)</span><br><span class="line">        mBinding.btnLeft.setOnClickListener(<span class="keyword">this</span><span class="symbol">@IconActivity</span>)</span><br><span class="line">        mBinding.btnBottom.setOnClickListener(<span class="keyword">this</span><span class="symbol">@IconActivity</span>)</span><br><span class="line">        mBinding.btnRight.setOnClickListener(<span class="keyword">this</span><span class="symbol">@IconActivity</span>)</span><br><span class="line">        mBinding.btnTop.setOnClickListener(<span class="keyword">this</span><span class="symbol">@IconActivity</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onClick</span><span class="params">(v: <span class="type">View</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">when</span>(v?.id)&#123;</span><br><span class="line">            R.id.btn_left -&gt; mBinding.btnIcon.setCompoundDrawables(drawable,<span class="literal">null</span>,<span class="literal">null</span>,<span class="literal">null</span>)</span><br><span class="line">            R.id.btn_top -&gt; mBinding.btnIcon.setCompoundDrawables(<span class="literal">null</span>,drawable,<span class="literal">null</span>,<span class="literal">null</span>)</span><br><span class="line">            R.id.btn_right -&gt; mBinding.btnIcon.setCompoundDrawables(<span class="literal">null</span>,<span class="literal">null</span>,drawable,<span class="literal">null</span>)</span><br><span class="line">            R.id.btn_bottom -&gt; mBinding.btnIcon.setCompoundDrawables(<span class="literal">null</span>,<span class="literal">null</span>,<span class="literal">null</span>,drawable)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="图形基础"><a href="#图形基础" class="headerlink" title="图形基础"></a>图形基础</h2><p>​        介绍几种常见图形的使用方法，主要包括状态列表图形StateListDrawable的定义与使用、形状图形ShapeDawable的定义与使用、九宫格图片（点九图片）的制作与适用场景等。</p>
+<h3 id="图形Drawable"><a href="#图形Drawable" class="headerlink" title="图形Drawable"></a>图形Drawable</h3><p>​        Android把所有显示出来的图形都抽象为Drawable（可绘制的）。这里的图形不止是图片，还包括色块、画板、背景等。</p>
+<p>​        drawable文件放在res目录的各个drawable目录下。\res\drawable一般存放的是描述性的XML文件，图片文件一般放在具体分辨率的drawable目录下。例如：</p>
+<ul>
+<li>drawable-ldpi里面存放低分辨率的图片（如240×320）</li>
+<li>drawable-mdpi里面存放中等分辨率的图片（如320×480）</li>
+<li>drawable-hdpi里面存放高分辨率的图片（如480×800），一般对应4英寸～4.5英寸的手机</li>
+<li>drawable-xhdpi里面存放加高分辨率的图片（如720×1280），一般对应5英寸～5.5英寸的手机。</li>
+<li>drawable-xxhdpi里面存放超高分辨率的图片（如1080×1920），一般对应6英寸～6.5英寸的手机。</li>
+<li>drawable-xxxhdpi里面存放超超高分辨率的图片（如1440×2560），一般对应7英寸以上的平板电脑。</li>
+</ul>
+<p><strong>如果各目录存在同名图片，Android就会根据手机的分辨率分别适配对应文件夹里的图片。</strong></p>
+<p>​        开发者拿到一张图片，可以直接复制粘贴到drawable目录，也可以通过<strong>批量drawable插件Android Drawable Importer</strong>生成并导入各分辨率的图片</p>
+<p>​        在XML布局文件中引用drawable文件可使用“@drawable/***”这种形式，如background属性、ImageView和ImageButton的src属性、TextView和Button的drawableTop系列属性都可以引用drawable文件。</p>
+<p>在代码中引用drawable文件可分为两种情况：</p>
+<ol>
+<li><p>使用setBackgroundResource和setImageResource方法，可直接在参数中指定drawable文件的资源ID，例如“R.drawable.***”。</p>
+</li>
+<li><p>使用setBackgroundDrawable、setImageDrawable和setCompoundDrawables等方法，参数是Drawable对象，这时得先从资源文件中生成Drawable对象，示例代码如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> drawable = getDrawable(R.mipmap.ic_launcher)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h4 id="状态列表图形"><a href="#状态列表图形" class="headerlink" title="状态列表图形"></a>状态列表图形</h4><p>​        一般drawable是静态图形。根据不同的触摸情况变更图形显示，这种情况会用到Drawable的一个子类StateListDrawable，该子类在XML文件中定义不同状态时呈现图形列表。</p>
+<p>​        要想在项目中创建状态图形的XML文件，则需右击drawable目录，然后在右键菜单中依次选择New→Drawableresource file，即可自动生成一个空的XML文件。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"utf-8"</span>?&gt;</span><br><span class="line">&lt;selector xmlns:android=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span><br><span class="line">    &lt;item android:state_pressed=<span class="string">"true"</span> android:drawable=<span class="string">"@drawable/button_pressed"</span> /&gt;</span><br><span class="line">    &lt;item android:drawable=<span class="string">"@drawable/button_normal"</span> /&gt;</span><br><span class="line">&lt;/selector&gt;</span><br></pre></td></tr></table></figure>
+
+<p>​        该XML定义文件中的关键点是state_pressed，值为true表示按下时显示button_pressed图像，其余情况显示button_normal图像。</p>
+<p>主题选择：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">resources</span> <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- Base application theme. --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">style</span> <span class="attr">name</span>=<span class="string">"Theme.TwoAndThree"</span> <span class="attr">parent</span>=<span class="string">"Theme.AppCompat.Light.NoActionBar"</span>&gt;</span></span><br><span class="line"><span class="xml">        <span class="comment">&lt;!-- Primary brand color. --&gt;</span></span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">resources</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">layout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">data</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">data</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".StateActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_margin</span>=<span class="string">"10dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">"默认样式的按钮"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textColor</span>=<span class="string">"#000"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_margin</span>=<span class="string">"10dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:paddingLeft</span>=<span class="string">"8dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:paddingRight</span>=<span class="string">"8dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">"定制样式的按钮"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textColor</span>=<span class="string">"#000"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:background</span>=<span class="string">"@drawable/btn_nine_selector"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">layout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/12.png" alt></p>
+<p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/13.png" alt></p>
+<h3 id="形状图形"><a href="#形状图形" class="headerlink" title="形状图形"></a>形状图形</h3><p>​        形状图形的定义文件以shape元素为根节点。根节点下定义了6个节点：corners（圆角）、gradient（渐变）、padding（间隔）、size（尺寸）、solid（填充）、stroke（描边），各节点的属性值主要是长宽、半径、角度以及颜色。</p>
+<ol>
+<li><p><strong>shape</strong></p>
+<p>​        shape是XML文件的根节点，用来描述该形状图形是哪种几何图形。下面是shape节点的常用属性说明。</p>
+<p>​        shape：字符串类型，图形的形状。</p>
+<p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/14.png" alt></p>
+</li>
+<li><p><strong>corners</strong></p>
+<p>​        corners是shape的下级节点，用来描述4个圆角的规格定义。若无corners节点，则表示没有圆角。下面是corners节点的常用属性说明。</p>
+<ul>
+<li>bottomLeftRadius：像素类型，左下圆角的半径。</li>
+<li>bottomRightRadius：像素类型，右下圆角的半径。</li>
+<li>topLeftRadius：像素类型，左上圆角的半径。</li>
+<li>topRightRadius：像素类型，右上圆角的半径。</li>
+<li>radius：像素类型，圆角半径（若有上面4个圆角半径的定义，则不需要radius定义）。</li>
+</ul>
+</li>
+<li><p><strong>gradient</strong></p>
+<p>​        gradient是shape的下级节点，用来描述形状内部的颜色渐变定义。若无gradient节点，则表示没有渐变效果。下面是gradient节点的常用属性说明。</p>
+<ul>
+<li><p>angle：整型，渐变的起始角度。为0时表示时钟的9点位置，值增大表示往逆时针方向旋转。例如，值为90表示6点位置，值为180表示3点位置，值为270表示0点／12点位置。</p>
+</li>
+<li><p>type：字符串类型，渐变类型。渐变类型的取值说明见表2-11。</p>
+<p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/15.png" alt></p>
+</li>
+<li><p>centerX：浮点型，圆心的X坐标。当android:type=”linear”时不可用。</p>
+</li>
+<li><p>centerY：浮点型，圆心的Y坐标。当android:type=”linear”时不可用。</p>
+</li>
+<li><p>gradientRadius：整型，渐变的半径。当android:type=”radial”时才需要设置该属性。</p>
+</li>
+<li><p>centerColor：颜色类型，渐变的中间颜色。</p>
+</li>
+<li><p>startColor：颜色类型，渐变的起始颜色。</p>
+</li>
+<li><p>endColor：颜色类型，渐变的终止颜色。</p>
+</li>
+<li><p>useLevel：布尔类型，设置为true无渐变色、false有渐变色。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>padding</strong>是shape的下级节点:padding的节点(bottom,left,right,top)</p>
+</li>
+<li><p><strong>size</strong>是shape的下级节点，用来描述形状图形的尺寸大小（宽度和高度）。若无size节点，则表示宽高自适应。下面是size节点的常用属性(height,width)</p>
+</li>
+<li><p><strong>solid</strong>是shape的下级节点，用来描述形状图形内部的填充色彩。若无solid节点，则表示无填充颜色。下面是solid节点的常用属性说明:color：颜色类型，内部填充的颜色。</p>
+</li>
+<li><p><strong>stroke</strong>是shape的下级节点，用来描述形状图形四周边线的规格定义。若无stroke节点，则表示不存在描边。下面是stroke节点的常用属性说明。</p>
+<ul>
+<li>color：颜色类型，描边的颜色。</li>
+<li>dashGap：像素类型，每段虚线之间的间隔。</li>
+<li>dashWidth：像素类型，每段虚线的宽度。</li>
+<li>width：像素类型，描边的厚度。若dashGap和dashWidth有一个值为0，则描边为实线。</li>
+</ul>
+</li>
+</ol>
+<p>​        在实际开发中，常用的有3个节点：corners（圆角）、solid（填充）和stroke（描边）。shape根节点的属性一般不用设置（默认矩形就好了）。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">shape</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--  内部填充色  --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">solid</span> <span class="attr">android:color</span>=<span class="string">"#ffdd66"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--边线粗细和颜色--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">stroke</span> <span class="attr">android:width</span>=<span class="string">"1dp"</span> <span class="attr">android:color</span>=<span class="string">"#faa"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--  指定了四个圆角的半径  --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">corners</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:bottomLeftRadius</span>=<span class="string">"10dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:bottomRightRadius</span>=<span class="string">"10dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:topLeftRadius</span>=<span class="string">"10dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:topRightRadius</span>=<span class="string">"10dp"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">shape</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">shape</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span> <span class="attr">android:shape</span>=<span class="string">"oval"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--  内部填充色  --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">solid</span> <span class="attr">android:color</span>=<span class="string">"#ff66aa"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!--边线粗细和颜色--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">stroke</span> <span class="attr">android:width</span>=<span class="string">"1dp"</span> <span class="attr">android:color</span>=<span class="string">"#ffaaaaaa"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">shape</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">layout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">data</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">data</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".ShapeActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">View</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/v_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"200dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_margin</span>=<span class="string">"20dp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:orientation</span>=<span class="string">"horizontal"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/btn_rect"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"圆角矩形背景"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"#000"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/btn_oval"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"椭圆背景"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"#000"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">layout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ShapeActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityShapeBinding</span>&gt;</span>(),View.OnClickListener &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityShapeBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        mBinding.btnRect.setOnClickListener(<span class="keyword">this</span><span class="symbol">@ShapeActivity</span>)</span><br><span class="line">        mBinding.btnOval.setOnClickListener(<span class="keyword">this</span><span class="symbol">@ShapeActivity</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onClick</span><span class="params">(v: <span class="type">View</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">when</span>(v?.id)&#123;</span><br><span class="line">            R.id.btn_rect -&gt; mBinding.vContent.setBackgroundResource(R.drawable.shape_rect)</span><br><span class="line">            R.id.btn_oval -&gt; mBinding.vContent.setBackgroundResource(R.drawable.shape_oval)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/30/%E5%88%9D%E7%BA%A7%E6%8E%A7%E4%BB%B6/16.png" alt></p>
+<h3 id="九宫格图片"><a href="#九宫格图片" class="headerlink" title="九宫格图片"></a>九宫格图片</h3><p><a href="https://hluck.gitee.io/2022/04/14/UI/" target="_blank" rel="noopener">.9图</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/05/26/%E6%96%87%E4%BB%B6IO%E6%93%8D%E4%BD%9C/" rel="prev" title="文件I/O操作">
+      <i class="fa fa-chevron-left"></i> 文件I/O操作
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/01/DataBinding%E5%B0%81%E8%A3%85/" rel="next" title="DataBinding">
+      DataBinding <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#屏幕显示"><span class="nav-number">1.</span> <span class="nav-text">屏幕显示</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#像素"><span class="nav-number">1.1.</span> <span class="nav-text">像素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#颜色"><span class="nav-number">1.2.</span> <span class="nav-text">颜色</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-使用系统已定义的颜色常量。"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.使用系统已定义的颜色常量。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-使用十六进制的颜色编码。"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.使用十六进制的颜色编码。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-使用colors-xml中定义的颜色。"><span class="nav-number">1.2.3.</span> <span class="nav-text">3.使用colors.xml中定义的颜色。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#屏幕分辨率"><span class="nav-number">1.3.</span> <span class="nav-text">屏幕分辨率</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简单布局"><span class="nav-number">2.</span> <span class="nav-text">简单布局</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#视图View的基本属性"><span class="nav-number">2.1.</span> <span class="nav-text">视图View的基本属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LinearLayout"><span class="nav-number">2.2.</span> <span class="nav-text">LinearLayout</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ScrollView"><span class="nav-number">2.3.</span> <span class="nav-text">ScrollView</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简单控件"><span class="nav-number">3.</span> <span class="nav-text">简单控件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#文本视图TextView"><span class="nav-number">3.1.</span> <span class="nav-text">文本视图TextView</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#跑马灯"><span class="nav-number">3.1.1.</span> <span class="nav-text">跑马灯</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#聊天室或者文字直播间效果"><span class="nav-number">3.1.2.</span> <span class="nav-text">聊天室或者文字直播间效果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#按钮Button"><span class="nav-number">3.2.</span> <span class="nav-text">按钮Button</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#图像视图ImageView"><span class="nav-number">3.3.</span> <span class="nav-text">图像视图ImageView</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#操作截图功能"><span class="nav-number">3.3.1.</span> <span class="nav-text">操作截图功能</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#图像按钮ImageButton"><span class="nav-number">3.4.</span> <span class="nav-text">图像按钮ImageButton</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#在按钮中变换图标位置"><span class="nav-number">3.4.1.</span> <span class="nav-text">在按钮中变换图标位置</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图形基础"><span class="nav-number">4.</span> <span class="nav-text">图形基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#图形Drawable"><span class="nav-number">4.1.</span> <span class="nav-text">图形Drawable</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#状态列表图形"><span class="nav-number">4.1.1.</span> <span class="nav-text">状态列表图形</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#形状图形"><span class="nav-number">4.2.</span> <span class="nav-text">形状图形</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#九宫格图片"><span class="nav-number">4.3.</span> <span class="nav-text">九宫格图片</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

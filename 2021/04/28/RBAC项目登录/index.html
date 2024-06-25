@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1.1 Shiro配置因为是前后端分离项目，Shiro默认支持的是前后端不分离的场景，并且认证机鉴权是基于Cookie的，因此我们需要对Shiro中的部分类进行重写。 1.1.1 重写sessionId接收方式正常来讲 Shiro 是从 Cookie 中获取 SessionId 的，然后找到相对应的 Session  来保证用户登陆的正确性和权限的正确性，但是在前后端分离的项目中，由于每次的 Se">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RBAC项目（二）登录">
+<meta property="og:url" content="https://hluck.github.io/2021/04/28/RBAC%E9%A1%B9%E7%9B%AE%E7%99%BB%E5%BD%95/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="1.1 Shiro配置因为是前后端分离项目，Shiro默认支持的是前后端不分离的场景，并且认证机鉴权是基于Cookie的，因此我们需要对Shiro中的部分类进行重写。 1.1.1 重写sessionId接收方式正常来讲 Shiro 是从 Cookie 中获取 SessionId 的，然后找到相对应的 Session  来保证用户登陆的正确性和权限的正确性，但是在前后端分离的项目中，由于每次的 Se">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2021/04/28/RBAC%E9%A1%B9%E7%9B%AE%E7%99%BB%E5%BD%95/1.png">
+<meta property="article:published_time" content="2021-04-28T12:01:00.905Z">
+<meta property="article:modified_time" content="2021-07-25T09:24:32.779Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="RBAC前后端分离项目">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2021/04/28/RBAC%E9%A1%B9%E7%9B%AE%E7%99%BB%E5%BD%95/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2021/04/28/RBAC%E9%A1%B9%E7%9B%AE%E7%99%BB%E5%BD%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>RBAC项目（二）登录 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2021/04/28/RBAC%E9%A1%B9%E7%9B%AE%E7%99%BB%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RBAC项目（二）登录
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-04-28 20:01:00" itemprop="dateCreated datePublished" datetime="2021-04-28T20:01:00+08:00">2021-04-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-07-25 17:24:32" itemprop="dateModified" datetime="2021-07-25T17:24:32+08:00">2021-07-25</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>24k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>22 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-1-Shiro配置"><a href="#1-1-Shiro配置" class="headerlink" title="1.1 Shiro配置"></a>1.1 Shiro配置</h2><p>因为是前后端分离项目，Shiro默认支持的是前后端不分离的场景，并且认证机鉴权是基于Cookie的，因此我们需要对Shiro中的部分类进行重写。</p>
+<h3 id="1-1-1-重写sessionId接收方式"><a href="#1-1-1-重写sessionId接收方式" class="headerlink" title="1.1.1 重写sessionId接收方式"></a>1.1.1 重写sessionId接收方式</h3><p>正常来讲 <strong>Shiro 是从 Cookie 中获取 SessionId 的，然后找到相对应的 Session  来保证用户登陆的正确性和权限的正确性，但是在前后端分离的项目中，由于每次的 SessionId 都是不一样的</strong>，所以我这里选择的是<strong>重写  DefaultWebSessionManager 的部分方法，然后在用户登陆的时候给前端返回 SessionId  来当用户的凭证信息，前端在请求头中携带信息</strong>，来解决 Shiro 的用户 Token 认证问题。</p>
+<a id="more"></a>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.shiro;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.constant.CoreConstant;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.utils.StringUtils;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.web.session.mgt.DefaultWebSessionManager;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.web.util.WebUtils;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"><span class="keyword">import</span> java.util.UUID;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 重写sessionId接收方式</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/4/21 11:11</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TokenWebSessionManager</span> <span class="keyword">extends</span> <span class="title">DefaultWebSessionManager</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> Serializable <span class="title">getSessionId</span><span class="params">(ServletRequest request, ServletResponse response)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//从请求头获取token</span></span><br><span class="line">        String token = WebUtils.toHttp(request).getHeader(CoreConstant.TOKEN_HEADER);</span><br><span class="line">        <span class="comment">//如果token存在,就返回token,</span></span><br><span class="line">        <span class="keyword">if</span> (StringUtils.isNotBlank(token)) &#123;</span><br><span class="line">            <span class="keyword">return</span> token;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> UUID.randomUUID().toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-1-2重写登录失效的方法"><a href="#1-1-2重写登录失效的方法" class="headerlink" title="1.1.2重写登录失效的方法"></a>1.1.2重写登录失效的方法</h3><p>shiro对于登录失效的默认处理方式是重定向到用户配置的某个页面，如果没有配置，默认重定向到 <code>login.jsp</code>，这对于我们前后端分离以及非jsp项目来说是不合理的，因此需要重写。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.shiro;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.common.Result;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.enums.ResultEnum;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.web.filter.authc.UserFilter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 重写登录失效重定向的过滤器</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/4/21 12:36</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginFilter</span> <span class="keyword">extends</span> <span class="title">UserFilter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 这个方法用于处理未登录时页面重定向的逻辑</span></span><br><span class="line"><span class="comment">     * 因此，只要进入这个方法，就意味着登录失效了</span></span><br><span class="line"><span class="comment">     * 我们只需要在这个方法里。给前端返回一个登录失败的状态即可</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> request</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> response</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">redirectToLogin</span><span class="params">(ServletRequest request, ServletResponse response)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">//设置响应头是json</span></span><br><span class="line">        response.setContentType(<span class="string">"application/json;charset=utf-8"</span>);</span><br><span class="line">       <span class="comment">//直接写回未登录的json信息</span></span><br><span class="line">       response.getWriter().write(JSON.toJSONString(<span class="keyword">new</span> Result&lt;&gt;(ResultEnum.NOT_LOGIN)));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-1-3重写token的保存方式"><a href="#1-1-3重写token的保存方式" class="headerlink" title="1.1.3重写token的保存方式"></a>1.1.3重写token的保存方式</h3><p>shiro默认有缓存去保存sessionId，这在单体项目中并不会有什么问题，但是后续项目如果扩展为分布式的，就存在问题了，sessionId无法共享。为了系统的可扩展性，这里引入redis去存储登录信息。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.shiro;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.session.Session;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.session.mgt.SimpleSession;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.session.mgt.ValidatingSession;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.core.RedisTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.annotation.Resource;</span><br><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 重写存取sessionId的方法</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/4/21 13:05</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SessionDaoConfig</span> <span class="keyword">extends</span> <span class="title">EnterpriseCacheSessionDAO</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> RedisTemplate&lt;Serializable, Session&gt; redisTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> Serializable <span class="title">doCreate</span><span class="params">(Session session)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//获取sessionid</span></span><br><span class="line">        Serializable sessionId = <span class="keyword">this</span>.generateSessionId(session);</span><br><span class="line">        <span class="comment">//session要和sessionid绑定</span></span><br><span class="line">        SimpleSession simpleSession=(SimpleSession) session;</span><br><span class="line">        simpleSession.setId(sessionId);</span><br><span class="line">        <span class="keyword">return</span> sessionId;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> Session <span class="title">doReadSession</span><span class="params">(Serializable sessionId)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//从redis中读取sessionId</span></span><br><span class="line">        <span class="keyword">return</span> redisTemplate.boundValueOps(sessionId).get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doUpdate</span><span class="params">(Session session)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (session <span class="keyword">instanceof</span> ValidatingSession) &#123;</span><br><span class="line">            ValidatingSession validatingSession= (ValidatingSession) session;</span><br><span class="line">            <span class="keyword">if</span> (validatingSession.isValid()) &#123;</span><br><span class="line">                redisTemplate.boundValueOps(session.getId()).set(session);</span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//校验失败，说明未登录或登录失效</span></span><br><span class="line">                redisTemplate.delete(session.getId());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            redisTemplate.boundValueOps(session.getId()).set(session);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doDelete</span><span class="params">(Session session)</span> </span>&#123;</span><br><span class="line">        redisTemplate.delete(session.getId());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-1-4编写realm"><a href="#1-1-4编写realm" class="headerlink" title="1.1.4编写realm"></a>1.1.4编写realm</h3><p>realm是shiro中用来登录授权使用的，这里先提供一个空的realm放在这，主要是把架子搭好</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span>(<span class="string">"adminRealm"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AdminRealm</span> <span class="keyword">extends</span> <span class="title">AuthorizingRealm</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 授权方法</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> principalCollection</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> AuthorizationInfo <span class="title">doGetAuthorizationInfo</span><span class="params">(PrincipalCollection principalCollection)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SimpleAuthorizationInfo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 认证</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> token</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> AuthenticationException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> AuthenticationInfo <span class="title">doGetAuthenticationInfo</span><span class="params">(AuthenticationToken token)</span> <span class="keyword">throws</span> AuthenticationException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-1-5-shiro核心类"><a href="#1-1-5-shiro核心类" class="headerlink" title="1.1.5 shiro核心类"></a>1.1.5 shiro核心类</h3><p>就是核心的配置，不配置的话shiro无法使用。</p>
+<p>这里的要工作就是使上面那一堆配置全都生效。    </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.shiro;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.mgt.DefaultSecurityManager;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.mgt.SecurityManager;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.spring.LifecycleBeanPostProcessor;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.spring.web.ShiroFilterFactoryBean;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.web.mgt.DefaultWebSecurityManager;</span><br><span class="line"><span class="keyword">import</span> org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.DependsOn;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.connection.RedisConnectionFactory;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.core.RedisTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.core.StringRedisTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.serializer.StringRedisSerializer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.Filter;</span><br><span class="line"><span class="keyword">import</span> java.util.LinkedHashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> Shiro核心配置类</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/4/21 19:37</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShiroConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    SysUserRealm sysUserRealm;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 配置shiroFilterFactoryBean</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> securityManager</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span>(<span class="string">"shiroFilterFactoryBean"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ShiroFilterFactoryBean <span class="title">shiroFilterFactoryBean</span><span class="params">(SecurityManager securityManager)</span></span>&#123;</span><br><span class="line">        <span class="comment">//设置安全管理器</span></span><br><span class="line">        ShiroFilterFactoryBean factoryBean = <span class="keyword">new</span> ShiroFilterFactoryBean();</span><br><span class="line">        factoryBean.setSecurityManager(securityManager);</span><br><span class="line">        <span class="comment">//把自定义的过滤器放到shiro中</span></span><br><span class="line">        Map&lt;String, Filter&gt; filters = factoryBean.getFilters();</span><br><span class="line">        filters.put(<span class="string">"authc"</span>,<span class="keyword">new</span> LoginFilter());</span><br><span class="line">        <span class="comment">//配置认证或者需要放行的路径，注意，这里必须是LinkedHashMap</span></span><br><span class="line">        LinkedHashMap&lt;String, String&gt; filterMap = <span class="keyword">new</span> LinkedHashMap&lt;&gt;();</span><br><span class="line">        filterMap.put(<span class="string">"/sysUser/login"</span>,<span class="string">"anon"</span>);</span><br><span class="line">        filterMap.put(<span class="string">"/**"</span>,<span class="string">"authc"</span>);</span><br><span class="line">        factoryBean.setFilterChainDefinitionMap(filterMap);</span><br><span class="line">        <span class="keyword">return</span> factoryBean;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 配置安全管理器</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sessionDaoConfig</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span>(<span class="string">"securityManager"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> SecurityManager <span class="title">securityManager</span><span class="params">(SessionDaoConfig sessionDaoConfig)</span></span>&#123;</span><br><span class="line">        DefaultSecurityManager securityManager = <span class="keyword">new</span> DefaultWebSecurityManager();</span><br><span class="line">        securityManager.setRealm(sysUserRealm);</span><br><span class="line">        <span class="comment">//自定义session管理，使用redis进行管理</span></span><br><span class="line">        TokenWebSessionManager tokenWebSessionManager = <span class="keyword">new</span> TokenWebSessionManager();</span><br><span class="line">        tokenWebSessionManager.setSessionDAO(sessionDaoConfig);</span><br><span class="line"></span><br><span class="line">        securityManager.setSessionManager(tokenWebSessionManager);</span><br><span class="line">        <span class="keyword">return</span> securityManager;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 管理生命周期</span></span><br><span class="line"><span class="comment">     * 如果不注入可能会无法启动</span></span><br><span class="line"><span class="comment">     * 注意方法要静态的</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LifecycleBeanPostProcessor <span class="title">lifecycleBeanPostProcessor</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> LifecycleBeanPostProcessor();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 使用redis存取sessionId</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> connectionFactory</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RedisTemplate&lt;Object,Object&gt; <span class="title">redisTemplate</span><span class="params">(RedisConnectionFactory connectionFactory)</span></span>&#123;</span><br><span class="line">        RedisTemplate&lt;Object, Object&gt; redisTemplate = <span class="keyword">new</span> RedisTemplate&lt;&gt;();</span><br><span class="line">        redisTemplate.setConnectionFactory(connectionFactory);</span><br><span class="line">        JdkSerializationRedisSerializer serializer = <span class="keyword">new</span> JdkSerializationRedisSerializer();</span><br><span class="line">        redisTemplate.setValueSerializer(serializer);</span><br><span class="line">        redisTemplate.setKeySerializer(<span class="keyword">new</span> StringRedisSerializer());</span><br><span class="line">        redisTemplate.afterPropertiesSet();</span><br><span class="line">        <span class="keyword">return</span> redisTemplate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> StringRedisTemplate <span class="title">stringRedisTemplate</span><span class="params">(RedisConnectionFactory factory)</span></span>&#123;</span><br><span class="line">        StringRedisTemplate redisTemplate = <span class="keyword">new</span> StringRedisTemplate();</span><br><span class="line">        redisTemplate.setConnectionFactory(factory);</span><br><span class="line">        <span class="keyword">return</span> redisTemplate;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 加入注解的使用，不加入注解不生效</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@DependsOn</span>(<span class="string">"lifecycleBeanPostProcessor"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> DefaultAdvisorAutoProxyCreator <span class="title">defaultAdvisorAutoProxyCreator</span><span class="params">()</span></span>&#123;</span><br><span class="line">        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = <span class="keyword">new</span> DefaultAdvisorAutoProxyCreator();</span><br><span class="line">        defaultAdvisorAutoProxyCreator.setProxyTargetClass(<span class="keyword">true</span>);</span><br><span class="line">        <span class="keyword">return</span> defaultAdvisorAutoProxyCreator;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> AuthorizationAttributeSourceAdvisor <span class="title">authorizationAttributeSourceAdvisor</span><span class="params">(SecurityManager securityManager)</span></span>&#123;</span><br><span class="line">        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = <span class="keyword">new</span> AuthorizationAttributeSourceAdvisor();</span><br><span class="line">        authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);</span><br><span class="line">        <span class="keyword">return</span> authorizationAttributeSourceAdvisor;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-2-登录"><a href="#1-2-登录" class="headerlink" title="1.2 登录"></a>1.2 登录</h2><p><strong>登录成功后只返回一个token，每个请求的请求头携带这个token</strong></p>
+<p>首先创建实体类 <code>SysUser</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.pojo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 系统用户实体</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/4/22 16:06</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SysUser</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * id</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用户名</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String username;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 微信的OpenId</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String openId;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 密码</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 邮箱</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String email;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 昵称</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String nickName;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 头像</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String header;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 备注</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String note;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建时间</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String createTime;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 修改时间</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String updateTime;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 登录时间</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String loginTime;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 帐号启用状态：1是  0否</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Integer status;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 逻辑删除：1是 0否</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Integer deleted;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-1-SysUserController"><a href="#1-2-1-SysUserController" class="headerlink" title="1.2.1 SysUserController"></a>1.2.1 SysUserController</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.common.Result;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.enums.ResultEnum;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysUser;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.vo.TokenVo;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.service.SysUserService;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.utils.ShiroUtils;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.utils.StringUtils;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.SecurityUtils;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.authc.UsernamePasswordToken;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.subject.Subject;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 系统用户controller</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/4/22 16:26</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/sysUser"</span>)</span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SysUserController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> SysUserService userService;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 登录</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sysUser</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PostMapping</span>(<span class="string">"/login"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Result&lt;TokenVo&gt; <span class="title">login</span><span class="params">(@RequestBody SysUser sysUser)</span></span>&#123;</span><br><span class="line">        <span class="comment">//校验用户名密码</span></span><br><span class="line">        <span class="keyword">if</span> (sysUser == <span class="keyword">null</span> || StringUtils.isBlank(sysUser.getUsername()) || StringUtils.isBlank(sysUser.getPassword()))&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(ResultEnum.LOGIN_PARAM_ERROR);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//使用shiro进行登录</span></span><br><span class="line">        Subject subject = SecurityUtils.getSubject();</span><br><span class="line">        UsernamePasswordToken token = <span class="keyword">new</span> UsernamePasswordToken(sysUser.getUsername(), sysUser.getPassword());</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            subject.login(token);</span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(ResultEnum.LOGIN_PARAM_ERROR);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//登录成功</span></span><br><span class="line">        Serializable sessionId = subject.getSession().getId();</span><br><span class="line">        <span class="comment">//更新登录时间</span></span><br><span class="line">        userService.updateLoginTime(sysUser.getUsername());</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(<span class="keyword">new</span> TokenVo(sessionId));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取登录用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/info"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Result&lt;SysUser&gt; <span class="title">info</span><span class="params">()</span></span>&#123;</span><br><span class="line">        SysUser sysUser = ShiroUtils.getLoginUser();</span><br><span class="line">        sysUser.setPassword(<span class="keyword">null</span>);</span><br><span class="line">        sysUser.setStatus(<span class="keyword">null</span>);</span><br><span class="line">        sysUser.setDeleted(<span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(sysUser);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 退出登录</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/logout"</span>)</span><br><span class="line">    <span class="keyword">public</span> Result&lt;?&gt; logout()&#123;</span><br><span class="line">        Subject subject = SecurityUtils.getSubject();</span><br><span class="line">        subject.logout();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(<span class="string">"退出成功！"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-2-SysUserRealm"><a href="#1-2-2-SysUserRealm" class="headerlink" title="1.2.2 SysUserRealm"></a>1.2.2 SysUserRealm</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.shiro;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.enums.ResultEnum;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.enums.StateEnum;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.exception.PochiException;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysUser;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.service.SysUserService;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.authc.*;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.authz.AuthorizationInfo;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.authz.SimpleAuthorizationInfo;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.realm.AuthorizingRealm;</span><br><span class="line"><span class="keyword">import</span> org.apache.shiro.subject.PrincipalCollection;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 系统用户登录realm</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/4/21 19:28</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span>(<span class="string">"sysUserRealm"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SysUserRealm</span> <span class="keyword">extends</span> <span class="title">AuthorizingRealm</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> SysUserService sysUserService;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 授权方法</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> principalCollection</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> AuthorizationInfo <span class="title">doGetAuthorizationInfo</span><span class="params">(PrincipalCollection principalCollection)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SimpleAuthorizationInfo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 认证方法</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> authenticationToken</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> AuthenticationException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> AuthenticationInfo <span class="title">doGetAuthenticationInfo</span><span class="params">(AuthenticationToken authenticationToken)</span> <span class="keyword">throws</span> AuthenticationException </span>&#123;</span><br><span class="line">       <span class="comment">//处理登录逻辑</span></span><br><span class="line">        UsernamePasswordToken usernamePasswordToken= (UsernamePasswordToken) authenticationToken;</span><br><span class="line">        String username = usernamePasswordToken.getUsername();</span><br><span class="line">        SysUser sysUser=sysUserService.getByUserName(username);</span><br><span class="line">        <span class="keyword">if</span> (sysUser==<span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> PochiException(ResultEnum.LOGIN_PARAM_ERROR);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (StateEnum.NOT_ENABLE.getCode().equals(sysUser.getStatus()))&#123;</span><br><span class="line">            <span class="comment">//未启用用户</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> PochiException(ResultEnum.LOGIN_PARAM_ERROR);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (StateEnum.DELETED.getCode().equals(sysUser.getDeleted()))&#123;</span><br><span class="line">            <span class="comment">//已删除用户</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> PochiException(ResultEnum.LOGIN_PARAM_ERROR);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SimpleAuthenticationInfo(sysUser,sysUser.getPassword(),<span class="keyword">this</span>.getName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-3-SysUserService"><a href="#1-2-3-SysUserService" class="headerlink" title="1.2.3 SysUserService"></a>1.2.3 SysUserService</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.service;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysUser;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 系统用户service</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/4/22 16:50</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SysUserService</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据用户名更新登录时间</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> username</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">updateLoginTime</span><span class="params">(String username)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据用户名查询用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> username</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">SysUser <span class="title">getByUserName</span><span class="params">(String username)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-4-SysUserServiceImpl"><a href="#1-2-4-SysUserServiceImpl" class="headerlink" title="1.2.4 SysUserServiceImpl"></a>1.2.4 SysUserServiceImpl</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.service.impl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.mapper.SysUserMapper;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysUser;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.service.SysUserService;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Service;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 系统用户service</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/4/22 16:51</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SysUserServiceImpl</span> <span class="keyword">implements</span> <span class="title">SysUserService</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> SysUserMapper sysUserMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateLoginTime</span><span class="params">(String username)</span> </span>&#123;</span><br><span class="line">        sysUserMapper.updateLoginTime(username);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SysUser <span class="title">getByUserName</span><span class="params">(String username)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sysUserMapper.getByUserName(username);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-5-SysUserMapper"><a href="#1-2-5-SysUserMapper" class="headerlink" title="1.2.5 SysUserMapper"></a>1.2.5 SysUserMapper</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.mapper;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysUser;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 系统用户mapper</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/4/22 17:52</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SysUserMapper</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 更新用户登录时间为当前时间</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> username</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">updateLoginTime</span><span class="params">(String username)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据用户名查询用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> username</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">SysUser <span class="title">getByUserName</span><span class="params">(String username)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-6-SysUserMapper-xml"><a href="#1-2-6-SysUserMapper-xml" class="headerlink" title="1.2.6 SysUserMapper.xml"></a>1.2.6 SysUserMapper.xml</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">mapper</span> <span class="meta-keyword">PUBLIC</span> <span class="meta-string">"-//mybatis.org//DTD Mapper 3.0//EN"</span> <span class="meta-string">"http://mybatis.org/dtd/mybatis-3-mapper.dtd"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">"hluck.me.pochi.mapper.SysUserMapper"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 通用查询映射结果 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">"BaseResultMap"</span> <span class="attr">type</span>=<span class="string">"hluck.me.pochi.pojo.SysUser"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span> <span class="attr">column</span>=<span class="string">"id"</span> <span class="attr">property</span>=<span class="string">"id"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"username"</span> <span class="attr">property</span>=<span class="string">"username"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"openid"</span> <span class="attr">property</span>=<span class="string">"openId"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"password"</span> <span class="attr">property</span>=<span class="string">"password"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"email"</span> <span class="attr">property</span>=<span class="string">"email"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"nick_name"</span> <span class="attr">property</span>=<span class="string">"nickName"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"header"</span> <span class="attr">property</span>=<span class="string">"header"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"note"</span> <span class="attr">property</span>=<span class="string">"note"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"create_time"</span> <span class="attr">property</span>=<span class="string">"createTime"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"update_time"</span> <span class="attr">property</span>=<span class="string">"updateTime"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"login_time"</span> <span class="attr">property</span>=<span class="string">"loginTime"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"status"</span> <span class="attr">property</span>=<span class="string">"status"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"deleted"</span> <span class="attr">property</span>=<span class="string">"deleted"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">update</span> <span class="attr">id</span>=<span class="string">"updateLoginTime"</span>&gt;</span></span><br><span class="line">        update sys_user set login_time = NOW() where username=#&#123;username&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">update</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"getByUserName"</span> <span class="attr">resultMap</span>=<span class="string">"BaseResultMap"</span>&gt;</span></span><br><span class="line">        select id,username,openid,password,email,nick_name,header,note,status,deleted from sys_user where username=#&#123;username&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="1-3-获取用户信息"><a href="#1-3-获取用户信息" class="headerlink" title="1.3 获取用户信息"></a>1.3 获取用户信息</h2><p>在shiro配置文件中配置放行登录接口，其他全都需要授权</p>
+<p><img src="/2021/04/28/RBAC%E9%A1%B9%E7%9B%AE%E7%99%BB%E5%BD%95/1.png" alt></p>
+<h3 id="1-3-1-SysUserController"><a href="#1-3-1-SysUserController" class="headerlink" title="1.3.1 SysUserController"></a>1.3.1 SysUserController</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取登录用户</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/info"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Result&lt;SysUser&gt; <span class="title">info</span><span class="params">()</span></span>&#123;</span><br><span class="line">        SysUser sysUser = ShiroUtils.getLoginUser();</span><br><span class="line">        sysUser.setPassword(<span class="keyword">null</span>);</span><br><span class="line">        sysUser.setStatus(<span class="keyword">null</span>);</span><br><span class="line">        sysUser.setDeleted(<span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(sysUser);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-4-退出登录"><a href="#1-4-退出登录" class="headerlink" title="1.4 退出登录"></a>1.4 退出登录</h2><p>退出登录不能直接清除redis中的token，因为shiro中还有缓存</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/logout"</span>, method = RequestMethod.GET)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Result&lt;SysUser&gt; <span class="title">logout</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String token = ShiroUtils.getToken();</span><br><span class="line">        redisTemplate.delete(token);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(<span class="string">"退出成功"</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用上面接口之后我们发现redis中的数据确实被清掉了，但是再次调用获取用户信息的接口发现能调通，并且成功获取到了登录用户。</p>
+<p>因此我们需要清空shiro中的缓存</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/logout"</span>, method = RequestMethod.GET)</span><br><span class="line">   <span class="function"><span class="keyword">public</span> Result&lt;SysUser&gt; <span class="title">logout</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       Subject currentUser = SecurityUtils.getSubject();</span><br><span class="line">       currentUser.logout();</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(<span class="string">"退出成功"</span>);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行上面的接口之后，redis中的数据也被清除了。</p>
+<h2 id="1-5前端编写"><a href="#1-5前端编写" class="headerlink" title="1.5前端编写"></a>1.5前端编写</h2><h3 id="1-5-1登录"><a href="#1-5-1登录" class="headerlink" title="1.5.1登录"></a>1.5.1登录</h3><p>启动项目，定位到登录页 <code>login.vue</code></p>
+<h4 id="页面编写"><a href="#页面编写" class="headerlink" title="页面编写"></a>页面编写</h4><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">&lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"login-container"</span>&gt;</span><br><span class="line">    &lt;el-form ref=<span class="string">"loginForm"</span> :model=<span class="string">"loginForm"</span> :rules=<span class="string">"loginRules"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"login-form"</span> autocomplete=<span class="string">"on"</span> label-position=<span class="string">"left"</span>&gt;</span><br><span class="line"></span><br><span class="line">      &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"title-container"</span>&gt;</span><br><span class="line">        &lt;h3 class="title"&gt;波奇犬屋&lt;/h3&gt;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line"></span><br><span class="line">      &lt;el-form-item prop=<span class="string">"username"</span>&gt;</span><br><span class="line">        &lt;span <span class="class"><span class="keyword">class</span></span>=<span class="string">"svg-container"</span>&gt;</span><br><span class="line">          &lt;svg-icon icon-<span class="class"><span class="keyword">class</span></span>=<span class="string">"user"</span> /&gt;</span><br><span class="line">        &lt;/span&gt;</span><br><span class="line">        &lt;el-input</span><br><span class="line">          ref=<span class="string">"username"</span></span><br><span class="line">          v-model=<span class="string">"loginForm.username"</span></span><br><span class="line">          placeholder=<span class="string">"Username"</span></span><br><span class="line">          name=<span class="string">"username"</span></span><br><span class="line">          type=<span class="string">"text"</span></span><br><span class="line">          tabindex=<span class="string">"1"</span></span><br><span class="line">          autocomplete=<span class="string">"on"</span></span><br><span class="line">        /&gt;</span><br><span class="line">      &lt;/el-form-item&gt;</span><br><span class="line"></span><br><span class="line">      &lt;el-tooltip v-model=<span class="string">"capsTooltip"</span> content=<span class="string">"Caps lock is On"</span> placement=<span class="string">"right"</span> manual&gt;</span><br><span class="line">        &lt;el-form-item prop=<span class="string">"password"</span>&gt;</span><br><span class="line">          &lt;span <span class="class"><span class="keyword">class</span></span>=<span class="string">"svg-container"</span>&gt;</span><br><span class="line">            &lt;svg-icon icon-<span class="class"><span class="keyword">class</span></span>=<span class="string">"password"</span> /&gt;</span><br><span class="line">          &lt;/span&gt;</span><br><span class="line">          &lt;el-input</span><br><span class="line">            :key=<span class="string">"passwordType"</span></span><br><span class="line">            ref=<span class="string">"password"</span></span><br><span class="line">            v-model=<span class="string">"loginForm.password"</span></span><br><span class="line">            :type=<span class="string">"passwordType"</span></span><br><span class="line">            placeholder=<span class="string">"Password"</span></span><br><span class="line">            name=<span class="string">"password"</span></span><br><span class="line">            tabindex=<span class="string">"2"</span></span><br><span class="line">            autocomplete=<span class="string">"on"</span></span><br><span class="line">            <span class="meta">@keyup</span>.<span class="keyword">native</span>=<span class="string">"checkCapslock"</span></span><br><span class="line">            <span class="meta">@blur</span>=<span class="string">"capsTooltip = false"</span></span><br><span class="line">            <span class="meta">@keyup</span>.enter.<span class="keyword">native</span>=<span class="string">"handleLogin"</span></span><br><span class="line">          /&gt;</span><br><span class="line">          &lt;span <span class="class"><span class="keyword">class</span></span>=<span class="string">"show-pwd"</span> <span class="meta">@click</span>=<span class="string">"showPwd"</span>&gt;</span><br><span class="line">            &lt;svg-icon :icon-<span class="class"><span class="keyword">class</span></span>=<span class="string">"passwordType === 'password' ? 'eye' : 'eye-open'"</span> /&gt;</span><br><span class="line">          &lt;/span&gt;</span><br><span class="line">        &lt;/el-form-item&gt;</span><br><span class="line">      &lt;/el-tooltip&gt;</span><br><span class="line"></span><br><span class="line">      &lt;el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin"&gt;登录&lt;/el-button&gt;</span><br><span class="line"></span><br><span class="line">    &lt;/el-form&gt;</span><br><span class="line">  &lt;/div&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="表单校验"><a href="#表单校验" class="headerlink" title="表单校验"></a>表单校验</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> validateUsername = (rule, value, callback) =&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (!validUsername(value)) &#123;</span><br><span class="line">        callback(<span class="keyword">new</span> Error(<span class="string">'请输入用户名'</span>))</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        callback()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">const</span> validatePassword = (rule, value, callback) =&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (value.length &lt; <span class="number">6</span>) &#123;</span><br><span class="line">        callback(<span class="keyword">new</span> Error(<span class="string">'密码长度需要在6位以上'</span>))</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        callback()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="登录功能"><a href="#登录功能" class="headerlink" title="登录功能"></a>登录功能</h4><p>追踪到 <code>handleLogin</code> 方法中我们发现，登录方法调用了 vuex 中的 <code>user</code> 模块的 <code>login</code> 方法，进入到里面</p>
+<p>我们发现在这里调用了 <code>api/user.js</code> 中的方法，这里是接口，因此我们需要把这个文件中相关的接口都修改成我们的接口地址</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">import request from '@/utils/request'</span><br><span class="line">const groupName = 'sysUser'</span><br><span class="line"></span><br><span class="line">export function login(data) &#123;</span><br><span class="line">  return request(&#123;</span><br><span class="line">    url: `/$&#123;groupName&#125;/login`,</span><br><span class="line">    method: 'post',</span><br><span class="line">    data</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">export function getInfo() &#123;</span><br><span class="line">  return request(&#123;</span><br><span class="line">    url: `/$&#123;groupName&#125;/info`,</span><br><span class="line">    method: 'get'</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">export function logout() &#123;</span><br><span class="line">  return request(&#123;</span><br><span class="line">    url: `/$&#123;groupName&#125;/logout`,</span><br><span class="line">    method: 'get'</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改完后，就可以开始编写登录功能了</p>
+<ol>
+<li><p>对密码进行MD5加密</p>
+<p>安装 <code>js-md5</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install --save js-md5</span><br></pre></td></tr></table></figure>
+
+<p>在页面中引入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import md5 from &#39;js-md5&#39;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>登录方法编写</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">const actions &#x3D; &#123;</span><br><span class="line">  &#x2F;&#x2F; 用户登录</span><br><span class="line">  login(&#123; commit &#125;, userInfo) &#123;</span><br><span class="line">    const &#123; username, password &#125; &#x3D; userInfo</span><br><span class="line">    return new Promise((resolve, reject) &#x3D;&gt; &#123;</span><br><span class="line">      login(&#123; username: username.trim(), password: md5(password) &#125;).then(response &#x3D;&gt; &#123;</span><br><span class="line">        &#x2F;&#x2F; console.log(response)</span><br><span class="line">        const &#123; data &#125; &#x3D; response</span><br><span class="line">        commit(&#39;SET_TOKEN&#39;, data.token)</span><br><span class="line">        setToken(data.token)</span><br><span class="line">        resolve()</span><br><span class="line">      &#125;).catch(error &#x3D;&gt; &#123;</span><br><span class="line">        reject(error)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-5-2获取登录信息"><a href="#1-5-2获取登录信息" class="headerlink" title="1.5.2获取登录信息"></a>1.5.2获取登录信息</h3><h4 id="修改用户信息存储方式"><a href="#修改用户信息存储方式" class="headerlink" title="修改用户信息存储方式"></a>修改用户信息存储方式</h4><p>我们发现在vuex中用户存储的方式不合理。</p>
+<ul>
+<li>用户信息应该是一个对象</li>
+<li>只存储了角色，没有权限</li>
+</ul>
+<p>我们将用户信息改成一个对象。而roles涉及到的地方太多了，我们用roles作为权限</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">const state &#x3D; &#123;</span><br><span class="line">  token: getToken(),</span><br><span class="line">  user: &#123;&#125;,</span><br><span class="line">  roles: []</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const mutations &#x3D; &#123;</span><br><span class="line">  SET_TOKEN: (state, token) &#x3D;&gt; &#123;</span><br><span class="line">    state.token &#x3D; token</span><br><span class="line">  &#125;,</span><br><span class="line">  SET_USER: (state, user) &#x3D;&gt; &#123;</span><br><span class="line">    state.user &#x3D; user</span><br><span class="line">  &#125;,</span><br><span class="line">  SET_ROLES: (state, roles) &#x3D;&gt; &#123;</span><br><span class="line">    state.roles &#x3D; roles</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改完之后，我们需要在 <code>getters.js</code> 中提供对应的getter方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">const getters &#x3D; &#123;</span><br><span class="line">  sidebar: state &#x3D;&gt; state.app.sidebar,</span><br><span class="line">  size: state &#x3D;&gt; state.app.size,</span><br><span class="line">  device: state &#x3D;&gt; state.app.device,</span><br><span class="line">  visitedViews: state &#x3D;&gt; state.tagsView.visitedViews,</span><br><span class="line">  cachedViews: state &#x3D;&gt; state.tagsView.cachedViews,</span><br><span class="line">  token: state &#x3D;&gt; state.user.token,</span><br><span class="line">  user: state &#x3D;&gt; state.user.user,</span><br><span class="line">  roles: state &#x3D;&gt; state.user.roles,</span><br><span class="line">  permission_routes: state &#x3D;&gt; state.permission.routes,</span><br><span class="line">  errorLogs: state &#x3D;&gt; state.errorLog.logs</span><br><span class="line">&#125;</span><br><span class="line">export default getters</span><br></pre></td></tr></table></figure>
+
+<h4 id="修改获取信息方法"><a href="#修改获取信息方法" class="headerlink" title="修改获取信息方法"></a>修改获取信息方法</h4><p>接下来修改获取用户信息的方法，在 <code>getInfo</code> 里。我们约定 <code>auths</code> 是用户的权限信息，现在权限功能还没有做，因此这里先这么写，后面再修改后端。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">getInfo(&#123; commit, state &#125;) &#123;</span><br><span class="line">    return new Promise((resolve, reject) &#x3D;&gt; &#123;</span><br><span class="line">      getInfo().then(response &#x3D;&gt; &#123;</span><br><span class="line">        const &#123; data &#125; &#x3D; response</span><br><span class="line">        commit(&#39;SET_USER&#39;, data)</span><br><span class="line">        if (data.auths) &#123;</span><br><span class="line">          commit(&#39;SET_ROLES&#39;, data.auths)</span><br><span class="line">        &#125;else &#123;</span><br><span class="line">          commit(&#39;SET_ROLES&#39;, &#39;admin&#39;)</span><br><span class="line">        &#125;</span><br><span class="line">        resolve(data)</span><br><span class="line">      &#125;).catch(error &#x3D;&gt; &#123;</span><br><span class="line">        reject(error)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure>
+
+<h4 id="修改路由构造方式"><a href="#修改路由构造方式" class="headerlink" title="修改路由构造方式"></a>修改路由构造方式</h4><p>我们的路由最终不在前端维护，全部从后端获，用户登录后就确定了有哪些路由和菜单，因此不需要前端再根据权限去判断路由了。</p>
+<p>找到 <code>permission.js</code>，这里是路由守卫，发现当没有权限的时候会去后端加载权限，并生成路由，我们把 <code>roles</code> 删掉</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    await store.dispatch(&#39;user&#x2F;getInfo&#39;)</span><br><span class="line"></span><br><span class="line">    const accessRoutes &#x3D; await store.dispatch(&#39;permission&#x2F;generateRoutes&#39;)</span><br><span class="line"></span><br><span class="line">    router.addRoutes(accessRoutes)</span><br><span class="line"></span><br><span class="line">    next(&#123; ...to, replace: true &#125;)</span><br><span class="line">&#125; catch (error) &#123;</span><br><span class="line">    &#x2F;&#x2F; remove token and go to login page to re-login</span><br><span class="line">    await store.dispatch(&#39;user&#x2F;resetToken&#39;)</span><br><span class="line">    Message.error(error || &#39;Has Error&#39;)</span><br><span class="line">    next(&#96;&#x2F;login?redirect&#x3D;$&#123;to.path&#125;&#96;)</span><br><span class="line">    NProgress.done()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>删掉之后，我们发现构造路由的代码是在 <code>permission/generateRoutes</code> 中，定位过去。</p>
+<p><code>vue-element-admin</code> 提供了两种类型的路由，<code>constantRoutes</code> 和 <code>asyncRoutes</code>。前者是写死在前端的固定路由，比如登录路由。后者是从接口获取的动态路由，我们先在前端进行操作，后面再从后端获取。</p>
+<p>在 <code>store/modules/permission.js</code> 中定位到 <code>generateRoutes</code> 方法，移除掉对 <code>roles</code> 的判断</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const actions &#x3D; &#123;</span><br><span class="line">  generateRoutes(&#123; commit &#125;) &#123;</span><br><span class="line">    return new Promise(resolve &#x3D;&gt; &#123;</span><br><span class="line">      const accessedRoutes &#x3D; filterAsyncRoutes(asyncRoutes)</span><br><span class="line">      commit(&#39;SET_ROUTES&#39;, accessedRoutes)</span><br><span class="line">      resolve(accessedRoutes)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来修改 <code>filterAsyncRoutes</code> 方法，同样是移除掉权限判断</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">export function filterAsyncRoutes(routes) &#123;</span><br><span class="line">  const res &#x3D; []</span><br><span class="line"></span><br><span class="line">  routes.forEach(route &#x3D;&gt; &#123;</span><br><span class="line">    const tmp &#x3D; &#123; ...route &#125;</span><br><span class="line">    if (tmp.children) &#123;</span><br><span class="line">      tmp.children &#x3D; filterAsyncRoutes(tmp.children)</span><br><span class="line">    &#125;</span><br><span class="line">    res.push(tmp)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  return res</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而 <code>hasPermission</code> 方法则可以直接删除了</p>
+<p>接下来再测试登录功能，发现已经正常。</p>
+<p>登录后我们发现报错了，定位到 <code>PanThumb</code> 发现这个组件在 <code>BoxCard</code> 被引用。原来是我们之前删掉了 vuex 中的 <code>avatar</code>，这是用户头像，因此报错了，我们只需要修改成正常的用户头像即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">computed: &#123;</span><br><span class="line">    ...mapGetters([</span><br><span class="line">      &#39;user&#39;,</span><br><span class="line">      &#39;roles&#39;</span><br><span class="line">    ])</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">pan-thumb</span> <span class="attr">:image</span>=<span class="string">"user.header"</span> <span class="attr">class</span>=<span class="string">"panThumb"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>而在 <code>layout/Navbar.vue</code> 中也存在同样的问题</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img :src&#x3D;&quot;user.header&quot; class&#x3D;&quot;user-avatar&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">computed: &#123;</span><br><span class="line">    ...mapGetters([</span><br><span class="line">      <span class="string">'sidebar'</span>,</span><br><span class="line">      <span class="string">'user'</span>,</span><br><span class="line">      <span class="string">'device'</span></span><br><span class="line">    ])</span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-5-3-退出登录"><a href="#1-5-3-退出登录" class="headerlink" title="1.5.3 退出登录"></a>1.5.3 退出登录</h3><p>退出登录的实现非常简单，调用退出登录接口然后清空token即可，修改 <code>logout</code> 方法</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">logout(&#123; commit, state, dispatch &#125;) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">      logout().then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        commit(<span class="string">'SET_TOKEN'</span>, <span class="string">''</span>)</span><br><span class="line">        commit(<span class="string">'SET_ROLES'</span>, [])</span><br><span class="line">        removeToken()</span><br><span class="line">        resetRouter()</span><br><span class="line"></span><br><span class="line">        dispatch(<span class="string">'tagsView/delAllViews'</span>, <span class="literal">null</span>, &#123; <span class="attr">root</span>: <span class="literal">true</span> &#125;)</span><br><span class="line"></span><br><span class="line">        resolve()</span><br><span class="line">      &#125;).catch(<span class="function"><span class="params">error</span> =&gt;</span> &#123;</span><br><span class="line">        reject(error)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/RBAC%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E9%A1%B9%E7%9B%AE/" rel="tag"># RBAC前后端分离项目</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/18/RBAC%E9%A1%B9%E7%9B%AE%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" rel="prev" title="RBAC项目环境搭建">
+      <i class="fa fa-chevron-left"></i> RBAC项目环境搭建
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/11/RBAC%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86/" rel="next" title="RBAC用户管理">
+      RBAC用户管理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Shiro配置"><span class="nav-number">1.</span> <span class="nav-text">1.1 Shiro配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-1-重写sessionId接收方式"><span class="nav-number">1.1.</span> <span class="nav-text">1.1.1 重写sessionId接收方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2重写登录失效的方法"><span class="nav-number">1.2.</span> <span class="nav-text">1.1.2重写登录失效的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-3重写token的保存方式"><span class="nav-number">1.3.</span> <span class="nav-text">1.1.3重写token的保存方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-4编写realm"><span class="nav-number">1.4.</span> <span class="nav-text">1.1.4编写realm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-5-shiro核心类"><span class="nav-number">1.5.</span> <span class="nav-text">1.1.5 shiro核心类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-登录"><span class="nav-number">2.</span> <span class="nav-text">1.2 登录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-SysUserController"><span class="nav-number">2.1.</span> <span class="nav-text">1.2.1 SysUserController</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-2-SysUserRealm"><span class="nav-number">2.2.</span> <span class="nav-text">1.2.2 SysUserRealm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-3-SysUserService"><span class="nav-number">2.3.</span> <span class="nav-text">1.2.3 SysUserService</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-4-SysUserServiceImpl"><span class="nav-number">2.4.</span> <span class="nav-text">1.2.4 SysUserServiceImpl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-5-SysUserMapper"><span class="nav-number">2.5.</span> <span class="nav-text">1.2.5 SysUserMapper</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-6-SysUserMapper-xml"><span class="nav-number">2.6.</span> <span class="nav-text">1.2.6 SysUserMapper.xml</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-获取用户信息"><span class="nav-number">3.</span> <span class="nav-text">1.3 获取用户信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-1-SysUserController"><span class="nav-number">3.1.</span> <span class="nav-text">1.3.1 SysUserController</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-退出登录"><span class="nav-number">4.</span> <span class="nav-text">1.4 退出登录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5前端编写"><span class="nav-number">5.</span> <span class="nav-text">1.5前端编写</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-1登录"><span class="nav-number">5.1.</span> <span class="nav-text">1.5.1登录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#页面编写"><span class="nav-number">5.1.1.</span> <span class="nav-text">页面编写</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#表单校验"><span class="nav-number">5.1.2.</span> <span class="nav-text">表单校验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#登录功能"><span class="nav-number">5.1.3.</span> <span class="nav-text">登录功能</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-2获取登录信息"><span class="nav-number">5.2.</span> <span class="nav-text">1.5.2获取登录信息</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#修改用户信息存储方式"><span class="nav-number">5.2.1.</span> <span class="nav-text">修改用户信息存储方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改获取信息方法"><span class="nav-number">5.2.2.</span> <span class="nav-text">修改获取信息方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修改路由构造方式"><span class="nav-number">5.2.3.</span> <span class="nav-text">修改路由构造方式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-3-退出登录"><span class="nav-number">5.3.</span> <span class="nav-text">1.5.3 退出登录</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Android系统的信使：Intent​        Intent对象被应用于4大应用程序组件中的3个（Activity、Service和Broadcast Receiver），而Content Provider会采用其他方式访问。 服务（Service）和广播（Broadcast）的使用方法和窗口（Activity）类似。 开始服务： 12Intent serviceIntent &#x3D; new">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Intent与Intent Filter">
+<meta property="og:url" content="https://hluck.github.io/2022/12/21/Intent%E4%B8%8EIntent%20Filter/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="Android系统的信使：Intent​        Intent对象被应用于4大应用程序组件中的3个（Activity、Service和Broadcast Receiver），而Content Provider会采用其他方式访问。 服务（Service）和广播（Broadcast）的使用方法和窗口（Activity）类似。 开始服务： 12Intent serviceIntent &#x3D; new">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/12/21/Intent%E4%B8%8EIntent%20Filter/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/12/21/Intent%E4%B8%8EIntent%20Filter/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/12/21/Intent%E4%B8%8EIntent%20Filter/3.png">
+<meta property="article:published_time" content="2022-12-21T00:48:17.394Z">
+<meta property="article:modified_time" content="2022-12-28T14:09:41.743Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Android权威指南2">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/12/21/Intent%E4%B8%8EIntent%20Filter/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/12/21/Intent%E4%B8%8EIntent%20Filter/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Intent与Intent Filter | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/12/21/Intent%E4%B8%8EIntent%20Filter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Intent与Intent Filter
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-12-21 08:48:17" itemprop="dateCreated datePublished" datetime="2022-12-21T08:48:17+08:00">2022-12-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-12-28 22:09:41" itemprop="dateModified" datetime="2022-12-28T22:09:41+08:00">2022-12-28</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>30k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>27 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Android系统的信使：Intent"><a href="#Android系统的信使：Intent" class="headerlink" title="Android系统的信使：Intent"></a>Android系统的信使：Intent</h2><p>​        Intent对象被应用于4大应用程序组件中的3个（Activity、Service和Broadcast Receiver），而Content Provider会采用其他方式访问。</p>
+<p>服务（Service）和广播（Broadcast）的使用方法和窗口（Activity）类似。</p>
+<p>开始服务：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent serviceIntent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, MyService<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">startService(serviceIntent);</span><br></pre></td></tr></table></figure>
+
+<p>发送广播:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//　mybroadcast是广播字符串</span></span><br><span class="line">Intent broadcastIntent = <span class="keyword">new</span> Intent(<span class="string">"mybroadcast"</span>);</span><br><span class="line"><span class="comment">//　向系统发送一条广播</span></span><br><span class="line">sendBroadcast(broadcastIntent);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Intent对象"><a href="#Intent对象" class="headerlink" title="Intent对象"></a>Intent对象</h2><p>Intent对象可以完成3项工作：</p>
+<ol>
+<li>定位窗口：通过Component name、Action、Category和Data可以定位一个或多个Activity。</li>
+<li>传递数据：通过Data和Extra。</li>
+<li>控制访问组件的行为（窗口、服务和广播）：通过Flags。<a id="more"></a>
+<h3 id="Intent对象可以封装和传递哪些信息"><a href="#Intent对象可以封装和传递哪些信息" class="headerlink" title="Intent对象可以封装和传递哪些信息"></a>Intent对象可以封装和传递哪些信息</h3></li>
+</ol>
+<ul>
+<li>组件名（Component name）</li>
+<li>动作（Action）</li>
+<li>种类（Category）</li>
+<li>数据（Data）</li>
+<li>附加信息（Extra）</li>
+<li>标志（Flags）</li>
+</ul>
+<h3 id="组件名（Component-name）"><a href="#组件名（Component-name）" class="headerlink" title="组件名（Component name）"></a>组件名（Component name）</h3><p>直接指定窗口类的class:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, MyActivity<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>还有3个方法可以指定具体的窗口:</p>
+<ol>
+<li>setClass：指定Context对象和窗口类的class。与通过Intent类的构造方法传递信息的作用是一样的。</li>
+<li>setClassName：指定Context对象、字符串形式的包名和窗口类名。</li>
+<li>setComponent：与setClassName方法类似，只是要传递的数据都封装在了ComponentName对象中。</li>
+</ol>
+<h4 id="1-setClass方法"><a href="#1-setClass方法" class="headerlink" title="1.setClass方法"></a>1.setClass方法</h4><p>setClass方法的原型:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Intent <span class="title">setClass</span><span class="params">(Context packageContext, Class＜?＞ cls)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>使用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent intent2 = <span class="keyword">new</span> Intent();</span><br><span class="line">intent2.setClass(<span class="keyword">this</span>, MyActivity<span class="class">.<span class="keyword">class</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-setClassName方法"><a href="#2-setClassName方法" class="headerlink" title="2.setClassName方法"></a>2.setClassName方法</h4><p>​        该方法有两个重载形式:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//packageContext以另外一种形式定位应用程序，这就是应用程序的Context对象（上下文对象）</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Intent <span class="title">setClassName</span><span class="params">(Context packageContext, String className)</span></span></span><br><span class="line"><span class="function"><span class="comment">//使用Android应用的唯一索引PackageName定位某个具体的程序</span></span></span><br><span class="line"><span class="function"><span class="comment">//className参数表示类的全名（是PackageName+ClassName，不能只指定类名）    </span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Intent <span class="title">setClassName</span><span class="params">(String packageName, String className)</span></span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-setComponent方法"><a href="#3-setComponent方法" class="headerlink" title="3.setComponent方法"></a>3.setComponent方法</h4><p>​        setComponent方法通过ComponentName对象指定PackageName、ClassName等信息，该方法的原型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Intent <span class="title">setComponent</span><span class="params">(ComponentName component)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>​        使用setComponent方法之前先要创建ComponentName对象。</p>
+<h3 id="动作（Action）"><a href="#动作（Action）" class="headerlink" title="动作（Action）"></a>动作（Action）</h3><p>​        还有一种确定窗口的方法，就是窗口动作（Activity Action）</p>
+<p>​        就是“与窗口绑定的一个或多个字符串”，也就是说Activity Action是一个字符串，而且一个窗口可以拥有多个这样的字符串。</p>
+<p>主窗口通常会在AndroidManifest.xml文件中有如下的声明代码：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">".MyActivity"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span>　</span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span>　</span><br><span class="line">		<span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span>　</span><br><span class="line">	<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span>　</span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>＜action＞标签的android:name属性值android.intent.action.MAIN就是一个系统提供的Activity Action。</p>
+<p>通过代码指定action去显示一个窗口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"mobile.android.android.MYACTION"</span>)</span><br><span class="line"><span class="comment">//如果系统中有多个窗口定义了该Activity Action，会显示一个选择列表，列表中显示了所有定义该Activity Action窗口，用户可以选择显示哪个窗口。    </span></span><br><span class="line">startActivity(intent)</span><br></pre></td></tr></table></figure>
+
+<p>或者：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent()</span><br><span class="line">intent.setAction(<span class="string">"mobile.android.android.MYACTION"</span>)</span><br><span class="line">startActivity(intent)</span><br></pre></td></tr></table></figure>
+
+<p>​    系统应用也有很多Activity定义了Activity Action，这些Activity Action可以调用Android系统内置应用中的窗口。如，照相机拍照界面、拨号界面等。尽量使用在Intent类中定义的Action常量（以ACTION_开头的都是Action常量）。这些常量包括Activity Action和Broadcast Action，系统未定义Service Action。直接在代码编辑器中输入“Intent.”就会看到所有的Action常量。</p>
+<p><img src="/2022/12/21/Intent%E4%B8%8EIntent%20Filter/1.png" alt></p>
+<h3 id="种类（Category）"><a href="#种类（Category）" class="headerlink" title="种类（Category）"></a>种类（Category）</h3><p>​        如果单凭Action无法定位唯一的窗口，那就要再加一个可以定位的标志（<strong>Category</strong>）。</p>
+<p>​        Category实际上与Action一样，也是与窗口绑定的字符串。在声明主窗口时＜category＞标签的android:name属性值指定的就是Category。Action与Category的不同之处在于只能为Intent对象指定一个Action，而Category可以指定多个（方法名setAction和addCategory）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line"><span class="comment">//设置action</span></span><br><span class="line">intent.setAction(<span class="string">"mobile.android.action.MYACTION"</span>);</span><br><span class="line"><span class="comment">//设置category</span></span><br><span class="line">intent.addCategory(“mobile.android.category.MYCATEGORY);</span><br></pre></td></tr></table></figure>
+
+<h3 id="数据-Data"><a href="#数据-Data" class="headerlink" title="数据(Data)"></a>数据(Data)</h3><p>​        Data与Action、Category并称为Android组件的3大过滤机制.</p>
+<p>​        但Data与后两者不同的是并不是简单地通过字符串对比的方式进行匹配，而是按着一定规则进行匹配。<strong>Data</strong>本身又分为两种方式进行匹配：<strong>MIME Type</strong>和<strong>URI</strong>。</p>
+<ul>
+<li><strong>MIME Type</strong>是指要访问的组件处理的数据类型，例如video/mpeg4、video/mp4、video/avi等。MIME Type也可以用通配符（*）匹配某一类型的数据，例如“audio/ *”表示所有的音频数据格式。</li>
+<li><strong>URI</strong>有些类似我们经常使用的Web地址，但要比Web地址范围更广，例如，下面的3行字符串都属于URI。</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://www.google.com</span><br><span class="line">content://mobile.android.data/cities</span><br><span class="line">ftp://192.168.17.168</span><br></pre></td></tr></table></figure>
+
+<p>设置MIME Type和URI可以由下几个方法完成:</p>
+<ol>
+<li><p>setType方法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//setType方法用于设置MIME Type，并且在设置后会将Uri清除</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Intent <span class="title">setType</span><span class="params">(String type)</span></span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function"><span class="comment">//使用：</span></span></span><br><span class="line"><span class="function">Intent intent </span>= <span class="keyword">new</span> Intent();</span><br><span class="line">intent.setType(<span class="string">"audio/ *"</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>setTypeAndNormalize（String type）方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Intent <span class="title">setTypeAndNormalize</span><span class="params">(String type)</span></span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>​        setTypeAndNormalize与setType的功能类似，也用于设置MIME Type，并且将Uri清空。但setTypeAndNormalize方法还可以规范MIME Type。</p>
+<p>​        例如，如果MIMI Type设为“text/plain; charset=utf-8”，就会将后面的非MIMI Type部分去掉，变成“text/plain”。该方法还可以使MIMI Type的写法看起来更标志，例如会将“text/x-vCard”变成“text/x-vcard”。</p>
+<ol start="3">
+<li><p>setData方法</p>
+<p>setData方法用于设置Uri，并且会清空MIMI Type</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Intent <span class="title">setData</span><span class="params">(Uri data)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">Intent intent </span>= <span class="keyword">new</span> Intent();</span><br><span class="line">intent.setData(Uri.parse(<span class="string">"http://192.168.17.168/process"</span>));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>setDataAndNormalize方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Intent <span class="title">setDataAndNormalize</span><span class="params">(Uri data)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>​        setDataAndNormalize与setData的功能类似，只是会将scheme变成小写形式。scheme就是指Uri开始的部分（冒号以前的部分），例如，<a href="http://www.google.com中的http就是scheme。假设有一个Uri：HTTP://www.google.com，setDataAndNormalize方法会将该Uri变成http://www.google.com。">http://www.google.com中的http就是scheme。假设有一个Uri：HTTP://www.google.com，setDataAndNormalize方法会将该Uri变成http://www.google.com。</a></p>
+</li>
+<li><p>setDataAndType方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//用于同时设置Uri和MIME Type</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Intent <span class="title">setDataAndType</span><span class="params">(Uri data, String type)</span></span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function">Intent intent </span>= <span class="keyword">new</span> Intent();</span><br><span class="line">intent.setDataAndType(Uri.parse(<span class="string">"http://192.168.17.168/process"</span>),<span class="string">"audio/*"</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>setDataAndTypeAndNormalize方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//同时设置Uri和MIME Type，并且将Uri和MIME Type标准化</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Intent <span class="title">setDataAndTypeAndNormalize</span><span class="params">(Uri data, String type)</span></span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="附加数据（Extra）"><a href="#附加数据（Extra）" class="headerlink" title="附加数据（Extra）"></a>附加数据（Extra）</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//　设置字符串</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Intent <span class="title">putExtra</span><span class="params">(String name, String value)</span></span></span><br><span class="line"><span class="function"><span class="comment">//设置整数</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Intent <span class="title">putExtra</span><span class="params">(String name, <span class="keyword">int</span> value)</span></span></span><br><span class="line"><span class="function"><span class="comment">//　设置浮点数</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Intent <span class="title">putExtra</span><span class="params">(String name, <span class="keyword">float</span> value)</span></span></span><br><span class="line"><span class="function"><span class="comment">//　设置实现Parcelable接口的对象</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Intent <span class="title">putExtra</span><span class="params">(String name, Parcelable value)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>选中该Action，会显示该Action的详细信息,如：系统Action需要传递附加信息</p>
+<p><img src="/2022/12/21/Intent%E4%B8%8EIntent%20Filter/2.png" alt></p>
+<h3 id="标志（Flags）"><a href="#标志（Flags）" class="headerlink" title="标志（Flags）"></a>标志（Flags）</h3><p>​        Flags既不会定位窗口，也不会向窗口传递数据，Flags只用来控制窗口显示行为。</p>
+<h2 id="显式和隐式访问Activity"><a href="#显式和隐式访问Activity" class="headerlink" title="显式和隐式访问Activity"></a>显式和隐式访问Activity</h2><p>​        <strong>显式访问</strong>Activity不会产生歧义，系统可以毫不犹豫地显示指定的Activity:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, MyActivity<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+
+<p>​        <strong>隐式访问</strong>Activity需要指定与窗口绑定的字符串（Action、Category和Data），至于如何设置Intent对象，要看访问的窗口在AndroidManifest.xml文件中是如何声明的，也就是说＜intent-filter＞标签里面有什么东西。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 注册MyActivity --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">".MyActivity"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MYACTION"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>使用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"android.intent.action.MYACTION"</span>);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+
+<h2 id="跨应用程序访问窗口"><a href="#跨应用程序访问窗口" class="headerlink" title="跨应用程序访问窗口"></a>跨应用程序访问窗口</h2><p>​    <strong>隐式方式可以调用其他应用程序的窗口，显式方式一样可以.</strong></p>
+<p>要了解显式调用窗口精髓需要知道如下几点:</p>
+<ol>
+<li><p>每一个Android应用的唯一标识就Package Name（包名），也就是AndroidManifest.xml文件中＜manifest＞标签的package属性值。只要Package Name相同，就可以认为是同一个Android应用。</p>
+</li>
+<li><p>如果用Intent对象指定一个窗口类，除了需要指定窗口类的class外，还需要指定窗口类所在的应用程序的Context对象（或应用程序的Package Name），所以<strong>通过Package Name和Activity Class Name（窗口类名）可以定位当前Android系统中的任意窗口</strong>。</p>
+<p>通过Intent.<strong>setClass</strong>、Intent.<strong>setClassName</strong>和Intent.<strong>setComponent</strong>方法可以指定Package Name和Activity Class Name。</p>
+</li>
+</ol>
+<p><strong>定位某个应用程序可以有如下3种方式。</strong></p>
+<ul>
+<li>直接指定Package Name。</li>
+<li>另一个Android应用的Context对象。</li>
+<li>ComponentName对象。</li>
+</ul>
+<p>​        只要知道目标应用程序的Package Name，直接指定即可。Context对象需要使用Context.createPackageContext方法创建:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Context.CONTEXT_INCLUDE_CODE允许代码被装载</span></span><br><span class="line"><span class="comment">//Context.CONTEXT_IGNORE_SECURITY则忽略任何安全限制。</span></span><br><span class="line">Context context = createPackageContext(<span class="string">"mobile.android.web.browser"</span>,Context.CONTEXT_INCLUDE_CODE|Context.CONTEXT_IGNORE_SECURITY);</span><br></pre></td></tr></table></figure>
+
+<p>​        ComponentName对象，就是封装了Package Name（或Context对象）和Class Name（或窗口类的class）的对象，只要得到了Context和窗口类的class，就可以直接创建ComponentName对象，并通过ComponentName类的构造方法传入相应的数据即可。</p>
+<p>案例：</p>
+<p>打开另一个webbrowser程序的MainActivity:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityMainBinding</span>&gt;</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//true：窗口退出　 false：窗口切换到后台执行，并没有退出</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> isFinished = <span class="literal">false</span></span><br><span class="line">	<span class="comment">//指向WebBrowser程序的Context对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mContext:Context? = <span class="literal">null</span></span><br><span class="line">    <span class="comment">//目标class</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mClass:Class&lt;*&gt;? = <span class="literal">null</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityMainBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//WebBrowser的Package Name</span></span><br><span class="line">            mContext = createPackageContext(<span class="string">"com.study.webbrowser"</span>,</span><br><span class="line">                Context.CONTEXT_INCLUDE_CODE or Context.CONTEXT_IGNORE_SECURITY )</span><br><span class="line">            <span class="comment">//动态装载MainActivity类</span></span><br><span class="line">            mClass = mContext?.classLoader?.loadClass(<span class="string">"com.study.webbrowser.MainActivity"</span>)</span><br><span class="line">        &#125; <span class="keyword">catch</span> (e:Exception)&#123;</span><br><span class="line">            e.printStackTrace()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;      </span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 浏览网页：Action</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> v View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">onClick_Action</span><span class="params">(v:<span class="type">View</span>)</span></span>&#123;</span><br><span class="line">        <span class="comment">//Intent.ACTION_VIEW的值是android.intent.action.VIEW</span></span><br><span class="line">        <span class="comment">//　Uri确定了Data（符合以http://开头的Uri的要求）</span></span><br><span class="line">        <span class="keyword">val</span> webIntent = Intent(Intent.ACTION_VIEW, Uri.parse(<span class="string">"http://blog.csdn.net/nokiaguy"</span>))</span><br><span class="line">        startActivity(webIntent)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 浏览网页：setClassName</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> v View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">onClick_SetClassName</span><span class="params">(v:<span class="type">View</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> webIntent = Intent();</span><br><span class="line">        <span class="comment">//直接指定了WebBrowser应用的Package Name和WebBrowserActivity类的全名</span></span><br><span class="line">        webIntent.setClassName(<span class="string">"com.study.webbrowser"</span>,<span class="string">"com.study.webbrowser.MainActivity"</span>)</span><br><span class="line">        <span class="comment">//　指定Uri</span></span><br><span class="line">        webIntent.setData(Uri.parse(<span class="string">"http://nokiaguy.blogjava.net"</span>));</span><br><span class="line">        startActivity(webIntent)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 浏览网页：setClassName_Context</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> v View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">onClick_SetClassName_Context</span><span class="params">(v:<span class="type">View</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(mContext == <span class="literal">null</span> || mClass == <span class="literal">null</span>) <span class="keyword">return</span></span><br><span class="line">        <span class="keyword">val</span> webIntent = Intent()</span><br><span class="line">        <span class="comment">//指定了Context对象和WebBrowserActivity类的全名</span></span><br><span class="line">        webIntent.setClassName(mContext!!,<span class="string">"com.study.webbrowser.MainActivity"</span>)</span><br><span class="line">        <span class="comment">//指定Uri</span></span><br><span class="line">        webIntent.setData(Uri.parse(<span class="string">"http://nokiaguy.cnblogs.com"</span>))</span><br><span class="line">        startActivity(webIntent)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *浏览网页：setClass</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> v View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">onClick_SetClass</span><span class="params">(v:<span class="type">View</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(mContext == <span class="literal">null</span> || mClass == <span class="literal">null</span>) <span class="keyword">return</span></span><br><span class="line">        <span class="keyword">val</span> webIntent = Intent()</span><br><span class="line">        <span class="comment">//　指定Context和Class对象</span></span><br><span class="line">        webIntent.setClass(mContext!!,mClass!!)</span><br><span class="line">        <span class="comment">//　指定Uri</span></span><br><span class="line">        webIntent.setData(Uri.parse(<span class="string">"http://nokiaguy.cnblogs.com"</span>))</span><br><span class="line">        startActivity(webIntent)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *浏览网页：setComponentName</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> v View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">onClick_SetComponentName</span><span class="params">(v:<span class="type">View</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(mContext == <span class="literal">null</span> || mClass == <span class="literal">null</span>) <span class="keyword">return</span></span><br><span class="line">        <span class="comment">//　通过ComponentName对象指定了Context和Class对象</span></span><br><span class="line">        <span class="keyword">val</span> componentName = ComponentName(mContext!!,mClass!!)</span><br><span class="line">        <span class="keyword">val</span> webIntent = Intent()</span><br><span class="line">        <span class="comment">//　指定ComponentName对象</span></span><br><span class="line">        webIntent.component = componentName</span><br><span class="line">        <span class="comment">//　指定Uri</span></span><br><span class="line">        webIntent.<span class="keyword">data</span> = Uri.parse(<span class="string">"http://nokiaguy.cnblogs.com"</span>)</span><br><span class="line">        startActivity(webIntent)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 显示计算器</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> v View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">onClick_ShowCalculator</span><span class="params">(v:<span class="type">View</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> intent = Intent()</span><br><span class="line">        <span class="comment">//　指定计算器的Package Name和主窗口类的全名</span></span><br><span class="line">        intent.setClassName(<span class="string">"com.android.calculator2"</span>,</span><br><span class="line">            <span class="string">"com.android.calculator2.Calculator"</span>)</span><br><span class="line">        startActivity(intent)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        要想让某个窗口可以接收Uri，除了指定相应的Action外，还需要指定Data（用＜data＞标签设置）。对于浏览Web页面，Data只需要设置scheme即可，也就是Web协议，如http、https等.</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:name</span>=<span class="string">".MainActivity"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:exported</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">tools:ignore</span>=<span class="string">"AppLinkUrlError"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.VIEW"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:scheme</span>=<span class="string">"http"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:scheme</span>=<span class="string">"https"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:name</span>=<span class="string">"android.app.lib_name"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:value</span>=<span class="string">""</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​        系统自带程序的Package Name和Activity Class Name有可能发生变化，那么直接访问这些程序的包名和类名就会带来一定的风险。所以在调用系统程序的窗口时应尽量使用Action，而不要直接指定包名和类名。</p>
+<p>​        如果调用的窗口不在当前的应用程序中，在AndroidManifest.xml文件中声明窗口时必须允许该窗口被其他应用程序调用</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//不可以被其他应用程序通过显式方式调用。</span><br><span class="line">＜activity android:name=".MyActivity"/＞</span><br><span class="line">//可以被其他应用程序通过显式方式调用</span><br><span class="line">＜activity android:name=".MyActivity"android:exported="true"/＞</span><br></pre></td></tr></table></figure>
+
+<p>​        <strong>显式调用：</strong>如果声明窗口时未指定任何Action，android:exported属性必须设置，而且属性值必须为true。如果指定了Action，则并不需要设置android:exported属性，或设置android:exported属性值true也可。</p>
+<p>​        <strong>隐式调用：</strong>必须指定Action，而且android:exported属性值不需要设置，或设置该属性值为true。</p>
+<p>获取Android应用中声明某个Action的窗口的类名也可以使用<strong>PackageManager.queryIntent Activities</strong>方法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//　查询是否有窗口指定了叫Intent.ACTION_VIEW的Action</span></span><br><span class="line">Intent intent = <span class="keyword">new</span> Intent(Intent.ACTION_VIEW);</span><br><span class="line"><span class="comment">//　任意指定一个Uri，如果窗口指定了叫http的scheme，系统就会匹配该窗口</span></span><br><span class="line">intent.setData(Uri.parse(<span class="string">"http://blog.csdn.net/nokiaguy"</span>));</span><br><span class="line"><span class="comment">//　列出系统中所有这样的窗口信息</span></span><br><span class="line">List＜ResolveInfo＞ resolveInfos = packageManager.queryIntentActivities(intent,PackageManager.GET_INTENT_ FILTERS);</span><br><span class="line"><span class="comment">//　通常第一个程序就是Browser，当然，也可以枚举所有的窗口信息</span></span><br><span class="line"><span class="comment">//　在LogCat视图中输出第一个满足条件的窗口的类名（＜activity＞标签的android:name属性值）</span></span><br><span class="line">Log.d(<span class="string">"Activity Action"</span>,String.valueOf(resolveInfos.get(<span class="number">0</span>).activityInfo.name));</span><br><span class="line"></span><br><span class="line"><span class="comment">//获取系统所有应用信息</span></span><br><span class="line"><span class="function">fun <span class="title">getAll</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> queryIntentActivities = mutableListOf&lt;ResolveInfo&gt;()</span><br><span class="line">    val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)</span><br><span class="line">    <span class="keyword">if</span> (android.os.Build.VERSION.SDK_INT &gt;= android.os.Build.VERSION_CODES.M) &#123;</span><br><span class="line">          queryIntentActivities =</span><br><span class="line">                packageManager.queryIntentActivities(intent, PackageManager.MATCH_ALL)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          queryIntentActivities = packageManager.queryIntentActivities(intent, <span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (info in queryIntentActivities) &#123;</span><br><span class="line">        Log.d(<span class="string">"TAG"</span>,info.toString() + <span class="string">""</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://blog.51cto.com/u_13316945/5832199" target="_blank" rel="noopener"><strong>Android实现获取系统应用列表</strong></a></p>
+<h2 id="Android系统的过滤机制"><a href="#Android系统的过滤机制" class="headerlink" title="Android系统的过滤机制"></a>Android系统的过滤机制</h2><h3 id="过滤条件的设置"><a href="#过滤条件的设置" class="headerlink" title="过滤条件的设置"></a>过滤条件的设置</h3><p>​    Android通过Action、Category和Data的组合来定位窗口，但这3种过滤机制涉及的规则还是很多的。</p>
+<p>窗口过滤条件首先需要从调用者和被调用者两方面考虑。</p>
+<p>​    <strong>1．调用者</strong></p>
+<p>​        <strong>调用者</strong>使用Intent的相应方法设置Action、Category和Data，也就是设置调用的窗口要满足的过滤条件。</p>
+<p>​        Action和Data只能指定一个（分别通过setAction和setData方法设置），而Category可以指定多个（通过addCategory方法设置）。设置完过滤条件后，通常会使用Activity.startActivity方法显示满足条件的窗口。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//　通过Intent类的构造方法指定了Action，也可以通过Intent.setAction方法指定Action</span></span><br><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"android.intent.action.MYACTION"</span>);</span><br><span class="line"><span class="comment">//　添加了一个Category</span></span><br><span class="line">intent.addCategory(<span class="string">"android.intent.category.MYCATEGORY5"</span>);</span><br><span class="line"><span class="comment">//　指定了Data。Data通常是指Uri，也可以只MIMEType</span></span><br><span class="line">intent.setData(Uri.parse(<span class="string">"http://192.168.17.100/work/test.jsp"</span>));</span><br><span class="line"><span class="comment">//　显示窗口</span></span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+
+<p>​    <strong>2．被调用者</strong></p>
+<p>声明规则，如何被调用，用＜intent-filter＞标签设置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">"MyActivity"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span>......<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span>......<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span>......<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">activity</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:name</span>=<span class="string">".MainActivity"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:exported</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">tools:ignore</span>=<span class="string">"AppLinkUrlError"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.VIEW"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:scheme</span>=<span class="string">"http"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:scheme</span>=<span class="string">"https"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:name</span>=<span class="string">"android.app.lib_name"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:value</span>=<span class="string">""</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​        在＜intent-filter＞标签中可以使用＜action＞、＜category＞和＜data＞标签分别设置Action、Category和Data。但要记住＜action＞标签是必须的，如果不指定＜action＞，尽管程序可以成功编译和安装，但其他程序将无法通过隐式的方式显示该窗口（不能只指定Category和Data，而不指定Action）。</p>
+<p>​        不管调用者是否添加Category，系统都会认为有一个默认的Category已经被添加。相当于调用者执行:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">intent.addCategory(Intent.CATEGORY_DEFAULT);</span><br></pre></td></tr></table></figure>
+
+<p>​        既然调用者默认加入了一个Category，那么被调用这自然也需要在过滤器（＜intent-filter＞标签）中加入如下的＜category＞标签了。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​        如果android.intent.action.MAIN和android.intent.category.LAUNCHER成对出现，并不需要指定android.intent.category.DEFAULT。其他的Action都必须要指定android.intent.category.DEFAULT。</p>
+<h3 id="过滤器的筛选规则"><a href="#过滤器的筛选规则" class="headerlink" title="过滤器的筛选规则"></a>过滤器的筛选规则</h3><p>​        窗口类的每一个过滤器（＜intent-filter＞标签）都会在系统中注册，然后系统再根据Intent对象设置的过滤条件筛选符合条件的窗口时会逐一扫描这些过滤器，并会分别根据Action、Category和Data筛选出所有符合条件的过滤器，如果这些被筛选出的过滤器属于多个窗口，系统就会显示一个选择列表，如果只属于一个窗口，就直接显示该窗口。</p>
+<p>​        筛选规则主要应从两个方面考虑。首先应考虑Action、Category和Data在默认情况下代表什么含义。也就是在不设置这3个过滤条件的情况下，系统会如何处理。</p>
+<ul>
+<li>不设置Action。由于Action是必选项，所以必须要设置Action，否则该窗口无法被其他的Android应用调用（同一个Android应用还是可以通过显式方式调用的）。</li>
+<li>不设置Category。系统会添加一个默认的Category（android.intent.category.DEFAULT）。</li>
+<li>不设置Data。系统会认为目标窗口不含有任何Data，也就是说如果不为Intent对象指定Data，在声明目标窗口时也不能在过滤器中使用＜data＞标签。否则即使Action和Category都匹配，该过滤器也不符合条件。</li>
+</ul>
+<p>​      第二个方面是Action、Category和Data如何进行匹配。系统会分别进行3次验证（分别验证这3个过滤条件），只有这3次验证都通过的过滤器才符合要求（该过滤器对应的窗口会成为候选窗口之一）</p>
+<h4 id="1．Action验证"><a href="#1．Action验证" class="headerlink" title="1．Action验证"></a><strong>1．Action验证</strong></h4><p>​        如果某个过滤器指定了一个或多个＜action＞标签（如果没有＜action＞标签或Intent对象未设置Action，Action验证肯定失败）。系统会扫描所有的＜action＞标签，如果找到与指定Action相同的＜action＞标签，就认为Action验证通过。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">intent.setAction(<span class="string">"MYACTION1"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>系统中有一个过滤器的代码：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"MYACTION1"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"MYACTION2"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"MYACTION3"</span> /&gt;</span></span><br><span class="line">    ......</span><br><span class="line"><span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​        在该过滤器中恰好有一个＜action＞标签的android:name属性值是MYACTION1，所以该过滤器通过了Action验证。</p>
+<h4 id="2．Category验证"><a href="#2．Category验证" class="headerlink" title="2．Category验证"></a>2．Category验证</h4><p>​        Category验证采用了子集的方法，也就是说为Intent对象指定了N个Category，而在某一个过滤器中设置了M个Category，并且M ＞= N。那么如果N个Category是M个Category的子集，那么该过滤器通过Category验证。否则不管是M ＜ N，还是其他任何情况，Category验证都失败。</p>
+<p>如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">intent.addCategory(<span class="string">"MYCATEGORY1"</span>);</span><br><span class="line">intent.addCategory(<span class="string">"MYCATEGORY2"</span>);</span><br><span class="line">intent.addCategory(<span class="string">"MYCATEGORY3"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>有两个过滤器：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">①号过滤器</span><br><span class="line"><span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"MYACTION1"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"MYACTION2"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"MYACTION3"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"MYACTION4"</span> /&gt;</span></span><br><span class="line">    ......</span><br><span class="line"><span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"></span><br><span class="line">②号过滤器</span><br><span class="line"><span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"MYACTION1"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"MYACTION2"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"MYACTION4"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"MYACTION5"</span> /&gt;</span></span><br><span class="line">    ......</span><br><span class="line"><span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​        由于①号过滤器包含了Intent对象设置的3个Category，所以第一个过滤器通过了Category验证。但②号过滤器由于缺少MYCATEGORY3，所以没有通过Category验证。</p>
+<h4 id="3．Data验证"><a href="#3．Data验证" class="headerlink" title="3．Data验证"></a>3．Data验证</h4><h5 id="URI"><a href="#URI" class="headerlink" title="URI"></a>URI</h5><p>​        Data验证用于验证Uri和Mime Type。Uri比Url范围更广，除了可表示Web地址外，还可以表示如下格式的字符串:</p>
+<p><strong>scheme://host:port/path</strong> 如 “<a href="http://www.google.com:8080/work/upload.jsp”" target="_blank" rel="noopener">http://www.google.com:8080/work/upload.jsp”</a></p>
+<p>从这个字符串看，将Uri分成了如下4部分。</p>
+<ol>
+<li><strong>scheme</strong>：协议标识，例如，http、https、content、ftp等。</li>
+<li><strong>host</strong>：域名、IP等。例如<a href="http://www.google.com、192.168.17.104等。" target="_blank" rel="noopener">www.google.com、192.168.17.104等。</a></li>
+<li><strong>port</strong>：端口号，例如，80、8080等。</li>
+<li><strong>path</strong>：资源的具体路径,如：/work/upload.jsp。</li>
+</ol>
+<p>一个标准的Uri:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//www.microsoft.com:8080/index.html</span></span><br><span class="line">组成部分:</span><br><span class="line">  - scheme：http。</span><br><span class="line">  - host：www.microsoft.com。  </span><br><span class="line">  - port：<span class="number">8080</span>。</span><br><span class="line">  - path：/index.html。</span><br></pre></td></tr></table></figure>
+
+<p>path除了可以设置完整的路径外，还可以使用如下两种路径匹配方式:</p>
+<ul>
+<li><strong>pathPrefix</strong>：路径前缀。所有以pathPrefix开头的path都满足条件。例如“/in”可以匹配“/index.html”，也可以匹配“/in.jsp”。</li>
+<li><strong>pathPattern</strong>：路径匹配模式。可以使用“<em>”或“.</em>”（星号前面加一个点）匹配相应的路径。“<em>”表示在“</em>”前面的字符会出现0个或任意多个。“.<em>”表示0个或任意多个字符。如，“abcd</em>e”可以匹配“abce”、“abcde”、“abcdde”、“abcddde”，也就是说在“abc”和“e”之间可以有0或任意多个“d”。而“ab.*cd”可以匹配“abcd”、“abxyzcd”、“ab123cd”，也就是说在“ab”和“cd”之间可以有0或多个任意字符</li>
+</ul>
+<p>​       不仅pathPattern属性可以使用通配符，host属性也可以使用“<em>”表示匹配所有的host（host属性值只能包含“</em>”，不能包含其他的字符）</p>
+<p>​        Uri实际上由6个属性确定，其中前3个是scheme、host和port，还有3个路径（path、pathPrefix和pathPattern）。在一个过滤器（＜intent-filter＞标签）中可以有多个Data（用＜data＞标签定义）。要遵循如下规则:</p>
+<ol>
+<li>scheme是必须的，所以无论是调用者，还是被调用者，如果设置了Uri，必须指定scheme，否则Data验证一定失败。</li>
+<li>属性不能跳跃设置，否则跳跃设置的属性将被忽略。</li>
+<li>系统在检测每一个＜data＞标签时会根据依次检测每一个属性。例如，Intent对象指定的Uri包含scheme、host、port和path。那么系统会在当前的＜data＞标签中依次检测这4个属性（scheme、host、port和path）是否符合要求（path会检测3个属性：path、pathPrefix和pathPattern，这3个属性只要有一个通过即可）。只有同时符合要求，才会通过Data验证。</li>
+<li>系统会检索过滤器中的所有Data来查找相应的属性。如，在一个过滤器中定义了3个Data，其中一个只指定了scheme和host，而另两个Data中只指定了port属性（两个Data指定了不同的属性）。而Uri是<a href="http://www.microsoft.com:8080。在Uri中包含了scheme、host和port。系统在验证第一个Data时自然要考虑这3个属性，但scheme和host都通过验证后，发现第一个Data中并没有设置port，这时系统并不认为验证失败，而是看看当前过滤器的其他Data中是否设置了port属性。恰好发现另外两个Data都设置了port属性，系统会分别拿这两个port属性值逐个与Uri中的端口号（8080）比较，只要有一个port是8080，就会通过Data验证。">http://www.microsoft.com:8080。在Uri中包含了scheme、host和port。系统在验证第一个Data时自然要考虑这3个属性，但scheme和host都通过验证后，发现第一个Data中并没有设置port，这时系统并不认为验证失败，而是看看当前过滤器的其他Data中是否设置了port属性。恰好发现另外两个Data都设置了port属性，系统会分别拿这两个port属性值逐个与Uri中的端口号（8080）比较，只要有一个port是8080，就会通过Data验证。</a></li>
+<li>如果同时指定了path、pathPrefix和pathPattern属性，系统会依次处理这3个属性，直到一个属性的验证通过为止。也就是说这3个属性直接的关系是“或”，而不是“与”。</li>
+<li>设置path和pathPrefix属性时必须以“/”开头，例如“/index.html”、“/abc”等。pathPattern属性值如果以“.<em>”开头，则不需要加“/”，因为“.</em>”已经包含“/”了。但如果不以“.*”开头，则pathPattern属性值必须以“/”开头。</li>
+<li>如果Uri没有指定所有的过滤条件，例如，只指定了scheme和host，那么Data也不能设置Uri未指定的属性。在定义过滤器时，Data的过滤条件不能超过Uri中包含的信息，否则Data验证必然失败。</li>
+<li>如果Uri指定的过滤条件比Data多，并且Uri与Data都指定的过滤条件都通过了验证，则通过Data验证。例如，Uri指定了scheme、host和port，而Data只指定了scheme。如果两个scheme相同，系统则认为通过Data验证。</li>
+<li>如果同时设置了Uri与Mime Type。系统会分别验证Uri和Mime Type。</li>
+<li>Uri是大小写敏感的，这一点与平常使用的Uri不同。</li>
+</ol>
+<p>​      Data不仅指Uri，也指Mime Type。Uri和Mime Type可以同时使用，也可以单独使用一个。如果同时使用Uri和Mime Type，要使用<strong>Intent.setDataAndType</strong>方法进行设置，否则Uri和Mime Type会互相覆盖</p>
+<h5 id="Mime-Type"><a href="#Mime-Type" class="headerlink" title="Mime Type"></a>Mime Type</h5><p>​        Mime Type就是指可以处理的资源类型，例如“audio/ *”用于处理所有的音频资源，“audio/mp3”只用于处理MP3音频格式，“video/ *”用于处理所有的视频资源。在Data中使用mimeType属性设置Mime Type。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//这种情况下只有Uri和Mime Type同时通过验证，Data验证才算通过。</span><br><span class="line"><span class="tag">&lt;<span class="name">data</span></span></span><br><span class="line"><span class="tag">      <span class="attr">android:host</span>=<span class="string">"*"</span>　　</span></span><br><span class="line"><span class="tag">      <span class="attr">android:port</span>=<span class="string">"8080"</span>　　</span></span><br><span class="line"><span class="tag">      <span class="attr">android:path</span>=<span class="string">"/work/upload.jsp"</span>　　</span></span><br><span class="line"><span class="tag">      <span class="attr">android:scheme</span>=<span class="string">"http"</span>　　</span></span><br><span class="line"><span class="tag">      <span class="attr">android:mimeType</span>=<span class="string">"audio/*"</span></span></span><br><span class="line"><span class="tag">      /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Data验证要想通过，需要同时通过如下3种验证。</strong></p>
+<ol>
+<li><strong>scheme、host、port、path（包括pathPrefix和pathPattern）。这4个属性的关系是“与”，只有同时满足这4个属性，才算通过验证。</strong></li>
+<li><strong>ath、pathPrefix和pathPattern。这3个属性的关系是“或”，只要通过一个属性就算通过验证。</strong></li>
+<li><strong>Uri（scheme、host、port、path、pathPrefix和pathPattern）和Mime Type。关系是“与”，如果同时设置了Uri和Mime Type，必须同时满足条件才算通过验证。</strong></li>
+</ol>
+<h3 id="过滤机制应用"><a href="#过滤机制应用" class="headerlink" title="过滤机制应用"></a>过滤机制应用</h3><p>通常Uri只指定scheme，顶多与Mime Type一起使用。</p>
+<p>FilterProducer程序中为MainActivity类设置了7个过滤器：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:name</span>=<span class="string">".MainActivity"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:exported</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- ①号过滤器：用于启动窗口，在这里不需要考虑 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">	<span class="comment">&lt;!-- ②号过滤器--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MYACTION1"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MYACTION2"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.MYCATEGORY1"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.MYCATEGORY2"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- ③号过滤器--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MYACTION3"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MYACTION4"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.MYCATEGORY3"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.MYCATEGORY4"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- ④号过滤器--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MYACTION5"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.MYCATEGORY5"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!--下面给出一个符合条件的Uri，只匹配scheme，Uri其他部分随意指定　　　　　　			   http://www.microsoft.com:8888/index.html--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:scheme</span>=<span class="string">"http"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:mimeType</span>=<span class="string">"audio/*"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:mimeType</span>=<span class="string">"video/*"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- ⑤号过滤器--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MYACTION6"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span></span><br><span class="line">		<span class="comment">&lt;!--下面是一个符合条件的Uri http://www.google.com:8080/work/upload.jsp　　--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span></span></span><br><span class="line"><span class="tag">              <span class="attr">android:host</span>=<span class="string">"*"</span></span></span><br><span class="line"><span class="tag">              <span class="attr">android:mimeType</span>=<span class="string">"audio/*"</span></span></span><br><span class="line"><span class="tag">              <span class="attr">android:path</span>=<span class="string">"/work/upload.jsp"</span></span></span><br><span class="line"><span class="tag">              <span class="attr">android:port</span>=<span class="string">"8080"</span></span></span><br><span class="line"><span class="tag">              <span class="attr">android:scheme</span>=<span class="string">"http"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- ⑥号过滤器--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MYACTION7"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">&lt;!--下面是一个符合条件的Uri　ftp://192.168.17.100:8080/work/upload.html　　--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span></span></span><br><span class="line"><span class="tag">              <span class="attr">android:host</span>=<span class="string">"192.168.17.100"</span></span></span><br><span class="line"><span class="tag">              <span class="attr">android:mimeType</span>=<span class="string">"audio/*"</span></span></span><br><span class="line"><span class="tag"></span></span><br><span class="line"><span class="tag">              <span class="attr">android:port</span>=<span class="string">"8080"</span></span></span><br><span class="line"><span class="tag">              <span class="attr">android:scheme</span>=<span class="string">"ftp"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:pathPattern</span>=<span class="string">".*.html"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- ⑦号过滤器--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MYACTION7"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span></span><br><span class="line">		<span class="comment">&lt;!--　下面是3个符合条件的Uri</span></span><br><span class="line"><span class="comment">			path属性验证通过　　　　　https://192.168.17.111:8888/work/test.up　　　　　　</span></span><br><span class="line"><span class="comment">			pathPattern属性验证通过　https://192.168.17.111:8888/p/m/abc.html</span></span><br><span class="line"><span class="comment">      		 pathPrefix属性验证通过　https://192.168.17.111:8888/test/up.aspx　　--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span></span></span><br><span class="line"><span class="tag">              <span class="attr">android:host</span>=<span class="string">"192.168.17.111"</span></span></span><br><span class="line"><span class="tag">              <span class="attr">android:mimeType</span>=<span class="string">"audio/*"</span></span></span><br><span class="line"><span class="tag">              <span class="attr">android:path</span>=<span class="string">"/work/test.up"</span></span></span><br><span class="line"><span class="tag">              <span class="attr">android:pathPattern</span>=<span class="string">".*.html"</span></span></span><br><span class="line"><span class="tag">              <span class="attr">android:pathPrefix</span>=<span class="string">"/test"</span></span></span><br><span class="line"><span class="tag">              <span class="attr">android:port</span>=<span class="string">"8888"</span></span></span><br><span class="line"><span class="tag">              <span class="attr">android:scheme</span>=<span class="string">"https"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:name</span>=<span class="string">"android.app.lib_name"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:value</span>=<span class="string">""</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>FilterConsumer根据FilterProducer的过滤规则启动FilterProducer：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        setContentView(R.layout.activity_main)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 第②号过滤器通过验证，利用了Action和Category验证规则，未使用Data</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> v View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">onClick_IntentFilter2</span><span class="params">(v:<span class="type">View</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> intent = Intent(<span class="string">"android.intent.action.MYACTION1"</span>)</span><br><span class="line">        intent.addCategory(<span class="string">"android.intent.category.MYCATEGORY1"</span>)</span><br><span class="line">        intent.addCategory(<span class="string">"android.intent.category.MYCATEGORY2"</span>)</span><br><span class="line">        startActivity(intent)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ③号过滤器通过验证，未指定Category</span></span><br><span class="line"><span class="comment">     * 因为默认已经为Intent对象添加了android.intent.category.DEFAULT</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> v View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">onClick_IntentFilter3</span><span class="params">(v:<span class="type">View</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> intent = Intent(<span class="string">"android.intent.action.MYACTION4"</span>)</span><br><span class="line">        startActivity(intent)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ④号过滤器通过验证，Uri匹配了scheme（http），并且匹配了第1个Data（“audio/ *”）</span></span><br><span class="line"><span class="comment">     * 在进行Data验证时利用了Data验证规则的第8条</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> v View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">onClick_IntentFilter4</span><span class="params">(v:<span class="type">View</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> intent = Intent(<span class="string">"android.intent.action.MYACTION5"</span>)</span><br><span class="line">        intent.setDataAndType(Uri.parse(<span class="string">"http://www.microsoft.com:8888/index.html"</span>),<span class="string">"audio/mp3"</span>)</span><br><span class="line">        startActivity(intent)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ⑤号过滤器通过验证</span></span><br><span class="line"><span class="comment">     * 在进行Data验证时利用了Data验证规则的第3、9条</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> v View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">onClick_IntentFilter5</span><span class="params">(v:<span class="type">View</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> intent = Intent(<span class="string">"android.intent.action.MYACTION6"</span>)</span><br><span class="line">        intent.setDataAndType(Uri.parse(<span class="string">"http://www.google.com:8080/work/upload.jsp"</span>),<span class="string">"audio/*"</span>)</span><br><span class="line">        startActivity(intent)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ⑥号过滤器通过验证</span></span><br><span class="line"><span class="comment">     * 在进行Data验证时利用了Data验证规则的第3、4、9条</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> v View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">onClick_IntentFilter6</span><span class="params">(v: <span class="type">View</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> intent = Intent(<span class="string">"android.intent.action.MYACTION7"</span>)</span><br><span class="line">        intent.setDataAndType(Uri.parse(<span class="string">"ftp://192.168.17.100:8080/work/upload.html"</span>),<span class="string">"audio/*"</span>)</span><br><span class="line">        startActivity(intent)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ⑦号过滤器通过验证</span></span><br><span class="line"><span class="comment">     * 在进行Data验证时利用了Data验证规则的第3、5、9条</span></span><br><span class="line"><span class="comment">     * 下面的代码调用了3次setDataAndType方法，分别设置了3个Uri，其中前两次加了注释，</span></span><br><span class="line"><span class="comment">     * 这3个Uri都符合要求，Uri的路径分别匹配path、pathPrefix和pahtPattern</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> v View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">onClick_IntentFilter7</span><span class="params">(v:<span class="type">View</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> intent = Intent(<span class="string">"android.intent.action.MYACTION7"</span>)</span><br><span class="line">        <span class="comment">//intent.setDataAndType(Uri.parse("https://192.168.17.111:8888/work/test.up"), "audio/wav");</span></span><br><span class="line">        <span class="comment">//intent.setDataAndType(Uri.parse("https://192.168.17.111:8888/test/up.aspx"), "audio/wav");</span></span><br><span class="line">        intent.setDataAndType(Uri.parse(<span class="string">"https://192.168.17.111:8888/p/m/abc.html"</span>),<span class="string">"audio/wav"</span>)</span><br><span class="line">        startActivity(intent)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据对方的包名和全类名称启动对方的activity</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> v View</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">onClick_IntentFilter8</span><span class="params">(v:<span class="type">View</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> intent = Intent()</span><br><span class="line">        intent.setClassName(<span class="string">"com.study.filterproducer"</span>,<span class="string">"com.study.filterproducer.MainActivity"</span>)</span><br><span class="line">        startActivity(intent)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Android源代码与过滤器"><a href="#Android源代码与过滤器" class="headerlink" title="Android源代码与过滤器"></a>Android源代码与过滤器</h2><h3 id="系统内置程序有哪些窗口可以利用"><a href="#系统内置程序有哪些窗口可以利用" class="headerlink" title="系统内置程序有哪些窗口可以利用"></a>系统内置程序有哪些窗口可以利用</h3><p>在Intent类中定义了一些Action常量，这些常量用来调用系统的一些窗口或接收系统广播。</p>
+<p><img src="/2022/12/21/Intent%E4%B8%8EIntent%20Filter/3.png" alt></p>
+<p>​        系统内置程序的APK文件都在系统的目录中（/system/app），如果没有root权限根本访问不了该目录，更别提获取APK文件了。尽管熟悉Linux的知道可以用su或sudo命令暂时将用户权限提升到root。但很多手机安装的Android系统根本就没有su或sudo命令，所以为了方法更通用，采用直接查看Android源代码的方法获取需要的信息。</p>
+<p><a href="https://www.androidos.net.cn/sourcecode" target="_blank" rel="noopener">Android系统源码</a></p>
+<p>​        Android系统内置应用程序的源代码都放在了如下的目录：＜Android源代码根目录＞/packages/apps</p>
+<p>常用内置应用的目录：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Browser：浏览器。</span><br><span class="line">Calculator：计算器。</span><br><span class="line">Calendar：日历。</span><br><span class="line">Camera：照相机。</span><br><span class="line">Contacts：联系人    </span><br><span class="line">Launcher2：Android系统的启动程序。在系统启动后第一个运行的就是该程序，主要包括桌面、图标、程序列表等。经常提及的定制ROM(刷机包)，UI部分主要就是修改Launcher2。</span><br></pre></td></tr></table></figure>
+
+<h4 id="打开系统计算器"><a href="#打开系统计算器" class="headerlink" title="打开系统计算器"></a>打开系统计算器</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">String calculatorPackage = <span class="keyword">null</span>;</span><br><span class="line">PackageManager pm = mContext.getPackageManager();</span><br><span class="line"><span class="comment">// 查询所有已经安装的应用程序</span></span><br><span class="line">List&lt;ApplicationInfo&gt; appInfos= pm.getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);<span class="comment">// GET_UNINSTALLED_PACKAGES代表已删除，但还有安装目录的</span></span><br><span class="line"><span class="keyword">for</span> (ApplicationInfo applicationInfo : appInfos)&#123;</span><br><span class="line">    String packageName = applicationInfo.packageName;</span><br><span class="line">    <span class="keyword">if</span> (packageName.contains(<span class="string">"calculator"</span>))&#123;</span><br><span class="line">        calculatorPackage = packageName;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">Intent intent = mContext.getPackageManager().getLaunchIntentForPackage(calculatorPackage);</span><br><span class="line">mContext.startActivity(intent);</span><br></pre></td></tr></table></figure>
+
+<p>＜Android源代码根目录＞/packages/apps/Calculator/AndroidManifest.xml:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">manifest</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">package</span>=<span class="string">"com.android.calculator2"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">application</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:icon</span>=<span class="string">"@mipmap/ic_launcher_calculator"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:label</span>=<span class="string">"@string/app_name"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:theme</span>=<span class="string">"@style/CalculatorTheme"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">activity</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:name</span>=<span class="string">".Calculator"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:label</span>=<span class="string">"@string/app_name"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:windowSoftInputMode</span>=<span class="string">"stateAlwaysHidden"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.APP_CALCULATOR"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">application</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick_Calculator</span><span class="params">(View view)</span></span>&#123;</span><br><span class="line">    <span class="comment">//Intent intent = new Intent("android.intent.action.MAIN");</span></span><br><span class="line">    <span class="comment">//intent.addCategory("android.intent.category.APP_CALCULATOR");</span></span><br><span class="line">    Intent intent = <span class="keyword">new</span> Intent(Intent.ACTION_MAIN);</span><br><span class="line">    intent.addCategory(Intent.CATEGORY_APP_CALCULATOR);</span><br><span class="line">    startActivity(intent);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="用浏览器（Browser）显示网页"><a href="#用浏览器（Browser）显示网页" class="headerlink" title="用浏览器（Browser）显示网页"></a>用浏览器（Browser）显示网页</h4><p>＜Android源代码根目录＞/packages/apps/Browser/AndroidManifest.xml里的一个过滤器：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">"BrowserActivity"</span></span></span><br><span class="line"><span class="tag">                  <span class="attr">android:label</span>=<span class="string">"@string/application_name"</span></span></span><br><span class="line"><span class="tag">                  <span class="attr">android:launchMode</span>=<span class="string">"singleTask"</span></span></span><br><span class="line"><span class="tag">                  <span class="attr">android:alwaysRetainTaskState</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">                  <span class="attr">android:configChanges</span>=<span class="string">"orientation|keyboardHidden|keyboard|screenSize|locale"</span></span></span><br><span class="line"><span class="tag">                  <span class="attr">android:theme</span>=<span class="string">"@style/BrowserTheme"</span></span></span><br><span class="line"><span class="tag">                  <span class="attr">android:windowSoftInputMode</span>=<span class="string">"adjustResize"</span> &gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.speech.action.VOICE_SEARCH_RESULTS"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 2号 For these schemes were not particular MIME type has been</span></span><br><span class="line"><span class="comment">                 supplied, we are a good candidate. --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.VIEW"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.BROWSABLE"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:scheme</span>=<span class="string">"http"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:scheme</span>=<span class="string">"https"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:scheme</span>=<span class="string">"about"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:scheme</span>=<span class="string">"javascript"</span> /&gt;</span></span><br><span class="line">    		<span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span>     </span><br><span class="line">			......</span><br><span class="line">    		<span class="comment">&lt;!--  3号 We are also the main entry point of the browser. --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.BROWSABLE"</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.APP_BROWSER"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>使用上面的2号过滤器跳转:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Intent intent = <span class="keyword">new</span> Intent(Intent.ACTION_VIEW,Uri.parse(<span class="string">"http://blog.csdn.net/nokiaguy"</span>));</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+
+<p>使用3号：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="string">"android.intent.action.MAIN"</span>);</span><br><span class="line">intent.addCategory(Intent.CATEGORY_BROWSABLE);</span><br><span class="line"><span class="comment">//Intent.CATEGORY_APP_BROWSER是android.intent.category.APP_BROWSER对应的常量</span></span><br><span class="line">intent.addCategory(Intent.CATEGORY_APP_BROWSER);</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+
+<h4 id="拨打电话（Phone）与授权"><a href="#拨打电话（Phone）与授权" class="headerlink" title="拨打电话（Phone）与授权"></a>拨打电话（Phone）与授权</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Intent callIntent = <span class="keyword">new</span> Intent(Intent.ACTION_CALL,Uri.parse(<span class="string">"tel:12345678"</span>));</span><br><span class="line">startActivity(callIntent);</span><br></pre></td></tr></table></figure>
+
+<p>＜Android源代码根目录＞/packages/apps/Phone/AndroidManifest.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.CALL"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.DEFAULT"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">data</span> <span class="attr">android:scheme</span>=<span class="string">"tel"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​        拨号盘类（OutgoingCallBroadcaster）的声明代码在＜activity＞标签中设置了android:permission属性，并指定了android.permission.CALL_PHONE权限，所以在调用者的AndroidManifest.xml文件中要加入如下的代码才可以成功进行拨号。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.CALL_PHONE"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>注意：</p>
+<p>​        有的Uri并未指定“//”，例如“tel:12345678”。实际上这是由相应的程序进行处理的，因为如果不指定“//”，是无法通过Uri.getHost方法获取Host的，自然也就无法获取电话号的。不过处理来电的程序（Phone）会从“tel:12345678”中解析出电话号。如果某些程序只能从Uri的host中获取数据，那就必须加“//”了。</p>
+<h4 id="获取第三方程序中可调用的窗口"><a href="#获取第三方程序中可调用的窗口" class="headerlink" title="获取第三方程序中可调用的窗口"></a>获取第三方程序中可调用的窗口</h4><p>​        解开sina_weibo.apk文件后，再解压根目录会找到一个AndroidManifest.xml文件，不过该文件是被编译过的，无法使用文本编辑器查看其内容。但可以使用一些工具将其反编译。一个简单的工具AXMLPrinter2，该工具用Java编写，是一个jar文件，所以可以在任何支持JDK的操作系统平台上使用。该工具的下载地址如下：<a href="http://android4me.googlecode.com/files/AXMLPrinter2.jar" target="_blank" rel="noopener">http://android4me.googlecode.com/files/AXMLPrinter2.jar</a></p>
+<p>​        将AXMLPrinter2.jar文件与AndroidManifest.xml文件放到一个目录，然后在控制台（终端）进入该目录，并执行如下命令，将AndroidManifest.xml文件解压为AndroidManifest.txt：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar ./AXMLPrinter.jar ./AndroidManifest.xml ＞ ./AndroidManifest.txt</span><br></pre></td></tr></table></figure>
+
+<h2 id="传递附加数据（Extra）"><a href="#传递附加数据（Extra）" class="headerlink" title="传递附加数据（Extra）"></a>传递附加数据（Extra）</h2><p>通常可以使用如下两种方式向窗口传递数据</p>
+<ol>
+<li>通过Data传递数据。</li>
+<li>通过putExtra传递附加数据。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//　写入附加数据</span></span><br><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, MyActivity<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">intent.putExtra(<span class="string">"key1"</span>, <span class="number">20</span>);</span><br><span class="line">intent.putExtra(<span class="string">"key2"</span>, <span class="string">'c'</span>);</span><br><span class="line">intent.putExtra(<span class="string">"key3"</span>,<span class="string">"value"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//　读取附加数据</span></span><br><span class="line"><span class="comment">//　0是默认值</span></span><br><span class="line"><span class="keyword">int</span> n = intent.getIntExtra(<span class="string">"key1"</span>, <span class="number">0</span>);</span><br><span class="line"><span class="comment">//　'c'是默认值</span></span><br><span class="line"><span class="keyword">char</span> c = intent.getCharExtra(<span class="string">"key2"</span>, <span class="string">'c'</span>);</span><br><span class="line">String s = intent.getStringExtra(<span class="string">"key3"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//还可以使用Bundle对象设置完附加数据</span></span><br><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, MyActivity<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">Bundle bundle = <span class="keyword">new</span> Bundle();</span><br><span class="line">bundle.putInt(<span class="string">"key1"</span>, <span class="number">20</span>);</span><br><span class="line">bundle.putChar(<span class="string">"key2"</span>, <span class="string">'c'</span>);</span><br><span class="line">bundle.putString(<span class="string">"key3"</span>, <span class="string">"value"</span>);</span><br><span class="line">intent.putExtras(bundle);</span><br></pre></td></tr></table></figure>
+
+<h2 id="解析数据"><a href="#解析数据" class="headerlink" title="解析数据"></a>解析数据</h2><p>​        除了会通过Intent对象传递数据外，还需要在被调用窗口中获取这些数据。例如，向某个窗口传入了一个Uri。通常会在窗口类的onCreate方法中将Uri分解，获取Uri的各个部分，例如，scheme、host、port、path等。这些信息都可以从Intent类的相应方法获取:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">获取Action：Intent.getAction方法</span><br><span class="line">获取多个Category：Intent.getCategories方法</span><br><span class="line">获取Mime Type：Intent.getType方法</span><br><span class="line"><span class="comment">//　直接获取Uri对象</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Uri <span class="title">getData</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">//　获取字符串形式的Uri</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">getDataString</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">//　获取scheme</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">getScheme</span><span class="params">()</span></span></span><br><span class="line"><span class="function">获取Flags：Intent.getFlags方法</span></span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%972/" rel="tag"># Android权威指南2</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/12/19/%E7%AA%97%E5%8F%A3%EF%BC%88Activity%EF%BC%89%E4%B8%8E%E8%A7%86%E5%9B%BE%EF%BC%88View%EF%BC%89/" rel="prev" title="窗口（Activity）与视图（View）">
+      <i class="fa fa-chevron-left"></i> 窗口（Activity）与视图（View）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/12/26/Activity%E9%AB%98%E7%BA%A7%E9%83%A8%E5%88%86/" rel="next" title="Activity高级部分">
+      Activity高级部分 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Android系统的信使：Intent"><span class="nav-number">1.</span> <span class="nav-text">Android系统的信使：Intent</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Intent对象"><span class="nav-number">2.</span> <span class="nav-text">Intent对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Intent对象可以封装和传递哪些信息"><span class="nav-number">2.1.</span> <span class="nav-text">Intent对象可以封装和传递哪些信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#组件名（Component-name）"><span class="nav-number">2.2.</span> <span class="nav-text">组件名（Component name）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-setClass方法"><span class="nav-number">2.2.1.</span> <span class="nav-text">1.setClass方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-setClassName方法"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.setClassName方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-setComponent方法"><span class="nav-number">2.2.3.</span> <span class="nav-text">3.setComponent方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动作（Action）"><span class="nav-number">2.3.</span> <span class="nav-text">动作（Action）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#种类（Category）"><span class="nav-number">2.4.</span> <span class="nav-text">种类（Category）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据-Data"><span class="nav-number">2.5.</span> <span class="nav-text">数据(Data)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#附加数据（Extra）"><span class="nav-number">2.6.</span> <span class="nav-text">附加数据（Extra）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#标志（Flags）"><span class="nav-number">2.7.</span> <span class="nav-text">标志（Flags）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#显式和隐式访问Activity"><span class="nav-number">3.</span> <span class="nav-text">显式和隐式访问Activity</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨应用程序访问窗口"><span class="nav-number">4.</span> <span class="nav-text">跨应用程序访问窗口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Android系统的过滤机制"><span class="nav-number">5.</span> <span class="nav-text">Android系统的过滤机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#过滤条件的设置"><span class="nav-number">5.1.</span> <span class="nav-text">过滤条件的设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#过滤器的筛选规则"><span class="nav-number">5.2.</span> <span class="nav-text">过滤器的筛选规则</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1．Action验证"><span class="nav-number">5.2.1.</span> <span class="nav-text">1．Action验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2．Category验证"><span class="nav-number">5.2.2.</span> <span class="nav-text">2．Category验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3．Data验证"><span class="nav-number">5.2.3.</span> <span class="nav-text">3．Data验证</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#URI"><span class="nav-number">5.2.3.1.</span> <span class="nav-text">URI</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Mime-Type"><span class="nav-number">5.2.3.2.</span> <span class="nav-text">Mime Type</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#过滤机制应用"><span class="nav-number">5.3.</span> <span class="nav-text">过滤机制应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Android源代码与过滤器"><span class="nav-number">6.</span> <span class="nav-text">Android源代码与过滤器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#系统内置程序有哪些窗口可以利用"><span class="nav-number">6.1.</span> <span class="nav-text">系统内置程序有哪些窗口可以利用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#打开系统计算器"><span class="nav-number">6.1.1.</span> <span class="nav-text">打开系统计算器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#用浏览器（Browser）显示网页"><span class="nav-number">6.1.2.</span> <span class="nav-text">用浏览器（Browser）显示网页</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拨打电话（Phone）与授权"><span class="nav-number">6.1.3.</span> <span class="nav-text">拨打电话（Phone）与授权</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获取第三方程序中可调用的窗口"><span class="nav-number">6.1.4.</span> <span class="nav-text">获取第三方程序中可调用的窗口</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#传递附加数据（Extra）"><span class="nav-number">7.</span> <span class="nav-text">传递附加数据（Extra）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解析数据"><span class="nav-number">8.</span> <span class="nav-text">解析数据</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

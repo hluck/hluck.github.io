@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="笔记出自朱涛 · Kotlin编程第一课 协程调试我们可以通过两种手段来进行调试：设置 VM 参数、断点调试。 协程 VM 参数我们只需要将 VM 参数设置成“-Dkotlinx.coroutines.debug”。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何启动协程">
+<meta property="og:url" content="https://hluck.github.io/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="笔记出自朱涛 · Kotlin编程第一课 协程调试我们可以通过两种手段来进行调试：设置 VM 参数、断点调试。 协程 VM 参数我们只需要将 VM 参数设置成“-Dkotlinx.coroutines.debug”。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/1.gif">
+<meta property="og:image" content="https://hluck.github.io/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/2.gif">
+<meta property="og:image" content="https://hluck.github.io/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/3.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/3.gif">
+<meta property="og:image" content="https://hluck.github.io/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/4.png">
+<meta property="article:published_time" content="2022-06-22T03:11:19.850Z">
+<meta property="article:modified_time" content="2022-06-26T06:01:11.939Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Kotlin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/1.gif">
+
+<link rel="canonical" href="https://hluck.github.io/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>如何启动协程 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何启动协程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-22 11:11:19" itemprop="dateCreated datePublished" datetime="2022-06-22T11:11:19+08:00">2022-06-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-26 14:01:11" itemprop="dateModified" datetime="2022-06-26T14:01:11+08:00">2022-06-26</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>笔记出自<a href="https://time.geekbang.org/column/article/486305?screen=full" target="_blank" rel="noopener">朱涛 · Kotlin编程第一课</a></p>
+<h2 id="协程调试"><a href="#协程调试" class="headerlink" title="协程调试"></a>协程调试</h2><p>我们可以通过两种手段来进行调试：设置 VM 参数、断点调试。</p>
+<h3 id="协程-VM-参数"><a href="#协程-VM-参数" class="headerlink" title="协程 VM 参数"></a>协程 VM 参数</h3><p>我们只需要将 VM 参数设置成“-Dkotlinx.coroutines.debug”。</p>
+<p><img src="/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/1.gif" alt></p>
+<a id="more"></a>
+<p>​        完成这个设置后，当我们在 log 当中打印“Thread.currentThread().name”的时候，如果当前代码是运行在协程当中的，那么它就会带上协程的相关信息。具体我们可以看个代码的例子：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// 不必关心代码逻辑，关心输出结果即可</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    GlobalScope.launch(Dispatchers.IO) &#123;</span><br><span class="line">        println(<span class="string">"Coroutine started:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>"</span>)</span><br><span class="line">        delay(<span class="number">1000L</span>)</span><br><span class="line">        println(<span class="string">"Hello World!"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    println(<span class="string">"After launch:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>"</span>)</span><br><span class="line">    Thread.sleep(<span class="number">2000L</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出结果：</span></span><br><span class="line"><span class="comment">After launch:main</span></span><br><span class="line"><span class="comment">Coroutine started:DefaultDispatcher-worker-1 @coroutine#1</span></span><br><span class="line"><span class="comment">Hello world.</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="断点调试协程"><a href="#断点调试协程" class="headerlink" title="断点调试协程"></a>断点调试协程</h3><p>确保 IDE 自带的 Kotlin 编译器插件版本号大于 1.4:</p>
+<p><img src="/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/1.png" alt></p>
+<p>​        为协程代码打断点，并且右击断点处，勾选 suspend、All，这代表了我们的断点将会对协程生效。具体可以参考我下面的截图：</p>
+<p><img src="/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/2.png" alt></p>
+<p>直接进行调试，当程序停留到断点处以后，我们就需要确保协程调试窗口已经被开启了。具体可以参考这个动图：</p>
+<p><img src="/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/2.gif" alt></p>
+<p><img src="/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/3.png" alt></p>
+<p>这个专属的协程调试窗口当中，我们可以看到很多有用的协程信息，包括：</p>
+<ul>
+<li>当前协程的名字，这里是“coroutine#1”；</li>
+<li>当前协程运行在哪个线程之上，这里是“DefaultDispatcher-worker-1”；</li>
+<li>当前协程的运行状态，这里是“RUNNING”；</li>
+<li>当前协程的“创建调用栈”。</li>
+</ul>
+<h2 id="协程的三种方式"><a href="#协程的三种方式" class="headerlink" title="协程的三种方式"></a>协程的三种方式</h2><h3 id="launch-启动协程"><a href="#launch-启动协程" class="headerlink" title="launch 启动协程"></a>launch 启动协程</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/* delay 函数的定义</span></span><br><span class="line"><span class="comment">     注意这个关键字</span></span><br><span class="line"><span class="comment">          ↓                                            */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">delay</span><span class="params">(timeMillis: <span class="type">Long</span>)</span></span> &#123; ... &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 仅用于研究，生产环境不建议使用GlobalScope</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// ①</span></span><br><span class="line">    GlobalScope.launch &#123;</span><br><span class="line">        <span class="comment">// ②</span></span><br><span class="line">        delay(<span class="number">1000L</span>)</span><br><span class="line">        println(<span class="string">"Hello World!"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ③</span></span><br><span class="line">    Thread.sleep(<span class="number">2000L</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出结果；</span></span><br><span class="line"><span class="comment">Hello World!</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>注释①，GlobalScope.launch{}，它是一个高阶函数，它的作用就是启动一个协程。</li>
+<li>注释②，delay()，它的作用就是字面上的意思，“延迟”。以上代码中，我们是延迟了 1 秒。从 delay() 的函数签名这里可以发现，它的定义跟普通的函数不太一样，它多了一个“suspend”关键字，这代表了它是一个挂起函数。而这也就意味着，delay 将会拥有“挂起和恢复”的能力。</li>
+<li>注释③，它的作用是让当前线程休眠 2 秒钟。</li>
+</ul>
+<p>协程代码特殊的行为模式，那就是：<strong>它的代码不是按照顺序执行的。</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    GlobalScope.launch &#123;                <span class="comment">// 1</span></span><br><span class="line">        println(<span class="string">"Coroutine started!"</span>)   <span class="comment">// 2</span></span><br><span class="line">        delay(<span class="number">1000L</span>)                    <span class="comment">// 3</span></span><br><span class="line">        println(<span class="string">"Hello World!"</span>)         <span class="comment">// 4</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    println(<span class="string">"After launch!"</span>)            <span class="comment">// 5</span></span><br><span class="line">    Thread.sleep(<span class="number">2000L</span>)                 <span class="comment">// 6</span></span><br><span class="line">    println(<span class="string">"Process end!"</span>)             <span class="comment">// 7</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出结果：</span></span><br><span class="line"><span class="comment">After launch!</span></span><br><span class="line"><span class="comment">Coroutine started!</span></span><br><span class="line"><span class="comment">Hello World!</span></span><br><span class="line"><span class="comment">Process end!</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>​        根据这个程序运行结果，我们发现，以上的协程代码运行顺序是 1、5、6、2、3、4、7。也就是说，launch 并不会阻塞线程的执行，甚至，我们可以认为 launch() 当中 Lambda 一定就是在函数调用之后才执行的。</p>
+<p>​        我们通过 launch 启动一个协程以后，并没有让协程为我们返回一个执行结果,launch 一个协程任务，就像猎人射箭一样。</p>
+<p>launch 和射箭，有几个共同点：</p>
+<ul>
+<li>箭一旦射出去了，目标就无法再被改变；协程一旦被 launch，那么它当中执行的任务也不会被中途改变。</li>
+<li>箭如果命中了猎物，猎物也不会自动送到我们手上来；launch 的协程任务一旦完成了，即使有了结果，也没办法直接返回给调用方。</li>
+</ul>
+<p>​       launch 为什么无法将结果返回给调用方呢？如果你去看 launch 函数的源代码，你就会发现，这个函数的返回值是一个 Job，它其实代表的是协程的句柄（Handle），它并不能为我们返回协程的执行结果。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> CoroutineScope.<span class="title">launch</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    context: <span class="type">CoroutineContext</span> = EmptyCoroutineContext,</span></span></span><br><span class="line"><span class="function"><span class="params">    start: <span class="type">CoroutineStart</span> = CoroutineStart.DEFAULT,</span></span></span><br><span class="line"><span class="function"><span class="params">    block: <span class="type">suspend</span> <span class="type">CoroutineScope</span>.() -&gt; <span class="type">Unit</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>: Job &#123; ... &#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>CoroutineScope.launch()，代表了 <strong>launch 其实是一个扩展函数，而它的“扩展接收者类型”是 CoroutineScope</strong>。这就意味着，我们的 launch() 会等价于 CoroutineScope 的成员方法。而如果我们要调用 launch() 来启动协程，就必须要先拿到 CoroutineScope 的对象。前面的案例，我们使用的 GlobalScope，其实就是 Kotlin 官方为我们提供的一个 CoroutineScope 对象，方便我们开发者直接启动协程。</p>
+</li>
+<li><p>接着是第一个参数：CoroutineContext，它代表了我们<strong>协程的上下文</strong>，它的默认值是 EmptyCoroutineContext，如果我们不传这个参数，默认就会使用 EmptyCoroutineContext。一般来说，我们也可以传入 Kotlin 官方为我们提供的 Dispatchers，来指定协程运行的线程池。协程上下文，是协程当中非常关键的元素</p>
+</li>
+<li><p>然后是第二个参数：CoroutineStart，它代表了<strong>协程的启动模式</strong>。如果我们不传这个参数，它会默认使用 CoroutineStart.DEFAULT。CoroutineStart 其实是一个枚举类，一共有：DEFAULT、LAZY、ATOMIC、UNDISPATCHED。我们最常使用的就是 DEFAULT、LAZY，它们分别代表：立即执行、懒加载执行。</p>
+<p>​        对于“suspend CoroutineScope.() -&gt; Unit”这个函数类型，首先，它应该是一个“挂起函数”，同时，它还应该是 CoroutineScope 类的成员方法或是扩展方法，并且，它的参数个数为0，返回值类型Unit。</p>
+</li>
+</ul>
+<h3 id="runBlocking-启动协程"><a href="#runBlocking-启动协程" class="headerlink" title="runBlocking 启动协程"></a>runBlocking 启动协程</h3><p>​        runBlocking 跟我们前面学的 launch 的行为模式不太一样，通过它的名字，我们就可以看出来，它是<strong>存在某种阻塞行为的。</strong>让我们将前面 launch 的代码直接改为 runBlocking，看看运行结果是否有差异。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    runBlocking &#123;                       <span class="comment">// 1</span></span><br><span class="line">        println(<span class="string">"Coroutine started!"</span>)   <span class="comment">// 2</span></span><br><span class="line">        delay(<span class="number">1000L</span>)                    <span class="comment">// 3</span></span><br><span class="line">        println(<span class="string">"Hello World!"</span>)         <span class="comment">// 4</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    println(<span class="string">"After launch!"</span>)            <span class="comment">// 5</span></span><br><span class="line">    Thread.sleep(<span class="number">2000L</span>)                 <span class="comment">// 6</span></span><br><span class="line">    println(<span class="string">"Process end!"</span>)             <span class="comment">// 7</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出结果：</span></span><br><span class="line"><span class="comment">Coroutine started!</span></span><br><span class="line"><span class="comment">Hello World!</span></span><br><span class="line"><span class="comment">After launch!</span></span><br><span class="line"><span class="comment">Process end!</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>​        通过分析上面的运行结果，我们可以发现，使用 runBlocking 启动的协程会阻塞当前线程的执行，这样一来，所有的代码就变成了顺序执行：1、2、3、4、5、6、7。这其实就是 runBlocking 与 launch 的最大差异。</p>
+<p>​        <strong>runBlocking 确实会阻塞当前线程的执行。</strong>对于这一点，Kotlin 官方也强调了：runBlocking 只推荐用于连接线程与协程，并且，大部分情况下，都只应该用于编写 Demo 或是测试代码。所以，<strong>请不要在生产环境当中使用 runBlocking。</strong></p>
+<p>​        当我们调用 runBlocking 的时候，并不需要 GlobalScope，这也是它跟 launch 之间的一大差异，具体，让我们来看看 runBlocking 的函数签名：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">actual</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">runBlocking</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    context: <span class="type">CoroutineContext</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">    block: <span class="type">suspend</span> <span class="type">CoroutineScope</span>.() -&gt; <span class="type">T</span>)</span></span>: T &#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        可以看到，runBlocking 就是一个普通的顶层函数，它并不是 CoroutineScope 的扩展函数，因此，我们调用它的时候，不需要 CoroutineScope 的对象。        </p>
+<p>runBlocking 其实是可以从协程当中返回执行结果的:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> result = runBlocking &#123;</span><br><span class="line">        delay(<span class="number">1000L</span>)</span><br><span class="line">        <span class="comment">// return@runBlocking 可写可不写</span></span><br><span class="line">        <span class="keyword">return</span><span class="symbol">@runBlocking</span> <span class="string">"Coroutine done!"</span> </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    println(<span class="string">"Result is: <span class="variable">$result</span>"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出结果：</span></span><br><span class="line"><span class="comment">Result is: Coroutine done!</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="async-启动协程"><a href="#async-启动协程" class="headerlink" title="async 启动协程"></a>async 启动协程</h3><p>​        async，是在很多其他编程语言都存在的一种协程模式，比如 C#。在 Kotlin 当中，我们可以使用 async{} 创建协程，并且还能通过它返回的句柄拿到协程的执行结果。让我们看个简单的例子：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    println(<span class="string">"In runBlocking:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> deferred: Deferred&lt;String&gt; = async &#123;</span><br><span class="line">        println(<span class="string">"In async:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>"</span>)</span><br><span class="line">        delay(<span class="number">1000L</span>) <span class="comment">// 模拟耗时操作</span></span><br><span class="line">        <span class="keyword">return</span><span class="symbol">@async</span> <span class="string">"Task completed!"</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    println(<span class="string">"After async:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> result = deferred.await()</span><br><span class="line">    println(<span class="string">"Result is: <span class="variable">$result</span>"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出结果：</span></span><br><span class="line"><span class="comment">In runBlocking:main @coroutine#1</span></span><br><span class="line"><span class="comment">After async:main @coroutine#1 // 注意，它比“In async”先输出</span></span><br><span class="line"><span class="comment">In async:main @coroutine#2</span></span><br><span class="line"><span class="comment">Result is: Task completed!</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>​        上面的代码中，我们直接使用 runBlocking 来实现了 main 函数。注意，由于 runBlocking 的最后一个参数的类型是“suspend CoroutineScope.() -&gt; T”，因此在 Lambda 当中已经有了 CoroutineScope，所以我们可以直接在 runBlocking 当中，用 async 启动一个协程。从程序的输出结果，我们也可以看到，确实存在两个协程，runBlocking 启动的叫做“coroutine#1”；async 启动的叫做“coroutine#2”。</p>
+<p>​        另外，你应该还注意到了一个细节，那就是 async 启动协程以后，它也不会阻塞当前程序的执行流程，因为：“After async”在“In async”的前面就已经输出了。</p>
+<p>​        还有，请注意 async{}的返回值，它是一个 Deferred 对象，我们通过调用它的 await() 方法，就可以拿到协程的执行结果。对比前面 launch 我们举的“射箭”的例子，这里的 async，就更加像是“钓鱼”：</p>
+<p>​        在我们钓鱼的时候，我们手里的鱼竿，就有点像是 async 当中的 Deferred 对象。只要我们手里有这根鱼竿，一旦有鱼儿上钩了，我们就可以直接拿到结果。</p>
+<p>这里，我们再来看看 async 的函数签名，顺便对比一下它跟 launch 之间的差异：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> CoroutineScope.<span class="title">launch</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    context: <span class="type">CoroutineContext</span> = EmptyCoroutineContext,</span></span></span><br><span class="line"><span class="function"><span class="params">    start: <span class="type">CoroutineStart</span> = CoroutineStart.DEFAULT,</span></span></span><br><span class="line"><span class="function"><span class="params">    block: <span class="type">suspend</span> <span class="type">CoroutineScope</span>.() -&gt; <span class="type">Unit</span> <span class="comment">// 不同点1</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>: Job &#123;&#125; <span class="comment">// 不同点2</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> CoroutineScope.<span class="title">async</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    context: <span class="type">CoroutineContext</span> = EmptyCoroutineContext,</span></span></span><br><span class="line"><span class="function"><span class="params">    start: <span class="type">CoroutineStart</span> = CoroutineStart.DEFAULT,</span></span></span><br><span class="line"><span class="function"><span class="params">    block: <span class="type">suspend</span> <span class="type">CoroutineScope</span>.() -&gt; <span class="type">T</span> <span class="comment">// 不同点1</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>: Deferred&lt;T&gt; &#123;&#125; <span class="comment">// 不同点2</span></span><br></pre></td></tr></table></figure>
+
+<p>​        从上面的代码中，我们可以发现 launch 和 async 的两个不同点，一个是 block 的函数类型，前者的返回值类型是 Unit，后者则是泛型 T；另外一个不同点在返回值上，前者返回值类型是 Job，后者返回值类型是 Deferred。而 async 可以返回协程执行结果的原因也在于此。</p>
+<p>程序整体的执行流程：</p>
+<p><img src="/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/3.gif" alt></p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><ul>
+<li><strong>launch</strong>，是典型的“Fire-and-forget”场景，它不会阻塞当前程序的执行流程，使用这种方式的时候，我们无法直接获取协程的执行结果。它有点像是生活中的射箭。</li>
+<li><strong>runBlocking</strong>，我们可以获取协程的执行结果，但这种方式会阻塞代码的执行流程，因为它一般用于测试用途，生产环境当中是不推荐使用的。</li>
+<li><strong>async</strong>，则是很多编程语言当中普遍存在的协程模式。它像是结合了 launch 和 runBlocking 两者的优点。它既不会阻塞当前的执行流程，还可以直接获取协程的执行结果。它有点像是生活中的钓鱼。</li>
+</ul>
+<p><img src="/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/4.png" alt></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/" rel="prev" title="Kotlin协程思维模型">
+      <i class="fa fa-chevron-left"></i> Kotlin协程思维模型
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/22/%E6%8C%82%E8%B5%B7%E5%87%BD%E6%95%B0%EF%BC%9AKotlin%E5%8D%8F%E7%A8%8B%E7%9A%84%E6%A0%B8%E5%BF%83/" rel="next" title="挂起函数：Kotlin协程的核心">
+      挂起函数：Kotlin协程的核心 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#协程调试"><span class="nav-number">1.</span> <span class="nav-text">协程调试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#协程-VM-参数"><span class="nav-number">1.1.</span> <span class="nav-text">协程 VM 参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#断点调试协程"><span class="nav-number">1.2.</span> <span class="nav-text">断点调试协程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协程的三种方式"><span class="nav-number">2.</span> <span class="nav-text">协程的三种方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#launch-启动协程"><span class="nav-number">2.1.</span> <span class="nav-text">launch 启动协程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#runBlocking-启动协程"><span class="nav-number">2.2.</span> <span class="nav-text">runBlocking 启动协程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#async-启动协程"><span class="nav-number">2.3.</span> <span class="nav-text">async 启动协程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">3.</span> <span class="nav-text">小结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

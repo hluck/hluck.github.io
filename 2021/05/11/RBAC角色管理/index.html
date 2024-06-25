@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1.后端1.1 SysRole12345678910111213141516171819202122232425262728293031323334353637383940414243444546package hluck.me.pochi.pojo;import lombok.Data;import java.io.Serializable;&#x2F;** * @author 余一 * @Descrip">
+<meta property="og:type" content="article">
+<meta property="og:title" content="角色管理">
+<meta property="og:url" content="https://hluck.github.io/2021/05/11/RBAC%E8%A7%92%E8%89%B2%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="1.后端1.1 SysRole12345678910111213141516171819202122232425262728293031323334353637383940414243444546package hluck.me.pochi.pojo;import lombok.Data;import java.io.Serializable;&#x2F;** * @author 余一 * @Descrip">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-05-11T07:22:58.043Z">
+<meta property="article:modified_time" content="2021-07-25T09:31:09.934Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="RBAC前后端分离项目">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://hluck.github.io/2021/05/11/RBAC%E8%A7%92%E8%89%B2%E7%AE%A1%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>角色管理 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2021/05/11/RBAC%E8%A7%92%E8%89%B2%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          角色管理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-05-11 15:22:58" itemprop="dateCreated datePublished" datetime="2021-05-11T15:22:58+08:00">2021-05-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-07-25 17:31:09" itemprop="dateModified" datetime="2021-07-25T17:31:09+08:00">2021-07-25</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>21k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>19 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-后端"><a href="#1-后端" class="headerlink" title="1.后端"></a>1.后端</h2><h3 id="1-1-SysRole"><a href="#1-1-SysRole" class="headerlink" title="1.1 SysRole"></a>1.1 SysRole</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.pojo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 角色实体类</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/5/7 13:03</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SysRole</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 角色Id,自增</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Long roleId;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 角色名</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String roleName;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 排序值，越小越靠前</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Integer roleSort;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建人</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String createBy;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建时间</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String createTime;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 更新人</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String updateBy;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 更新时间</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String updateTime;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 逻辑删除，1是0否</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Integer delete;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-SysRoleController"><a href="#1-2-SysRoleController" class="headerlink" title="1.2 SysRoleController"></a>1.2 SysRoleController</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.common.Page;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.common.Result;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysRole;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.service.SysRoleService;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 角色controller</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/5/7 15:02</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/sysRole"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SysRoleController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> SysRoleService sysRoleService;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 添加</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sysRole</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PostMapping</span>(<span class="string">"/save"</span>)</span><br><span class="line">    <span class="keyword">public</span> Result&lt;?&gt; save(<span class="meta">@RequestBody</span> SysRole sysRole)&#123;</span><br><span class="line">        sysRoleService.save(sysRole);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(<span class="string">"添加成功"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 修改</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sysRole</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PutMapping</span>(<span class="string">"/update"</span>)</span><br><span class="line">    <span class="keyword">public</span> Result&lt;?&gt; update(<span class="meta">@RequestBody</span> SysRole sysRole)&#123;</span><br><span class="line">        sysRoleService.update(sysRole);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(<span class="string">"修改成功"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 删除角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@DeleteMapping</span>(<span class="string">"/delete/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="keyword">public</span> Result&lt;?&gt; delete(<span class="meta">@PathVariable</span> Integer id)&#123;</span><br><span class="line">        sysRoleService.delete(id);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(<span class="string">"删除成功"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据id查询</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/get/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Result&lt;SysRole&gt; <span class="title">get</span><span class="params">(@PathVariable Long id)</span></span>&#123;</span><br><span class="line">        SysRole sysRole=sysRoleService.get(id);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(sysRole);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 分页查询</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> page</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PostMapping</span>(<span class="string">"/getByPage"</span>)</span><br><span class="line">    <span class="keyword">public</span> Result&lt;Page&lt;SysRole&gt;&gt; getByPage(<span class="meta">@RequestBody</span> Page&lt;SysRole&gt; page)&#123;</span><br><span class="line">        page = sysRoleService.getByPage(page);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(page);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 查询所有角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/getAll"</span>)</span><br><span class="line">    <span class="keyword">public</span> Result&lt;List&lt;SysRole&gt;&gt; getAll()&#123;</span><br><span class="line">        List&lt;SysRole&gt; list = sysRoleService.getAll();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Result&lt;&gt;(list);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="1-3SysRoleService"><a href="#1-3SysRoleService" class="headerlink" title="1.3SysRoleService"></a>1.3SysRoleService</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.service;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.common.Page;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysRole;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 角色service</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/5/7 13:25</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SysRoleService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 添加角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sysRole</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">save</span><span class="params">(SysRole sysRole)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 修改角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sysRole</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">update</span><span class="params">(SysRole sysRole)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 删除角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> roleId</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">delete</span><span class="params">(Integer roleId)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据id查询角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">SysRole <span class="title">get</span><span class="params">(Long id)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 查询总数</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> page</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Integer <span class="title">countByPage</span><span class="params">(Page&lt;SysRole&gt; page)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 分页查询</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> page</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Page&lt;SysRole&gt; <span class="title">getByPage</span><span class="params">(Page&lt;SysRole&gt; page)</span></span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 查询所有角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">List&lt;SysRole&gt; <span class="title">getAll</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-4-SysRoleServiceImpl"><a href="#1-4-SysRoleServiceImpl" class="headerlink" title="1.4 SysRoleServiceImpl"></a>1.4 SysRoleServiceImpl</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.service.impl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.common.Page;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.mapper.SysRoleMapper;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysRole;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysUser;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.service.SysRoleService;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.utils.IdWorker;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.utils.ShiroUtils;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Service;</span><br><span class="line"><span class="keyword">import</span> org.springframework.transaction.annotation.Transactional;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> 角色service实现类</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/5/7 13:26</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SysRoleServiceImpl</span> <span class="keyword">implements</span> <span class="title">SysRoleService</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> SysRoleMapper sysRoleMapper;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> IdWorker idWorker;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="meta">@Transactional</span>(rollbackFor = Exception<span class="class">.<span class="keyword">class</span>)</span></span><br><span class="line"><span class="class">    <span class="title">public</span> <span class="title">void</span> <span class="title">save</span>(<span class="title">SysRole</span> <span class="title">sysRole</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 设置创建人和修改人</span></span><br><span class="line">        SysUser loginUser = ShiroUtils.getLoginUser();</span><br><span class="line">        String username = loginUser.getUsername();</span><br><span class="line">        sysRole.setCreateBy(username);</span><br><span class="line">        sysRole.setUpdateBy(username);</span><br><span class="line">        sysRoleMapper.save(sysRole);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">(SysRole sysRole)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//设置更新人</span></span><br><span class="line">        SysUser loginUser = ShiroUtils.getLoginUser();</span><br><span class="line">        String username = loginUser.getUsername();</span><br><span class="line">        sysRole.setUpdateBy(username);</span><br><span class="line">        sysRoleMapper.update(sysRole);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delete</span><span class="params">(Integer roleId)</span> </span>&#123;</span><br><span class="line">        sysRoleMapper.delete(roleId);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SysRole <span class="title">get</span><span class="params">(Long id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sysRoleMapper.get(id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">countByPage</span><span class="params">(Page&lt;SysRole&gt; page)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sysRoleMapper.countByPage(page);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Page&lt;SysRole&gt; <span class="title">getByPage</span><span class="params">(Page&lt;SysRole&gt; page)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//设置默认的当前页和每页条数</span></span><br><span class="line">        Integer pageNumber = page.getPageNumber();</span><br><span class="line">        <span class="keyword">if</span> (pageNumber == <span class="keyword">null</span> || pageNumber&lt;<span class="number">1</span>)&#123;</span><br><span class="line">            pageNumber = <span class="number">1</span>;</span><br><span class="line">            page.setPageNumber(pageNumber);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//分页查询</span></span><br><span class="line">        List&lt;SysRole&gt; roleList = sysRoleMapper.getByPage(page);</span><br><span class="line">        <span class="comment">//查询总条数</span></span><br><span class="line">        Integer count = sysRoleMapper.countByPage(page);</span><br><span class="line">        <span class="comment">//设置值</span></span><br><span class="line">        page.setList(roleList);</span><br><span class="line">        page.setTotalCount(count);</span><br><span class="line">        <span class="keyword">return</span> page;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;SysRole&gt; <span class="title">getAll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sysRoleMapper.getAll();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-5-SysRoleMapper"><a href="#1-5-SysRoleMapper" class="headerlink" title="1.5 SysRoleMapper"></a>1.5 SysRoleMapper</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> hluck.me.pochi.mapper;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.common.Page;</span><br><span class="line"><span class="keyword">import</span> hluck.me.pochi.pojo.SysRole;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> 余一</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span> RoleMapper</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/5/7 13:12</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SysRoleMapper</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 添加角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sysRole</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">save</span><span class="params">(SysRole sysRole)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 修改角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> sysRole</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">update</span><span class="params">(SysRole sysRole)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 删除角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> roleId</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">delete</span><span class="params">(Integer roleId)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据id查询角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">SysRole <span class="title">get</span><span class="params">(Long id)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 查询总数</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> page</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Integer <span class="title">countByPage</span><span class="params">(Page&lt;SysRole&gt; page)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 分页查询</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> page</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">List&lt;SysRole&gt; <span class="title">getByPage</span><span class="params">(Page&lt;SysRole&gt; page)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据id查询角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> roleIds</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">List&lt;SysRole&gt; <span class="title">getByIds</span><span class="params">(List&lt;Long&gt; roleIds)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 查询所有角色</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">List&lt;SysRole&gt; <span class="title">getAll</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-6-SysRoleMapper-xml"><a href="#1-6-SysRoleMapper-xml" class="headerlink" title="1.6 SysRoleMapper.xml"></a>1.6 SysRoleMapper.xml</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">mapper</span> <span class="meta-keyword">PUBLIC</span> <span class="meta-string">"-//mybatis.org//DTD Mapper 3.0//EN"</span> <span class="meta-string">"http://mybatis.org/dtd/mybatis-3-mapper.dtd"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">"hluck.me.pochi.mapper.SysRoleMapper"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 通用查询映射结果 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">id</span>=<span class="string">"BaseResultMap"</span> <span class="attr">type</span>=<span class="string">"hluck.me.pochi.pojo.SysRole"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span> <span class="attr">column</span>=<span class="string">"role_id"</span> <span class="attr">property</span>=<span class="string">"roleId"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"role_name"</span> <span class="attr">property</span>=<span class="string">"roleName"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"role_sort"</span> <span class="attr">property</span>=<span class="string">"roleSort"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"create_by"</span> <span class="attr">property</span>=<span class="string">"createBy"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"create_time"</span> <span class="attr">property</span>=<span class="string">"createTime"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"update_by"</span> <span class="attr">property</span>=<span class="string">"updateBy"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"update_time"</span> <span class="attr">property</span>=<span class="string">"updateTime"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">result</span> <span class="attr">column</span>=<span class="string">"deleted"</span> <span class="attr">property</span>=<span class="string">"deleted"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">resultMap</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">insert</span> <span class="attr">id</span>=<span class="string">"save"</span>&gt;</span></span><br><span class="line">        insert into sys_role(role_name,role_sort,create_by,update_by) values (#&#123;roleName&#125;,#&#123;roleSort&#125;,#&#123;createBy&#125;,#&#123;updateBy&#125;)</span><br><span class="line">    <span class="tag">&lt;/<span class="name">insert</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">update</span> <span class="attr">id</span>=<span class="string">"update"</span>&gt;</span></span><br><span class="line">        update sys_role set role_name= #&#123;roleName&#125;, role_sort=#&#123;roleSort&#125;,update_by=#&#123;updateBy&#125; where role_id=#&#123;roleId&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">update</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">update</span> <span class="attr">id</span>=<span class="string">"delete"</span>&gt;</span></span><br><span class="line">        update sys_role set deleted = 1 where role_id = #&#123;roleId&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">update</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"get"</span> <span class="attr">resultMap</span>=<span class="string">"BaseResultMap"</span>&gt;</span></span><br><span class="line">        select role_id,role_name,role_sort,create_by,create_time,update_by,update_time from  sys_role where role_id=#&#123;roleId&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"countByPage"</span> <span class="attr">resultType</span>=<span class="string">"java.lang.Integer"</span>&gt;</span></span><br><span class="line">        select count(*) from sys_role where deleted = 0</span><br><span class="line">        <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">"params.roleName != null and params.roleName !=''"</span>&gt;</span></span><br><span class="line">            and role_name = #&#123;params.roleName&#125;</span><br><span class="line">        <span class="tag">&lt;/<span class="name">if</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"getByPage"</span> <span class="attr">resultMap</span>=<span class="string">"BaseResultMap"</span>&gt;</span></span><br><span class="line">        select role_id,role_name,role_sort,create_by,create_time,update_by,update_time from sys_role where deleted=0</span><br><span class="line">        <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">"params.roleName != null and params.roleName !=''"</span>&gt;</span></span><br><span class="line">            and role_name = #&#123;params.roleName&#125;</span><br><span class="line">        <span class="tag">&lt;/<span class="name">if</span>&gt;</span></span><br><span class="line">        order by role_sort asc</span><br><span class="line">        limit #&#123;index&#125;,#&#123;pageSize&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"getByIds"</span> <span class="attr">resultMap</span>=<span class="string">"BaseResultMap"</span>&gt;</span></span><br><span class="line">        select role_id,role_name,role_sort,create_by,create_time,update_by,update_time from  sys_role where deleted = 0 and role_id in(</span><br><span class="line">             <span class="tag">&lt;<span class="name">foreach</span> <span class="attr">collection</span>=<span class="string">"list"</span> <span class="attr">item</span>=<span class="string">"id"</span> <span class="attr">separator</span>=<span class="string">","</span>&gt;</span></span><br><span class="line">                 #&#123;id&#125;</span><br><span class="line">             <span class="tag">&lt;/<span class="name">foreach</span>&gt;</span></span><br><span class="line">            )</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"getAll"</span> <span class="attr">resultMap</span>=<span class="string">"BaseResultMap"</span>&gt;</span></span><br><span class="line">        select  role_id,role_name from sys_role where deleted = 0</span><br><span class="line">        order by role_sort</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-前端"><a href="#2-前端" class="headerlink" title="2. 前端"></a>2. 前端</h2><h3 id="2-1-API定义"><a href="#2-1-API定义" class="headerlink" title="2.1 API定义"></a>2.1 API定义</h3><p>在 <code>api</code> 目录下创建 <code>sysRole.js</code> 文件 </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> request <span class="keyword">from</span> <span class="string">'@/utils/request.js'</span></span><br><span class="line"><span class="keyword">const</span> groupName= <span class="string">'sysRole'</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span>&#123;</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 添加</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  save(sysRole)&#123;</span><br><span class="line">    <span class="keyword">return</span> request(&#123;</span><br><span class="line">      url: <span class="string">`/<span class="subst">$&#123;groupName&#125;</span>/save`</span>,</span><br><span class="line">      method: <span class="string">'post'</span>,</span><br><span class="line">      data: sysRole</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 修改</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  update(sysRole)&#123;</span><br><span class="line">    <span class="keyword">return</span> request(&#123;</span><br><span class="line">      url: <span class="string">`/<span class="subst">$&#123;groupName&#125;</span>/update`</span>,</span><br><span class="line">      method: <span class="string">'put'</span>,</span><br><span class="line">      data: sysRole</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 分页</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  getByPage(page)&#123;</span><br><span class="line">    <span class="keyword">return</span> request(&#123;</span><br><span class="line">      url: <span class="string">`/<span class="subst">$&#123;groupName&#125;</span>/getByPage`</span>,</span><br><span class="line">      method: <span class="string">'post'</span>,</span><br><span class="line">      data: page</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 删除</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  deleteById(id)&#123;</span><br><span class="line">    <span class="keyword">return</span> request(&#123;</span><br><span class="line">      url: <span class="string">`/<span class="subst">$&#123;groupName&#125;</span>/delete/<span class="subst">$&#123;id&#125;</span>`</span>,</span><br><span class="line">      method: <span class="string">'delete'</span></span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 根据id查询</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="keyword">get</span>(id)&#123;</span><br><span class="line">    <span class="keyword">return</span> request(&#123;</span><br><span class="line">      url: <span class="string">`/<span class="subst">$&#123;groupName&#125;</span>/get/<span class="subst">$&#123;id&#125;</span>`</span>,</span><br><span class="line">      method: <span class="string">'get'</span></span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 查询所有角色</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  getAll()&#123;</span><br><span class="line">    <span class="keyword">return</span> request(&#123;</span><br><span class="line">      url: <span class="string">`/<span class="subst">$&#123;groupName&#125;</span>/getAll`</span>,</span><br><span class="line">      method: <span class="string">'get'</span></span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-路由配置"><a href="#2-2-路由配置" class="headerlink" title="2.2 路由配置"></a>2.2 路由配置</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> asyncRoutes = [</span><br><span class="line">  &#123;</span><br><span class="line">    path: <span class="string">'/'</span>,</span><br><span class="line">    component: Layout,</span><br><span class="line">    redirect: <span class="string">'/dashboard'</span>,</span><br><span class="line">    children: [</span><br><span class="line">      &#123;</span><br><span class="line">        path: <span class="string">'dashboard'</span>,</span><br><span class="line">        component: <span class="function"><span class="params">()</span> =&gt;</span> <span class="keyword">import</span>(<span class="string">'@/views/dashboard/index'</span>),</span><br><span class="line">        name: <span class="string">'Dashboard'</span>,</span><br><span class="line">        meta: &#123; <span class="attr">title</span>: <span class="string">'Dashboard'</span>, <span class="attr">icon</span>: <span class="string">'dashboard'</span>, <span class="attr">affix</span>: <span class="literal">true</span> &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    path: <span class="string">'/sys'</span>,</span><br><span class="line">    component: Layout,</span><br><span class="line">    redirect: <span class="string">'/sys/user'</span>,</span><br><span class="line">    name:<span class="string">'system'</span>,</span><br><span class="line">    meta:&#123;</span><br><span class="line">      title: <span class="string">'系统管理'</span>,</span><br><span class="line">      icon: <span class="string">'documentation'</span></span><br><span class="line">    &#125;,</span><br><span class="line">    children: [</span><br><span class="line">      &#123;</span><br><span class="line">        path: <span class="string">'user'</span>,</span><br><span class="line">        component: <span class="function"><span class="params">()</span> =&gt;</span> <span class="keyword">import</span>(<span class="string">'@/views/system/user/sys-user-list'</span>),</span><br><span class="line">        name: <span class="string">'user'</span>,</span><br><span class="line">        meta: &#123; <span class="attr">title</span>: <span class="string">'后台用户'</span>, <span class="attr">icon</span>: <span class="string">'documentation'</span>&#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        path: <span class="string">'role'</span>,</span><br><span class="line">        component: <span class="function"><span class="params">()</span> =&gt;</span> <span class="keyword">import</span>(<span class="string">'@/views/system/role/sys-role-list'</span>),</span><br><span class="line">        name: <span class="string">'role'</span>,</span><br><span class="line">        meta: &#123; <span class="attr">title</span>: <span class="string">'角色管理'</span>, <span class="attr">icon</span>: <span class="string">'documentation'</span>&#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-页面编写"><a href="#2-3-页面编写" class="headerlink" title="2.3 页面编写"></a>2.3 页面编写</h3><h4 id="sys-role-list"><a href="#sys-role-list" class="headerlink" title="sys-role-list"></a>sys-role-list</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;!-- 搜索栏开始 --&gt;</span><br><span class="line">    &lt;div class&#x3D;&quot;search-form&quot;&gt;</span><br><span class="line">      &lt;el-form :inline&#x3D;&quot;true&quot; :model&#x3D;&quot;page.params&quot; size&#x3D;&quot;small&quot;&gt;</span><br><span class="line">            &lt;el-form-item&gt;</span><br><span class="line">              &lt;el-input clearable v-model&#x3D;&quot;page.params.roleName&quot; placeholder&#x3D;&quot;请输入角色名&quot;&gt;&lt;&#x2F;el-input&gt;</span><br><span class="line">            &lt;&#x2F;el-form-item&gt;</span><br><span class="line">            &lt;el-form-item&gt;</span><br><span class="line">              &lt;el-button type&#x3D;&quot;primary&quot; icon&#x3D;&quot;el-icon-search&quot; @click&#x3D;&quot;search&quot;&gt;查询&lt;&#x2F;el-button&gt;</span><br><span class="line">              &lt;el-button type&#x3D;&quot;warning&quot;icon&#x3D;&quot;el-icon-refresh</span><br><span class="line">      &quot; @click&#x3D;&quot;page.params &#x3D; &#123;&#125;&quot; &gt;重置&lt;&#x2F;el-button&gt;</span><br><span class="line">            &lt;&#x2F;el-form-item&gt;</span><br><span class="line">          &lt;&#x2F;el-form&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">    &lt;!-- 搜索栏结束 --&gt;</span><br><span class="line">    &lt;!-- 操作栏按钮 --&gt;</span><br><span class="line">    &lt;div class&#x3D;&quot;button-group&quot;&gt;</span><br><span class="line">      &lt;el-button type&#x3D;&quot;primary&quot; size&#x3D;&quot;small&quot; icon&#x3D;&quot;el-icon-plus&quot; @click&#x3D;&quot;toAdd&quot; &gt;添加&lt;&#x2F;el-button&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">    &lt;!-- 操作栏按钮结束 --&gt;</span><br><span class="line">    &lt;!-- 数据表格开始 --&gt;</span><br><span class="line">    &lt;div class&#x3D;&quot;data-table&quot;&gt;</span><br><span class="line">        &lt;el-table header-row-class-name&#x3D;&quot;pochi-table-header&quot; :data&#x3D;&quot;dataPage.list&quot; stripe style&#x3D;&quot;width: 100%&quot;&gt;</span><br><span class="line">            &lt;el-table-column prop&#x3D;&quot;roleId&quot; label&#x3D;&quot;角色编号&quot;&#x2F;&gt;</span><br><span class="line">            &lt;el-table-column prop&#x3D;&quot;roleName&quot; label&#x3D;&quot;角色名&quot;&#x2F;&gt;</span><br><span class="line">            &lt;el-table-column prop&#x3D;&quot;roleSort&quot; label&#x3D;&quot;排序&quot;&#x2F;&gt;</span><br><span class="line">            &lt;el-table-column prop&#x3D;&quot;createBy&quot; label&#x3D;&quot;创建人&quot;&#x2F;&gt;</span><br><span class="line">            &lt;el-table-column prop&#x3D;&quot;createTime&quot; label&#x3D;&quot;创建时间&quot;&#x2F;&gt;</span><br><span class="line">            &lt;el-table-column prop&#x3D;&quot;updateBy&quot; label&#x3D;&quot;更新人&quot;&#x2F;&gt;</span><br><span class="line">            &lt;el-table-column prop&#x3D;&quot;updateTime&quot; label&#x3D;&quot;更新时间&quot;&gt;&lt;&#x2F;el-table-column&gt;</span><br><span class="line">            &lt;el-table-column prop&#x3D;&quot;note&quot; label&#x3D;&quot;备注&quot;&#x2F;&gt;</span><br><span class="line">            &lt;el-table-column label&#x3D;&quot;操作&quot;&gt;</span><br><span class="line">              &lt;template slot-scope&#x3D;&quot;&#123;row&#125;&quot;&gt;</span><br><span class="line">                &lt;el-dropdown class&#x3D;&quot;handle-button&quot;&gt;</span><br><span class="line">                  &lt;span class&#x3D;&quot;el-dropdown-link&quot;&gt;</span><br><span class="line">                    操作&lt;i class&#x3D;&quot;el-icon-arrow-down el-icon--right&quot;&gt;&lt;&#x2F;i&gt;</span><br><span class="line">                  &lt;&#x2F;span&gt;</span><br><span class="line">                  &lt;el-dropdown-menu slot&#x3D;&quot;dropdown&quot;&gt;</span><br><span class="line">                    &lt;el-dropdown-item&gt;</span><br><span class="line">                      &lt;el-button type&#x3D;&quot;text&quot; icon&#x3D;&quot;el-icon-edit&quot; @click&#x3D;&quot;toUpdate(row.roleId)&quot;&gt;修改&lt;&#x2F;el-button&gt;</span><br><span class="line">                    &lt;&#x2F;el-dropdown-item&gt;</span><br><span class="line">                    &lt;el-dropdown-item @click.native&#x3D;&quot;deleteById(row.roleId)&quot;&gt;</span><br><span class="line">                      &lt;el-button type&#x3D;&quot;text&quot; icon&#x3D;&quot;el-icon-delete&quot;&gt;删除&lt;&#x2F;el-button&gt;</span><br><span class="line">                    &lt;&#x2F;el-dropdown-item&gt;</span><br><span class="line">                  &lt;&#x2F;el-dropdown-menu&gt;</span><br><span class="line">                &lt;&#x2F;el-dropdown&gt;</span><br><span class="line">              &lt;&#x2F;template&gt;</span><br><span class="line">            &lt;&#x2F;el-table-column&gt;</span><br><span class="line">         &lt;&#x2F;el-table&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">    &lt;!-- 数据表格结束 --&gt;</span><br><span class="line">    &lt;!-- 添加用户弹窗 --&gt;</span><br><span class="line">    &lt;el-dialog</span><br><span class="line">      title&#x3D;&quot;添加用户&quot;</span><br><span class="line">      :visible.sync&#x3D;&quot;addDialog&quot;</span><br><span class="line">      width&#x3D;&quot;45%&quot;&gt;</span><br><span class="line">       &lt;sysRoleAdd @after&#x3D;&quot;getByPage&quot; @close&#x3D;&quot;closeDialog&quot;&#x2F;&gt;</span><br><span class="line">    &lt;&#x2F;el-dialog&gt;</span><br><span class="line">    &lt;!-- 添加用户弹窗结束 --&gt;</span><br><span class="line">    &lt;!-- 修改用户弹窗 --&gt;</span><br><span class="line">    &lt;el-dialog</span><br><span class="line">      title&#x3D;&quot;修改用户&quot;</span><br><span class="line">      :visible.sync&#x3D;&quot;updateDialog&quot;</span><br><span class="line">      width&#x3D;&quot;45%&quot;&gt;</span><br><span class="line">       &lt;sysRoleUpdate :active-id&#x3D;&quot;activeId&quot; @after&#x3D;&quot;getByPage&quot; @close&#x3D;&quot;closeDialog&quot;&#x2F;&gt;</span><br><span class="line">    &lt;&#x2F;el-dialog&gt;</span><br><span class="line">    &lt;!-- 修改用户弹窗结束 --&gt;</span><br><span class="line">    &lt;!-- 分页组件开始 --&gt;</span><br><span class="line">    &lt;el-pagination</span><br><span class="line">          @size-change&#x3D;&quot;handleSizeChange&quot;</span><br><span class="line">          @current-change&#x3D;&quot;handleCurrentChange&quot;</span><br><span class="line">          :current-page&#x3D;&quot;page.pageNumber&quot;</span><br><span class="line">          :page-sizes&#x3D;&quot;[10, 20, 30, 50]&quot;</span><br><span class="line">          :page-size&#x3D;&quot;10&quot;</span><br><span class="line">          layout&#x3D;&quot;total, sizes, prev, pager, next, jumper&quot;</span><br><span class="line">          :total&#x3D;&quot;dataPage.totalCount&quot;&gt;</span><br><span class="line">        &lt;&#x2F;el-pagination&gt;</span><br><span class="line">    &lt;!-- 分页组件结束 --&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">  import sysRoleApi from &#39;@&#x2F;api&#x2F;sys-role.js&#39;</span><br><span class="line">  import sysRoleAdd from &#39;.&#x2F;sys-role-add.vue&#39;</span><br><span class="line">  import sysRoleUpdate from &#39;.&#x2F;sys-role-update.vue&#39;</span><br><span class="line">  export default&#123;</span><br><span class="line">    data()&#123;</span><br><span class="line">      return&#123;</span><br><span class="line">        &#x2F;&#x2F;分页对象</span><br><span class="line">        page:&#123;</span><br><span class="line">          &#x2F;&#x2F;分页参数</span><br><span class="line">          params:&#123;&#125;,</span><br><span class="line">          &#x2F;&#x2F;当前页</span><br><span class="line">          pageNumber: 1,</span><br><span class="line">          &#x2F;&#x2F;每页条数</span><br><span class="line">          pageSize: 10</span><br><span class="line">        &#125;,</span><br><span class="line">        &#x2F;&#x2F;当前点击的用户</span><br><span class="line">        activeId: &#39;&#39;,</span><br><span class="line">        &#x2F;&#x2F;数据page对象</span><br><span class="line">        dataPage:&#123;&#125;,</span><br><span class="line">        &#x2F;&#x2F;控制添加弹窗展示</span><br><span class="line">        addDialog: false,</span><br><span class="line">        &#x2F;&#x2F;控制修改弹窗展示</span><br><span class="line">        updateDialog: false</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    created() &#123;</span><br><span class="line">      this.getByPage()</span><br><span class="line">    &#125;,</span><br><span class="line">    components:&#123;</span><br><span class="line">      sysRoleAdd,</span><br><span class="line">      sysRoleUpdate</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">      &#x2F;&#x2F;搜索</span><br><span class="line">      search()&#123;</span><br><span class="line">          this.pageNumber &#x3D; 1,</span><br><span class="line">          this.getByPage()</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;关闭弹窗</span><br><span class="line">      closeDialog()&#123;</span><br><span class="line">        this.addDialog &#x3D; false</span><br><span class="line">        this.updateDialog &#x3D; false</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;打开添加弹窗</span><br><span class="line">      toAdd()&#123;</span><br><span class="line">        this.addDialog &#x3D; true</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;分页查询</span><br><span class="line">      getByPage()&#123;</span><br><span class="line">        sysRoleApi.getByPage(this.page).then(res &#x3D;&gt; &#123;</span><br><span class="line">            this.dataPage &#x3D; res.data</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;每页条数变更时触发</span><br><span class="line">      handleSizeChange(val)&#123;</span><br><span class="line">        this.page.pageNumber &#x3D; 1</span><br><span class="line">        this.getByPage()</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;当前页发生改变</span><br><span class="line">      handleCurrentChange(val)&#123;</span><br><span class="line">        this.page.pageNumber &#x3D; val</span><br><span class="line">        this.getByPage()</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;打开添加窗口</span><br><span class="line">      toAdd()&#123;</span><br><span class="line">        this.addDialog&#x3D;true</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;打开修改窗口</span><br><span class="line">      toUpdate(id)&#123;</span><br><span class="line">        this.activeId &#x3D; id</span><br><span class="line">        this.updateDialog&#x3D;true</span><br><span class="line">      &#125;,</span><br><span class="line">      deleteById(id)&#123;</span><br><span class="line">        &#x2F;&#x2F;根据id删除</span><br><span class="line">          this.$confirm(&#39;是否删除该角色?&#39;, &#39;提示&#39;, &#123;</span><br><span class="line">                    confirmButtonText: &#39;确定&#39;,</span><br><span class="line">                    cancelButtonText: &#39;取消&#39;,</span><br><span class="line">                    type: &#39;error&#39;</span><br><span class="line">                  &#125;).then(() &#x3D;&gt; &#123;</span><br><span class="line">                    sysRoleApi.deleteById(id).then(res &#x3D;&gt;&#123;</span><br><span class="line">                      this.$message.success(res.msg)</span><br><span class="line">                      this.getByPage()</span><br><span class="line">                    &#125;)</span><br><span class="line">           &#125;);</span><br><span class="line">        </span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&lt;&#x2F;script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style&gt;</span><br><span class="line">&lt;&#x2F;style&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="sys-role-add"><a href="#sys-role-add" class="headerlink" title="sys-role-add"></a>sys-role-add</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;el-form :model&#x3D;&quot;sysRole&quot; :rules&#x3D;&quot;rules&quot; label-width&#x3D;&quot;80px&quot; size&#x3D;&quot;small&quot; class&#x3D;&quot;demo-form-inline&quot;&gt;</span><br><span class="line">      &lt;el-row :gutter&#x3D;&quot;20&quot;&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;12&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;角色名&quot; prop&#x3D;&quot;roleName&quot;&gt;</span><br><span class="line">            &lt;el-input v-model&#x3D;&quot;sysRole.roleName&quot; clearable placeholder&#x3D;&quot;请输入角色名&quot;&gt;&lt;&#x2F;el-input&gt;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;12&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;排序&quot;&gt;</span><br><span class="line">            &lt;el-input-number style&#x3D;&quot;width: 100%;&quot; v-model&#x3D;&quot;sysRole.roleSort&quot; controls-position&#x3D;&quot;right&quot; :min&#x3D;&quot;1&quot; &gt;&lt;&#x2F;el-input-number&gt;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">      &lt;&#x2F;el-row&gt;</span><br><span class="line">      &lt;el-form-item&gt;</span><br><span class="line">        &lt;el-button type&#x3D;&quot;primary&quot; @click&#x3D;&quot;add&quot;&gt;添加&lt;&#x2F;el-button&gt;</span><br><span class="line">        &lt;el-button type&#x3D;&quot;warning&quot; @click&#x3D;&quot;sysUser&#x3D;&#123;&#125;&quot;&gt;重置&lt;&#x2F;el-button&gt;</span><br><span class="line">      &lt;&#x2F;el-form-item&gt;</span><br><span class="line">    &lt;&#x2F;el-form&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">  import sysRoleApi from &#39;@&#x2F;api&#x2F;sys-role.js&#39;</span><br><span class="line">  export default&#123;</span><br><span class="line">    data()&#123;</span><br><span class="line">      return&#123;</span><br><span class="line">        &#x2F;&#x2F;角色表单</span><br><span class="line">        sysRole: &#123;&#125;,</span><br><span class="line">        &#x2F;&#x2F;表单校验对象</span><br><span class="line">        rules:&#123;</span><br><span class="line">          roleName: [</span><br><span class="line">            &#123; required: true, message: &#39;请输入角色名&#39;, trigger: &#39;blur&#39; &#125;</span><br><span class="line">          ]</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods: &#123;</span><br><span class="line">      &#x2F;&#x2F;添加</span><br><span class="line">      add()&#123;</span><br><span class="line">        &#x2F;&#x2F; 表单校验</span><br><span class="line">        sysRoleApi.save(this.sysRole).then(res &#x3D;&gt; &#123;</span><br><span class="line">          this.$message.success(res.msg)</span><br><span class="line">          &#x2F;&#x2F;关闭对话框并刷新列表</span><br><span class="line">          this.$emit(&#39;close&#39;)</span><br><span class="line">          this.$emit(&#39;after&#39;)</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style&gt;</span><br><span class="line">&lt;&#x2F;style&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="sys-role-update"><a href="#sys-role-update" class="headerlink" title="sys-role-update"></a>sys-role-update</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;el-form :model&#x3D;&quot;sysRole&quot; :rules&#x3D;&quot;rules&quot; label-width&#x3D;&quot;80px&quot; size&#x3D;&quot;small&quot; class&#x3D;&quot;demo-form-inline&quot;&gt;</span><br><span class="line">      &lt;el-row :gutter&#x3D;&quot;20&quot;&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;12&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;角色名&quot; prop&#x3D;&quot;roleName&quot;&gt;</span><br><span class="line">            &lt;el-input v-model&#x3D;&quot;sysRole.roleName&quot; clearable placeholder&#x3D;&quot;请输入角色名&quot;&gt;&lt;&#x2F;el-input&gt;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">        &lt;el-col :span&#x3D;&quot;12&quot;&gt;</span><br><span class="line">          &lt;el-form-item label&#x3D;&quot;排序&quot;&gt;</span><br><span class="line">            &lt;el-input-number style&#x3D;&quot;width: 100%;&quot; v-model&#x3D;&quot;sysRole.roleSort&quot; controls-position&#x3D;&quot;right&quot; :min&#x3D;&quot;1&quot; &gt;&lt;&#x2F;el-input-number&gt;</span><br><span class="line">          &lt;&#x2F;el-form-item&gt;</span><br><span class="line">        &lt;&#x2F;el-col&gt;</span><br><span class="line">      &lt;&#x2F;el-row&gt;</span><br><span class="line">      &lt;el-form-item&gt;</span><br><span class="line">        &lt;el-button type&#x3D;&quot;primary&quot; @click&#x3D;&quot;update&quot;&gt;修改&lt;&#x2F;el-button&gt;</span><br><span class="line">        &lt;el-button type&#x3D;&quot;warning&quot; @click&#x3D;&quot;sysUser&#x3D;&#123;&#125;&quot;&gt;重置&lt;&#x2F;el-button&gt;</span><br><span class="line">      &lt;&#x2F;el-form-item&gt;</span><br><span class="line">    &lt;&#x2F;el-form&gt;</span><br><span class="line">  &lt;&#x2F;div&gt;</span><br><span class="line">&lt;&#x2F;template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">  import sysRoleApi from &#39;@&#x2F;api&#x2F;sys-role.js&#39;</span><br><span class="line">  export default&#123;</span><br><span class="line">    props:&#123;</span><br><span class="line">      &#x2F;&#x2F;父组件传递的角色ID</span><br><span class="line">      activeId: &#123;</span><br><span class="line">        type: String,</span><br><span class="line">        default: null</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    data()&#123;</span><br><span class="line">      return&#123;</span><br><span class="line">        &#x2F;&#x2F;角色表单</span><br><span class="line">        sysRole: &#123;&#125;,</span><br><span class="line">        &#x2F;&#x2F;表单校验对象</span><br><span class="line">        rules:&#123;</span><br><span class="line">          roleName: [</span><br><span class="line">            &#123; required: true, message: &#39;请输入角色名&#39;, trigger: &#39;blur&#39; &#125;</span><br><span class="line">          ]</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    watch:&#123;</span><br><span class="line">      activeId:&#123;</span><br><span class="line">        immediate: true,</span><br><span class="line">        handler: function(newVal,oldVal)&#123;</span><br><span class="line">          console.log(oldVal+&quot;$$$&quot;+newVal)</span><br><span class="line">          this.getById(newVal)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods: &#123;</span><br><span class="line">      update()&#123;</span><br><span class="line">        &#x2F;&#x2F;更新角色</span><br><span class="line">        sysRoleApi.update(this.sysRole).then(res &#x3D;&gt; &#123;</span><br><span class="line">          this.$message.success(res.msg)</span><br><span class="line">          &#x2F;&#x2F;关闭对话框并刷新列表</span><br><span class="line">          this.$emit(&#39;close&#39;)</span><br><span class="line">          this.$emit(&#39;after&#39;)</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;,</span><br><span class="line">      &#x2F;&#x2F;根据id查询</span><br><span class="line">      getById(id)&#123;</span><br><span class="line">        sysRoleApi.get(id).then(res &#x3D;&gt; &#123;</span><br><span class="line">          this.sysRole &#x3D; res.data</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style&gt;</span><br><span class="line">&lt;&#x2F;style&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/RBAC%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E9%A1%B9%E7%9B%AE/" rel="tag"># RBAC前后端分离项目</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/11/RBAC%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86/" rel="prev" title="RBAC用户管理">
+      <i class="fa fa-chevron-left"></i> RBAC用户管理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/11/RBAC%E7%94%A8%E6%88%B7%E8%A7%92%E8%89%B2/" rel="next" title="RBAC用户角色">
+      RBAC用户角色 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-后端"><span class="nav-number">1.</span> <span class="nav-text">1.后端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-SysRole"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 SysRole</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-SysRoleController"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 SysRoleController</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3SysRoleService"><span class="nav-number">1.3.</span> <span class="nav-text">1.3SysRoleService</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-SysRoleServiceImpl"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 SysRoleServiceImpl</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-SysRoleMapper"><span class="nav-number">1.5.</span> <span class="nav-text">1.5 SysRoleMapper</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-6-SysRoleMapper-xml"><span class="nav-number">1.6.</span> <span class="nav-text">1.6 SysRoleMapper.xml</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-前端"><span class="nav-number">2.</span> <span class="nav-text">2. 前端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-API定义"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 API定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-路由配置"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 路由配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-页面编写"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 页面编写</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#sys-role-list"><span class="nav-number">2.3.1.</span> <span class="nav-text">sys-role-list</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sys-role-add"><span class="nav-number">2.3.2.</span> <span class="nav-text">sys-role-add</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sys-role-update"><span class="nav-number">2.3.3.</span> <span class="nav-text">sys-role-update</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

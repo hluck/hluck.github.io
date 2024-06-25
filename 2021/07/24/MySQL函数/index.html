@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1.统计函数1.Count返回行的总数12select count(*) |count(列名) from table_name 		[WHERE where_definition]  1.统计一个班级共有多少个学生 1select count(*) from student  2.统计数学成绩大于90的学生有多少个 12select count(*) from student 		where ma">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL函数">
+<meta property="og:url" content="https://hluck.github.io/2021/07/24/MySQL%E5%87%BD%E6%95%B0/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="1.统计函数1.Count返回行的总数12select count(*) |count(列名) from table_name 		[WHERE where_definition]  1.统计一个班级共有多少个学生 1select count(*) from student  2.统计数学成绩大于90的学生有多少个 12select count(*) from student 		where ma">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2021/07/24/MySQL%E5%87%BD%E6%95%B0/1.png">
+<meta property="og:image" content="https://hluck.github.io/2021/07/24/MySQL%E5%87%BD%E6%95%B0/2.png">
+<meta property="og:image" content="https://hluck.github.io/2021/07/24/MySQL%E5%87%BD%E6%95%B0/3.png">
+<meta property="og:image" content="https://hluck.github.io/2021/07/24/MySQL%E5%87%BD%E6%95%B0/4.png">
+<meta property="og:image" content="https://hluck.github.io/2021/07/24/MySQL%E5%87%BD%E6%95%B0/5.png">
+<meta property="article:published_time" content="2021-07-24T01:27:33.070Z">
+<meta property="article:modified_time" content="2021-08-04T02:49:45.581Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="重拾MySQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2021/07/24/MySQL%E5%87%BD%E6%95%B0/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2021/07/24/MySQL%E5%87%BD%E6%95%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MySQL函数 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2021/07/24/MySQL%E5%87%BD%E6%95%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL函数
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-07-24 09:27:33" itemprop="dateCreated datePublished" datetime="2021-07-24T09:27:33+08:00">2021-07-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-08-04 10:49:45" itemprop="dateModified" datetime="2021-08-04T10:49:45+08:00">2021-08-04</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-统计函数"><a href="#1-统计函数" class="headerlink" title="1.统计函数"></a>1.统计函数</h2><h3 id="1-Count返回行的总数"><a href="#1-Count返回行的总数" class="headerlink" title="1.Count返回行的总数"></a>1.Count返回行的总数</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) |<span class="keyword">count</span>(列名) <span class="keyword">from</span> table_name </span><br><span class="line">		[<span class="keyword">WHERE</span> where_definition]</span><br></pre></td></tr></table></figure>
+
+<p>1.统计一个班级共有多少个学生</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> student</span><br></pre></td></tr></table></figure>
+
+<p>2.统计数学成绩大于90的学生有多少个</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> student </span><br><span class="line">		<span class="keyword">where</span> math &gt; <span class="number">90</span></span><br></pre></td></tr></table></figure>
+
+<p>3.统计总分大于250的人数有多少个</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> student </span><br><span class="line">		<span class="keyword">where</span> (chinese+english+math) &gt;<span class="number">250</span></span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+<h4 id="count-和count-列-的区别"><a href="#count-和count-列-的区别" class="headerlink" title="count(*)和count(列)的区别"></a>count(*)和count(列)的区别</h4><p>*<em>count( * )返回满足条件的记录的行数 *</em></p>
+<p><strong>count(列)统计满足条件的某列有多少个，但是会排除为null的列</strong></p>
+<h3 id="2-sum函数的使用"><a href="#2-sum函数的使用" class="headerlink" title="2.sum函数的使用"></a>2.sum函数的使用</h3><p>1.统计一个班级的数学总成绩</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">sum</span>(math) <span class="keyword">from</span> student</span><br></pre></td></tr></table></figure>
+
+<p>2.统计一个班级语文、英语、数学各科的总成绩</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">sum</span>(chinese),<span class="keyword">sum</span>(english),<span class="keyword">sum</span>(math) <span class="keyword">from</span> student</span><br></pre></td></tr></table></figure>
+
+<p>3.统计一个班级语文、英语、数学的成绩总和</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">sum</span>(chinese+english+math) <span class="keyword">from</span> student</span><br></pre></td></tr></table></figure>
+
+<p>4.统计一个班级语文成绩平均分</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">sum</span>(chinese)/<span class="keyword">count</span>(*) <span class="keyword">from</span> student</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-avg的使用"><a href="#3-avg的使用" class="headerlink" title="3.avg的使用"></a>3.avg的使用</h3><p>求一个班级数学平均分</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">avg</span>(math) <span class="keyword">from</span> student</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-max和min的使用"><a href="#4-max和min的使用" class="headerlink" title="4.max和min的使用"></a>4.max和min的使用</h3><p>1.求班级的最高分和最低分</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">max</span>(chinese+math+english),<span class="keyword">min</span>(chinese+math+english) <span class="keyword">from</span> student</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-分组统计"><a href="#2-分组统计" class="headerlink" title="2.分组统计"></a>2.分组统计</h2><h4 id="1-使用group-by子句对列进行分组"><a href="#1-使用group-by子句对列进行分组" class="headerlink" title="1.使用group  by子句对列进行分组"></a>1.使用group  by子句对列进行分组</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> column1,column2,column3 .. <span class="keyword">FROM</span> table_name </span><br><span class="line">		<span class="keyword">group</span> <span class="keyword">by</span> <span class="keyword">column</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-使用having子句对分组后的结果进行过滤"><a href="#2-使用having子句对分组后的结果进行过滤" class="headerlink" title="2.使用having子句对分组后的结果进行过滤"></a>2.使用having子句对分组后的结果进行过滤</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> column1,column2,column3..</span><br><span class="line">		<span class="keyword">FROM</span> table_name </span><br><span class="line">		<span class="keyword">group</span> <span class="keyword">by</span> culumn <span class="keyword">having</span> ...</span><br></pre></td></tr></table></figure>
+
+<p>1.显示每个部门的平均工资和最高工资</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">avg</span>(salary),<span class="keyword">max</span>(salary) deptno <span class="keyword">from</span> employe </span><br><span class="line">		<span class="keyword">group</span> <span class="keyword">by</span> deptno</span><br></pre></td></tr></table></figure>
+
+<p>2.显示每个部门的每种岗位的平均工资和最低工资</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">avg</span>(salary),<span class="keyword">min</span>(salary),deptno,job <span class="keyword">from</span> employe </span><br><span class="line">		<span class="keyword">group</span> <span class="keyword">by</span> deptno,job</span><br></pre></td></tr></table></figure>
+
+<p>3.显示平均工资低于2000的部门号和它的平均工资</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> deptno,<span class="keyword">avg</span>(salary) <span class="keyword">from</span> employe</span><br><span class="line">		<span class="keyword">group</span> <span class="keyword">by</span> deptno </span><br><span class="line">		<span class="keyword">having</span> <span class="keyword">avg</span>(salary)&lt;<span class="number">2000</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-字符串相关函数"><a href="#3-字符串相关函数" class="headerlink" title="3.字符串相关函数"></a>3.字符串相关函数</h2><p><img src="/2021/07/24/MySQL%E5%87%BD%E6%95%B0/1.png" alt></p>
+<h3 id="1-CHARSET-str-返回字符串字符集"><a href="#1-CHARSET-str-返回字符串字符集" class="headerlink" title="1.CHARSET(str) 返回字符串字符集"></a>1.CHARSET(str) 返回字符串字符集</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">CHARSET</span>(<span class="keyword">name</span>) <span class="keyword">FROM</span> system_role</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/07/24/MySQL%E5%87%BD%E6%95%B0/2.png" alt></p>
+<h3 id="2-CONCAT-string1-string2-…-连接字符串"><a href="#2-CONCAT-string1-string2-…-连接字符串" class="headerlink" title="2.CONCAT(string1[,string2,…]) 连接字符串"></a>2.CONCAT(string1[,string2,…]) 连接字符串</h3><h3 id="3-INSTR-string-substring-返回substring在string中出现的位置，没有返回0"><a href="#3-INSTR-string-substring-返回substring在string中出现的位置，没有返回0" class="headerlink" title="3.INSTR(string,substring)返回substring在string中出现的位置，没有返回0"></a>3.INSTR(string,substring)返回substring在string中出现的位置，没有返回0</h3><h3 id="4-UCASE-str-转换成大写"><a href="#4-UCASE-str-转换成大写" class="headerlink" title="4.UCASE(str) 转换成大写"></a>4.UCASE(str) 转换成大写</h3><h3 id="5-LCASE-str-转换成小写"><a href="#5-LCASE-str-转换成小写" class="headerlink" title="5.LCASE(str)转换成小写"></a>5.LCASE(str)转换成小写</h3><h3 id="6-LEFT-string2-length-从string2中的左边起取length个字符"><a href="#6-LEFT-string2-length-从string2中的左边起取length个字符" class="headerlink" title="6.LEFT(string2,length) 从string2中的左边起取length个字符"></a>6.LEFT(string2,length) 从string2中的左边起取length个字符</h3><h3 id="7-LENHTH-str-String长度（按照字节"><a href="#7-LENHTH-str-String长度（按照字节" class="headerlink" title="7.LENHTH(str) String长度（按照字节)"></a>7.LENHTH(str) String长度（按照字节)</h3><h3 id="8-REPLACE-str-search-str-replace-str-在str中，用replace-str替换search-str"><a href="#8-REPLACE-str-search-str-replace-str-在str中，用replace-str替换search-str" class="headerlink" title="8.REPLACE(str,search_str,replace_str)  在str中，用replace_str替换search_str"></a>8.REPLACE(str,search_str,replace_str)  在str中，用replace_str替换search_str</h3><h3 id="9-STRCMP-string1-string2-逐字符比较两字符串的大小"><a href="#9-STRCMP-string1-string2-逐字符比较两字符串的大小" class="headerlink" title="9.STRCMP(string1,string2) 逐字符比较两字符串的大小"></a>9.STRCMP(string1,string2) 逐字符比较两字符串的大小</h3><h3 id="10-SUBSTRING-str-position-length-从str的position开始，取length个字符，position是从1起"><a href="#10-SUBSTRING-str-position-length-从str的position开始，取length个字符，position是从1起" class="headerlink" title="10.SUBSTRING(str,position [,length]) 从str的position开始，取length个字符，position是从1起"></a>10.SUBSTRING(str,position [,length]) 从str的position开始，取length个字符，position是从1起</h3><h3 id="11-LTRIM-string2-RTRIM-string2-trim去除前端或后端空隔"><a href="#11-LTRIM-string2-RTRIM-string2-trim去除前端或后端空隔" class="headerlink" title="11.LTRIM(string2)  RTRIM(string2)  trim去除前端或后端空隔"></a>11.LTRIM(string2)  RTRIM(string2)  trim去除前端或后端空隔</h3><p>1.以首字母小写的方式显示所有员工emp的姓名</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">concat</span>(<span class="keyword">lcase</span>(<span class="keyword">substring</span>(employe_name,<span class="number">1</span>,<span class="number">1</span>)),<span class="keyword">substring</span>(employe_name,<span class="number">2</span>)) <span class="keyword">from</span> emp</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-数学相关函数"><a href="#4-数学相关函数" class="headerlink" title="4.数学相关函数"></a>4.数学相关函数</h2><p><img src="/2021/07/24/MySQL%E5%87%BD%E6%95%B0/3.png" alt></p>
+<p>1.下面的含义是8是十进制的8，转成2进制输出</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">CONV</span>(<span class="number">8</span>,<span class="number">10</span>,<span class="number">2</span>) <span class="keyword">FROM</span> DUAL;</span><br></pre></td></tr></table></figure>
+
+<p>2.如果使用rand()每次返回不同的随机数，其范围为 0&lt;=  v &lt;= 1.0</p>
+<p>​    如果使用rand(seed) 返回随机数，范围为 0&lt;=  v &lt;= 1.0，如果seed不变，该随机数也不变了<br>3.round() 将一个小数四舍五入取整</p>
+<h2 id="5-时间日期相关函数"><a href="#5-时间日期相关函数" class="headerlink" title="5.时间日期相关函数"></a>5.时间日期相关函数</h2><p><img src="/2021/07/24/MySQL%E5%87%BD%E6%95%B0/4.png" alt></p>
+<p><strong>1.DATE_ADD()中的INTERVAL后面可以是 year,minute,second,day等</strong></p>
+<p><strong>2.DATE_SUB()中的INTERVAL后面可以是 year,minute,second,hour,day等</strong></p>
+<p><strong>3.DATEDIFF(date1,date2)得到的是天数，而且是date1减去date2的天数，因此可以取负数</strong></p>
+<p><strong>4.这四个函数的日期类型可以是，date,datetime,或者timestamp</strong></p>
+<p><strong>5.unix_timestamp():返回的是1970-1-1 到现在的秒数</strong></p>
+<p><strong>6.FROM_UNIXTIME(): 可以把一个unix_timestamp秒数[时间戳]，转成指定格式的日期，%Y-%m-%d格式是规定好的，表示年月日，在开发中可以存放一个整数，然后表示时间，通过FROM_UNIXTIME转换</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> from_unixtime(<span class="number">1618483498</span>,<span class="string">'%Y-%m-%d'</span>) <span class="keyword">from</span> dual;</span><br></pre></td></tr></table></figure>
+
+<p>1.显示所有新闻信息，发布日期只显示日期，不显示时间</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">id</span>,<span class="keyword">content</span>,<span class="built_in">date</span>(send_time) <span class="keyword">from</span> mes;</span><br></pre></td></tr></table></figure>
+
+<p>2.请查询在十分钟内发布的贴子</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> mes </span><br><span class="line">	<span class="keyword">where</span> <span class="keyword">date_add</span>(send_time,<span class="built_in">interval</span> <span class="number">10</span> <span class="keyword">minute</span>) &gt;= <span class="keyword">now</span>();</span><br></pre></td></tr></table></figure>
+
+<p>3.求出2011-11-11和1990-1-1相差多少天</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">datediff</span>(<span class="string">'2011-11-11'</span>,<span class="string">'1990-1-1'</span>) <span class="keyword">from</span> dual;</span><br></pre></td></tr></table></figure>
+
+<p>4.求出你活了多少天？</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">datediff</span>(<span class="keyword">now</span>(),<span class="string">'1998-02-08'</span>) <span class="keyword">from</span> dual;</span><br></pre></td></tr></table></figure>
+
+<p>5.如果你能活80岁，求出你还能活多少天</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">datediff</span>(<span class="keyword">date_add</span>(<span class="string">'1998-02-08'</span>,<span class="built_in">interval</span> <span class="number">80</span> <span class="keyword">year</span>),<span class="keyword">now</span>()) <span class="keyword">from</span> dual;</span><br></pre></td></tr></table></figure>
+
+<h2 id="6-加密和系统函数"><a href="#6-加密和系统函数" class="headerlink" title="6.加密和系统函数"></a>6.加密和系统函数</h2><p><img src="/2021/07/24/MySQL%E5%87%BD%E6%95%B0/5.png" alt></p>
+<p>user()可以查看登录到mysql的有哪些用户，以及登录的IP</p>
+<h2 id="7-流程控制函数"><a href="#7-流程控制函数" class="headerlink" title="7.流程控制函数"></a>7.流程控制函数</h2><h3 id="1-IF-expr1-expr2-expr3-如果expr1为True-则返回expr2-否则-false-返回expr3"><a href="#1-IF-expr1-expr2-expr3-如果expr1为True-则返回expr2-否则-false-返回expr3" class="headerlink" title="1.IF(expr1,expr2,expr3) 如果expr1为True,则返回expr2  否则(false)返回expr3"></a>1.IF(expr1,expr2,expr3) 如果expr1为True,则返回expr2  否则(false)返回expr3</h3><h3 id="2-IFNULL-expr1-expr2-如果expr1不为空NULL-则返回expr1-否则返回expr2"><a href="#2-IFNULL-expr1-expr2-如果expr1不为空NULL-则返回expr1-否则返回expr2" class="headerlink" title="2.IFNULL(expr1,expr2)   如果expr1不为空NULL,则返回expr1,否则返回expr2"></a>2.IFNULL(expr1,expr2)   如果expr1不为空NULL,则返回expr1,否则返回expr2</h3><h3 id="3-SELECT-CASE-WHEN-expr1-THEN-expr2-WHEN-expr3-THEN-expr4-ELSE-expr5-END-类似多重分支"><a href="#3-SELECT-CASE-WHEN-expr1-THEN-expr2-WHEN-expr3-THEN-expr4-ELSE-expr5-END-类似多重分支" class="headerlink" title="3.SELECT CASE WHEN expr1 THEN expr2 WHEN expr3 THEN expr4 ELSE expr5 END;[类似多重分支]"></a>3.SELECT CASE WHEN expr1 THEN expr2 WHEN expr3 THEN expr4 ELSE expr5 END;[类似多重分支]</h3><p><strong>如果expr1为True,则返回expr2,如果expr3为True,返回expr4,否则返回expr5</strong></p>
+<p>1.查询emp表，如果comm是null,则显示，0.0</p>
+<p><strong>判断是否为null,要使用  is  null，判断不为空 使用  is   not   null</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,<span class="keyword">if</span>(comm <span class="keyword">is</span> <span class="literal">null</span>,<span class="number">0.0</span>,comm) <span class="keyword">from</span> emp;</span><br><span class="line"><span class="keyword">select</span> ename,<span class="keyword">ifnull</span>(comm,<span class="number">0.0</span>) <span class="keyword">from</span> emp;</span><br></pre></td></tr></table></figure>
+
+<p>2.如果emp表的job是CLERK则显示 职员，如果是MANAGER 则显示经理，如果是SALESMAN则显示销售人员，其他正常显示；</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,(<span class="keyword">select</span> <span class="keyword">case</span> </span><br><span class="line">              <span class="keyword">when</span> job = <span class="string">'CLERK'</span> <span class="keyword">then</span> <span class="string">'职员'</span> </span><br><span class="line">              <span class="keyword">when</span> job = <span class="string">'MANAGER'</span> <span class="keyword">then</span> <span class="string">'经理'</span> </span><br><span class="line">              <span class="keyword">when</span> job = <span class="string">'SALESMAN'</span> <span class="keyword">then</span> <span class="string">'销售人员'</span> </span><br><span class="line">              <span class="keyword">else</span> job <span class="keyword">end</span> </span><br><span class="line">             ) <span class="keyword">as</span> job <span class="keyword">from</span> emp;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%87%8D%E6%8B%BEMySQL/" rel="tag"># 重拾MySQL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/22/MySQL%E5%B8%B8%E7%94%A8%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" rel="prev" title="MySQL常用数据类型">
+      <i class="fa fa-chevron-left"></i> MySQL常用数据类型
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07/25/MySQL%E5%A4%9A%E8%A1%A8%E6%9F%A5%E8%AF%A2/" rel="next" title="MySQL多表查询">
+      MySQL多表查询 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-统计函数"><span class="nav-number">1.</span> <span class="nav-text">1.统计函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Count返回行的总数"><span class="nav-number">1.1.</span> <span class="nav-text">1.Count返回行的总数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#count-和count-列-的区别"><span class="nav-number">1.1.1.</span> <span class="nav-text">count(*)和count(列)的区别</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-sum函数的使用"><span class="nav-number">1.2.</span> <span class="nav-text">2.sum函数的使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-avg的使用"><span class="nav-number">1.3.</span> <span class="nav-text">3.avg的使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-max和min的使用"><span class="nav-number">1.4.</span> <span class="nav-text">4.max和min的使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-分组统计"><span class="nav-number">2.</span> <span class="nav-text">2.分组统计</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-使用group-by子句对列进行分组"><span class="nav-number">2.0.1.</span> <span class="nav-text">1.使用group  by子句对列进行分组</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-使用having子句对分组后的结果进行过滤"><span class="nav-number">2.0.2.</span> <span class="nav-text">2.使用having子句对分组后的结果进行过滤</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-字符串相关函数"><span class="nav-number">3.</span> <span class="nav-text">3.字符串相关函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-CHARSET-str-返回字符串字符集"><span class="nav-number">3.1.</span> <span class="nav-text">1.CHARSET(str) 返回字符串字符集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-CONCAT-string1-string2-…-连接字符串"><span class="nav-number">3.2.</span> <span class="nav-text">2.CONCAT(string1[,string2,…]) 连接字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-INSTR-string-substring-返回substring在string中出现的位置，没有返回0"><span class="nav-number">3.3.</span> <span class="nav-text">3.INSTR(string,substring)返回substring在string中出现的位置，没有返回0</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-UCASE-str-转换成大写"><span class="nav-number">3.4.</span> <span class="nav-text">4.UCASE(str) 转换成大写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-LCASE-str-转换成小写"><span class="nav-number">3.5.</span> <span class="nav-text">5.LCASE(str)转换成小写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-LEFT-string2-length-从string2中的左边起取length个字符"><span class="nav-number">3.6.</span> <span class="nav-text">6.LEFT(string2,length) 从string2中的左边起取length个字符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-LENHTH-str-String长度（按照字节"><span class="nav-number">3.7.</span> <span class="nav-text">7.LENHTH(str) String长度（按照字节)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-REPLACE-str-search-str-replace-str-在str中，用replace-str替换search-str"><span class="nav-number">3.8.</span> <span class="nav-text">8.REPLACE(str,search_str,replace_str)  在str中，用replace_str替换search_str</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-STRCMP-string1-string2-逐字符比较两字符串的大小"><span class="nav-number">3.9.</span> <span class="nav-text">9.STRCMP(string1,string2) 逐字符比较两字符串的大小</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-SUBSTRING-str-position-length-从str的position开始，取length个字符，position是从1起"><span class="nav-number">3.10.</span> <span class="nav-text">10.SUBSTRING(str,position [,length]) 从str的position开始，取length个字符，position是从1起</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-LTRIM-string2-RTRIM-string2-trim去除前端或后端空隔"><span class="nav-number">3.11.</span> <span class="nav-text">11.LTRIM(string2)  RTRIM(string2)  trim去除前端或后端空隔</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-数学相关函数"><span class="nav-number">4.</span> <span class="nav-text">4.数学相关函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-时间日期相关函数"><span class="nav-number">5.</span> <span class="nav-text">5.时间日期相关函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-加密和系统函数"><span class="nav-number">6.</span> <span class="nav-text">6.加密和系统函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-流程控制函数"><span class="nav-number">7.</span> <span class="nav-text">7.流程控制函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-IF-expr1-expr2-expr3-如果expr1为True-则返回expr2-否则-false-返回expr3"><span class="nav-number">7.1.</span> <span class="nav-text">1.IF(expr1,expr2,expr3) 如果expr1为True,则返回expr2  否则(false)返回expr3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-IFNULL-expr1-expr2-如果expr1不为空NULL-则返回expr1-否则返回expr2"><span class="nav-number">7.2.</span> <span class="nav-text">2.IFNULL(expr1,expr2)   如果expr1不为空NULL,则返回expr1,否则返回expr2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-SELECT-CASE-WHEN-expr1-THEN-expr2-WHEN-expr3-THEN-expr4-ELSE-expr5-END-类似多重分支"><span class="nav-number">7.3.</span> <span class="nav-text">3.SELECT CASE WHEN expr1 THEN expr2 WHEN expr3 THEN expr4 ELSE expr5 END;[类似多重分支]</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

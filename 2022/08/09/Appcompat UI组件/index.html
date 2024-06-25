@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="App Bar​    即APP应用栏（ToolBar） 1.添加ToolBar控件 ​    修改 activity_main.xml 的内容，添加如下代码： 12345678910&lt;androidx.appcompat.widget.Toolbar            android:id&#x3D;&quot;@+id&#x2F;tb&quot;            android:layout_width&#x3D;&quot;match">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Appcompat UI组件">
+<meta property="og:url" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="App Bar​    即APP应用栏（ToolBar） 1.添加ToolBar控件 ​    修改 activity_main.xml 的内容，添加如下代码： 12345678910&lt;androidx.appcompat.widget.Toolbar            android:id&#x3D;&quot;@+id&#x2F;tb&quot;            android:layout_width&#x3D;&quot;match">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/3.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/4.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/5.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/6.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/7.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/8.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/9.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/10.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/11.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/12.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/13.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/14.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/15.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/16.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/17.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/18.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/19.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/20.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/21.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/22.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/23.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/24.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/25.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/26.png">
+<meta property="article:published_time" content="2022-08-09T06:04:58.056Z">
+<meta property="article:modified_time" content="2022-08-10T13:22:16.104Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Appcompat UI组件 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Appcompat UI组件
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-08-09 14:04:58" itemprop="dateCreated datePublished" datetime="2022-08-09T14:04:58+08:00">2022-08-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-10 21:22:16" itemprop="dateModified" datetime="2022-08-10T21:22:16+08:00">2022-08-10</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>34k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>31 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="App-Bar"><a href="#App-Bar" class="headerlink" title="App Bar"></a>App Bar</h2><p>​    即APP应用栏（ToolBar）</p>
+<p><strong>1.添加ToolBar控件</strong></p>
+<p>​    修改 activity_main.xml 的内容，添加如下代码：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">androidx.appcompat.widget.Toolbar</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/tb"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"?attr/actionBarSize"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:background</span>=<span class="string">"?attr/colorPrimary"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:elevation</span>=<span class="string">"4dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:theme</span>=<span class="string">"@style/Widget.MaterialComponents.Toolbar"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">app:layout_constraintLeft_toLeftOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">app:layout_constraintRight_toRightOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">app:layout_constraintTop_toTopOf</span>=<span class="string">"parent"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​        去掉默认的主题，以便去掉默认的ActionBar</p>
+<p>​        分别打开位于 values 和 values-night 的 <strong>themes.xml</strong>，修改名为 Theme.AppBarDemo 的 parent 属性值为 Theme.MaterialComponents.DayNight.NoActionBar。</p>
+<p>​    <strong>2.在ToolBar上添加菜单：</strong></p>
+<p>在项目的 res 目录下新建 menu 目录，并创建菜单 XML 文档。本例将其命名为 activity_main_menu.xml，内容如下：</p>
+<a id="more"></a>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">menu</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/activity_main_menu_item1"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:icon</span>=<span class="string">"@drawable/ic_baseline_search_24"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:title</span>=<span class="string">"@string/activity_main_menu_item_1"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:actionViewClass</span>=<span class="string">"androidx.appcompat.widget.SearchView"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:showAsAction</span>=<span class="string">"ifRoom"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/activity_main_menu_item2"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:icon</span>=<span class="string">"@drawable/ic_baseline_help_24"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:title</span>=<span class="string">"@string/activity_main_menu_item_2"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:showAsAction</span>=<span class="string">"never"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/activity_main_menu_item3"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:title</span>=<span class="string">"@string/activity_main_menu_item_3"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:showAsAction</span>=<span class="string">"never"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">menu</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​        我们使用 app:showAsAction 来表示菜单的显示方式。它常见的取值为 ifRoom 和 never。前者表示当空间允许时，显示完整的菜单名称或图标，当空间不够时，会以折叠的方式将没有显示的菜单放进「更多」按钮中；后者表示无论空间是否允许，一律放进「更多」按钮中。这种被放进「更多」按钮的菜单称为「溢出菜单」</p>
+<ol start="3">
+<li><p>为ToolBar选项添加搜索功能（添加了actionViewClass属性）</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">item</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/activity_main_menu_item1"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:icon</span>=<span class="string">"@drawable/ic_baseline_search_24"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:title</span>=<span class="string">"@string/activity_main_menu_item_1"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:actionViewClass</span>=<span class="string">"androidx.appcompat.widget.SearchView"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:showAsAction</span>=<span class="string">"ifRoom"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span></span></span><br></pre></td></tr></table></figure>
+
+<p>复写的 onCreateOptionsMenu()；方法中添加用于搜索的 SearchView 控件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">class MainActivity : BaseActivity&lt;ActivityMainBinding&gt;() &#123;</span><br><span class="line"></span><br><span class="line">    override fun ActivityMainBinding.initBinding() &#123;</span><br><span class="line">        <span class="comment">//设置ToolBar对象作为AppBar使用</span></span><br><span class="line">        setSupportActionBar(mBinding.tb)</span><br><span class="line">        <span class="comment">//设置标题</span></span><br><span class="line">        tb.title = getString(R.string.app_name)</span><br><span class="line">        <span class="comment">//设置子标题</span></span><br><span class="line">        tb.setSubtitle(<span class="string">"hello"</span>)</span><br><span class="line">        <span class="comment">//设置图标</span></span><br><span class="line">        tb.setLogo(R.drawable.ic_launcher_foreground)</span><br><span class="line">        <span class="comment">//修改返回键图标</span></span><br><span class="line">        tb.setNavigationIcon(android.R.drawable.ic_delete)</span><br><span class="line">        <span class="comment">//返回键生效，启用返回键</span></span><br><span class="line">        supportActionBar?.setDisplayHomeAsUpEnabled(<span class="keyword">true</span>)</span><br><span class="line">        <span class="comment">//实现菜单点击动作的监听</span></span><br><span class="line">        tb.setOnMenuItemClickListener &#123;</span><br><span class="line">            when(it.itemId)&#123;</span><br><span class="line">                R.id.activity_main_menu_item1 -&gt; &#123;</span><br><span class="line">                    Toast.makeText(<span class="keyword">this</span><span class="meta">@MainActivity</span>,<span class="string">"Search"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">                &#125;</span><br><span class="line">                R.id.activity_main_menu_item2 -&gt; &#123;</span><br><span class="line">                    Toast.makeText(<span class="keyword">this</span><span class="meta">@MainActivity</span>,<span class="string">"Menu_1"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">                &#125;</span><br><span class="line">                R.id.activity_main_menu_item3 -&gt; &#123;</span><br><span class="line">                    Toast.makeText(<span class="keyword">this</span><span class="meta">@MainActivity</span>,<span class="string">"Menu_2"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span><span class="meta">@setOnMenuItemClickListener</span> <span class="keyword">false</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">override fun <span class="title">onOptionsItemSelected</span><span class="params">(item: MenuItem)</span>: Boolean </span>&#123;</span><br><span class="line">        <span class="comment">//定义返回键动作</span></span><br><span class="line">        <span class="keyword">if</span> (item.itemId == android.R.id.home)&#123;</span><br><span class="line">            finish()</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onOptionsItemSelected(item)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 关联菜单布局</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> menu Menu</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> Boolean</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">override fun <span class="title">onCreateOptionsMenu</span><span class="params">(menu: Menu?)</span>: Boolean </span>&#123;</span><br><span class="line">        menuInflater.inflate(R.menu.activity_main_menu,menu)</span><br><span class="line">        <span class="comment">//为搜索View添加搜索事件回调</span></span><br><span class="line">        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager</span><br><span class="line">        val searchView: SearchView = menu!!.findItem(R.id.activity_main_menu_item1).actionView as SearchView</span><br><span class="line">        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))</span><br><span class="line">        searchView.setOnQueryTextListener(object :SearchView.OnQueryTextListener&#123;</span><br><span class="line"></span><br><span class="line">            <span class="function">override fun <span class="title">onQueryTextSubmit</span><span class="params">(query: String?)</span>: Boolean </span>&#123;</span><br><span class="line">                Toast.makeText(<span class="keyword">this</span><span class="meta">@MainActivity</span>,<span class="string">"搜索：$&#123;query&#125;"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="function">override fun <span class="title">onQueryTextChange</span><span class="params">(newText: String?)</span>: Boolean </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/1.png" alt></p>
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/2.png" alt></p>
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/3.png" alt></p>
+</li>
+</ol>
+<h3 id="ToolBar小结"><a href="#ToolBar小结" class="headerlink" title="ToolBar小结"></a>ToolBar小结</h3><p>显示 ToolBar 的方法：</p>
+<ol>
+<li><p>隐藏掉默认的 ActionBar。</p>
+</li>
+<li><p>调用 setSupportActionBar()；方法，参数为 ToolBar 对象。</p>
+</li>
+</ol>
+<p>ToolBar 的构成：</p>
+<ul>
+<li>返回按钮。</li>
+<li>图标。</li>
+<li>标题与子标题。</li>
+<li>菜单项。</li>
+<li>搜索栏。</li>
+</ul>
+<p>ToolBar 的样式：</p>
+<ul>
+<li>继承 Base.Widget.AppCompat.Toolbar、Base.Widget.AppCompat.Light.PopupMenu.Overflow 和 Base.Widget.AppCompat.ListPopupWindow，再自定义属性值。</li>
+</ul>
+<h2 id="AppCompatActivity-与AppCompatDelegate"><a href="#AppCompatActivity-与AppCompatDelegate" class="headerlink" title="AppCompatActivity 与AppCompatDelegate"></a>AppCompatActivity 与AppCompatDelegate</h2><h3 id="AppCompatActivity"><a href="#AppCompatActivity" class="headerlink" title="AppCompatActivity"></a>AppCompatActivity</h3><p>​        AppCompatActivity 提供了在旧版本 Android 操作系统（兼容的最低版本为 Android 2.1）上使用新特性的兼容处理。主要包含：</p>
+<ul>
+<li>对 ToolBar 控件的支持。</li>
+<li>对暗黑／明亮主题的支持。</li>
+<li>对 DrawerLayout 控件的支持。</li>
+</ul>
+<h3 id="AppCompatDelegate"><a href="#AppCompatDelegate" class="headerlink" title="AppCompatDelegate"></a>AppCompatDelegate</h3><p>​        Delegate 意为「委托」，它是 AppCompatActivity 和 Activity 之间的「桥梁」。当我们的项目不得不继承 Activity，却还想使用某些新版本 Android 的特性时，AppCompatDelegate 就可以派上用场了。</p>
+<p>通过 AppCompatDelegate 使用 ToolBar:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> <span class="keyword">implements</span> <span class="title">AppCompatCallback</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> AppCompatDelegate appCompatDelegate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line"><span class="comment">//        setContentView(R.layout.activity_main);</span></span><br><span class="line">        appCompatDelegate = AppCompatDelegate.create(<span class="keyword">this</span>, <span class="keyword">this</span>);</span><br><span class="line">        appCompatDelegate.onCreate(savedInstanceState);</span><br><span class="line">        appCompatDelegate.setContentView(R.layout.activity_main);</span><br><span class="line">        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_main_tb);</span><br><span class="line">        appCompatDelegate.setSupportActionBar(toolbar);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSupportActionModeStarted</span><span class="params">(ActionMode mode)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSupportActionModeFinished</span><span class="params">(ActionMode mode)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Nullable</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ActionMode <span class="title">onWindowStartingSupportActionMode</span><span class="params">(ActionMode.Callback callback)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPostCreate</span><span class="params">(@Nullable Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onPostCreate(savedInstanceState);</span><br><span class="line">        appCompatDelegate.onPostCreate(savedInstanceState);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onConfigurationChanged</span><span class="params">(@NonNull Configuration newConfig)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onConfigurationChanged(newConfig);</span><br><span class="line">        appCompatDelegate.onConfigurationChanged(newConfig);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onStart</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onStart();</span><br><span class="line">        appCompatDelegate.onStart();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onStop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onStop();</span><br><span class="line">        appCompatDelegate.onStop();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onDestroy();</span><br><span class="line">        appCompatDelegate.onDestroy();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onPostResume</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onPostResume();</span><br><span class="line">        appCompatDelegate.onPostResume();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onSaveInstanceState</span><span class="params">(@NonNull Bundle outState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onSaveInstanceState(outState);</span><br><span class="line">        appCompatDelegate.onSaveInstanceState(outState);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTitle</span><span class="params">(CharSequence title)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.setTitle(title);</span><br><span class="line">        appCompatDelegate.setTitle(title);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="AppCompatDialogFragment"><a href="#AppCompatDialogFragment" class="headerlink" title="AppCompatDialogFragment"></a>AppCompatDialogFragment</h2><ol>
+<li><p>简单对话框</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>： LJH</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Time</span>： 2022/8/9</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>：简单对话框</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SimpleDialogFragment</span></span>(onButtonClicked:OnButtonClicked):AppCompatDialogFragment() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> clicked = onButtonClicked</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">OnButtonClicked</span></span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">onPositiveButtonClicked</span><span class="params">()</span></span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">onNegativeButtonClicked</span><span class="params">()</span></span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateDialog</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span>: Dialog &#123;</span><br><span class="line"><span class="comment">//        val builder = activity?.let &#123; AlertDialog.Builder(it) &#125;</span></span><br><span class="line">        <span class="keyword">val</span> builder = AlertDialog.Builder(requireContext())</span><br><span class="line">        builder.setMessage(<span class="string">"您确定这样做吗？"</span>)</span><br><span class="line">            .setPositiveButton(<span class="string">"确定"</span>) &#123; dialog, which -&gt;</span><br><span class="line">                clicked.onPositiveButtonClicked()</span><br><span class="line">            &#125;</span><br><span class="line">            .setNegativeButton(<span class="string">"取消"</span>)&#123; dialog, which -&gt;</span><br><span class="line">                      clicked.onNegativeButtonClicked()</span><br><span class="line">            &#125;</span><br><span class="line">        <span class="keyword">return</span> builder.create()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//简单对话框</span></span><br><span class="line">        btn1.setOnClickListener &#123;</span><br><span class="line">            SimpleDialogFragment(<span class="keyword">object</span> : SimpleDialogFragment.OnButtonClicked&#123;</span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onPositiveButtonClicked</span><span class="params">()</span></span> &#123;</span><br><span class="line">                    Toast.makeText(<span class="keyword">this</span><span class="symbol">@MainActivity</span>, <span class="string">"确定"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onNegativeButtonClicked</span><span class="params">()</span></span> &#123;</span><br><span class="line">                    Toast.makeText(<span class="keyword">this</span><span class="symbol">@MainActivity</span>, <span class="string">"取消"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;).show(supportFragmentManager,<span class="string">"SimpleDialog"</span>)</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/4.png" alt></p>
+</li>
+<li><p>单选对话框</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>： LJH</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Time</span>： 2022/8/9</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>：单选对话框</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SingleSelectListDialogFragment</span></span>(selectItems: Array&lt;String&gt;, onItemSelected:OnItemSelected):AppCompatDialogFragment() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> listener = onItemSelected</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> items = selectItems</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">OnItemSelected</span></span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(index:<span class="type">Int</span>)</span></span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateDialog</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span>: Dialog &#123;</span><br><span class="line">        <span class="keyword">val</span> builder = AlertDialog.Builder(requireContext())</span><br><span class="line">        builder.setTitle(<span class="string">"请选择"</span>).setItems(items)&#123; dialog,which -&gt;</span><br><span class="line">            listener.onItemSelected(which)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> builder.create()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//单选对话框</span></span><br><span class="line"><span class="keyword">val</span> items = arrayOf(<span class="string">"选项1"</span>,<span class="string">"选项2"</span>,<span class="string">"选项3"</span>,<span class="string">"选项4"</span>,<span class="string">"选项5"</span>)</span><br><span class="line">btn2.setOnClickListener &#123;</span><br><span class="line">            SingleSelectListDialogFragment(items,<span class="keyword">object</span> : SingleSelectListDialogFragment.OnItemSelected&#123;</span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(index: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">                    Toast.makeText(<span class="keyword">this</span><span class="symbol">@MainActivity</span>, <span class="string">"你选择的是<span class="subst">$&#123;items[index]&#125;</span>"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;).show(supportFragmentManager,<span class="string">"SingleListSelectDialog"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/5.png" alt></p>
+</li>
+<li><p>带有确认按钮的对话框</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>： LJH</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Time</span>： 2022/8/9</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>：带有确认取消按钮的对话框</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SingleSelectWithConfirmListDialogFragment</span></span>(items:Array&lt;String&gt;,selectedCall:OnItemSelected):AppCompatDialogFragment() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> selectItems = items</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> call = selectedCall</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> index = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">OnItemSelected</span></span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(index:<span class="type">Int</span>)</span></span></span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">confirm</span><span class="params">(index: <span class="type">Int</span>)</span></span></span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">cancel</span><span class="params">()</span></span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateDialog</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span>: Dialog &#123;</span><br><span class="line">        <span class="keyword">val</span> builder = AlertDialog.Builder(requireContext())</span><br><span class="line">            .setTitle(<span class="string">"请选择"</span>).setSingleChoiceItems(selectItems,<span class="number">0</span>)&#123;dialog,which -&gt;</span><br><span class="line">                call.onItemSelected(which)</span><br><span class="line">                index = which</span><br><span class="line">            &#125;.setPositiveButton(<span class="string">"确定"</span>)&#123;dialog,which -&gt;</span><br><span class="line">                call.confirm(which)</span><br><span class="line">            &#125;</span><br><span class="line">            .setNegativeButton(<span class="string">"取消"</span>)&#123;dialog,which -&gt;</span><br><span class="line">                call.cancel()</span><br><span class="line">            &#125;</span><br><span class="line">        <span class="keyword">return</span> builder.create()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//带有确认按钮的单选对话框</span></span><br><span class="line">btn3.setOnClickListener &#123;</span><br><span class="line">    SingleSelectWithConfirmListDialogFragment(items = items,<span class="keyword">object</span> :SingleSelectWithConfirmListDialogFragment.OnItemSelected&#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(index: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span><span class="symbol">@MainActivity</span>, <span class="string">"<span class="subst">$&#123;items[index]&#125;</span>"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">confirm</span><span class="params">(index: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span><span class="symbol">@MainActivity</span>, <span class="string">"确定"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">cancel</span><span class="params">()</span></span> &#123;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span><span class="symbol">@MainActivity</span>, <span class="string">"取消"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).show(supportFragmentManager,<span class="string">"SingleSelectWithConfirmListDialogFragment"</span>)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/6.png" alt></p>
+</li>
+<li><p>多选对话框</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>： LJH</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Time</span>： 2022/8/9</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>：带有确认的多选对话框</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultiSelectWithConfirmListDialogFragment</span></span>(items:Array&lt;String&gt;,isItemSelects:BooleanArray,onItemSelect:OnItemSelected):AppCompatDialogFragment() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> selectedCall = onItemSelect</span><br><span class="line">    <span class="keyword">val</span> selects = items</span><br><span class="line">    <span class="keyword">val</span> isSelectArr = isItemSelects</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">OnItemSelected</span></span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(index:<span class="type">Int</span>)</span></span></span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">confirm</span><span class="params">(isItemSelects:<span class="type">BooleanArray</span>)</span></span></span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">cancel</span><span class="params">()</span></span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateDialog</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span>: Dialog &#123;</span><br><span class="line">        <span class="keyword">val</span> build = AlertDialog.Builder(requireContext())</span><br><span class="line">        build.setTitle(<span class="string">"请选择"</span>)</span><br><span class="line">            .setMultiChoiceItems(selects,isSelectArr</span><br><span class="line">            ) &#123; dialog, which, isChecked -&gt;</span><br><span class="line">                selectedCall.onItemSelected(which)</span><br><span class="line">                isSelectArr[which] = isChecked</span><br><span class="line">            &#125;</span><br><span class="line">            .setPositiveButton(<span class="string">"确定"</span>)&#123;dialog,which -&gt;</span><br><span class="line">                selectedCall.confirm(isSelectArr)</span><br><span class="line">            &#125;</span><br><span class="line">            .setNegativeButton(<span class="string">"取消"</span>)&#123;dialog,which -&gt;</span><br><span class="line">                selectedCall.cancel()</span><br><span class="line">            &#125;</span><br><span class="line">        <span class="keyword">return</span> build.create()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//多选对话框</span></span><br><span class="line">btn4.setOnClickListener &#123;</span><br><span class="line">    <span class="keyword">val</span> booleanArr = booleanArrayOf(<span class="literal">false</span>,<span class="literal">false</span>,<span class="literal">false</span>,<span class="literal">false</span>,<span class="literal">false</span>)</span><br><span class="line">    MultiSelectWithConfirmListDialogFragment(items,booleanArr,<span class="keyword">object</span> :MultiSelectWithConfirmListDialogFragment.OnItemSelected&#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(index: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span><span class="symbol">@MainActivity</span>, <span class="string">"选择了<span class="subst">$&#123;items[index]&#125;</span>"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">confirm</span><span class="params">(isItemSelects: <span class="type">BooleanArray</span>)</span></span> &#123;</span><br><span class="line">            <span class="keyword">val</span> stringBuilder = StringBuilder()</span><br><span class="line">            <span class="keyword">for</span> (i <span class="keyword">in</span> isItemSelects.indices) &#123;</span><br><span class="line">                <span class="keyword">if</span> (isItemSelects[i])&#123;</span><br><span class="line">                    stringBuilder.append(items[i]+<span class="string">" \n"</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span><span class="symbol">@MainActivity</span>, <span class="string">"选择了<span class="subst">$&#123;stringBuilder.toString()&#125;</span>"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">cancel</span><span class="params">()</span></span> &#123;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span><span class="symbol">@MainActivity</span>, <span class="string">"取消"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).show(supportFragmentManager,<span class="string">"multiSelect"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/7.png" alt></p>
+</li>
+<li><p>自定义选项对话框</p>
+<p>自定义选项布局：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:orientation</span>=<span class="string">"horizontal"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:padding</span>=<span class="string">"3dp"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">ImageView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:src</span>=<span class="string">"@android:drawable/ic_menu_compass"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/item_single_menu_name_tv"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_gravity</span>=<span class="string">"center_vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_marginLeft</span>=<span class="string">"10dp"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>对话框：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>： LJH</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Time</span>： 2022/8/9</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>：自定义选项对话框</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SingleCustomSelectListDialogFragment</span></span>(selectItems:Array&lt;String&gt;,onItemSelected:OnItemSelected):AppCompatDialogFragment() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> selectedCall = onItemSelected</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> items = selectItems</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> menuAdapter:MenuAdapter</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">OnItemSelected</span></span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(index:<span class="type">Int</span>)</span></span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateDialog</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span>: Dialog &#123;</span><br><span class="line">        <span class="keyword">val</span> builder = AlertDialog.Builder(requireContext())</span><br><span class="line">        menuAdapter = MenuAdapter(items)</span><br><span class="line">        builder.setTitle(<span class="string">"请选择"</span>)</span><br><span class="line">            .setAdapter(menuAdapter)&#123;dialog,which -&gt;</span><br><span class="line">                selectedCall.onItemSelected(which)</span><br><span class="line">            &#125;</span><br><span class="line">        <span class="keyword">return</span> builder.create()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">MenuAdapter</span></span>(selectItems: Array&lt;String&gt;):BaseAdapter()&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">val</span>  items = selectItems</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getCount</span><span class="params">()</span></span>: <span class="built_in">Int</span> = items.size</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getItem</span><span class="params">(position: <span class="type">Int</span>)</span></span>: Any = items[position]</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getItemId</span><span class="params">(position: <span class="type">Int</span>)</span></span>: <span class="built_in">Long</span> = position.toLong()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getView</span><span class="params">(position: <span class="type">Int</span>,convertView: <span class="type">View</span>?, parent: <span class="type">ViewGroup</span>?)</span></span>: View &#123;</span><br><span class="line">            <span class="keyword">var</span> view:View? = convertView</span><br><span class="line">            <span class="keyword">val</span> inflater = LayoutInflater.from(requireContext())</span><br><span class="line">            <span class="keyword">var</span> holder:ViewHolder? = <span class="literal">null</span></span><br><span class="line">            <span class="keyword">if</span> (convertView == <span class="literal">null</span>)&#123;</span><br><span class="line">                view =  inflater.inflate(R.layout.item_single_menu,<span class="literal">null</span>)</span><br><span class="line">                holder = ViewHolder()</span><br><span class="line">                holder.textView = view.findViewById(R.id.item_single_menu_name_tv)</span><br><span class="line">                view.tag = holder</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                holder = convertView.tag <span class="keyword">as</span> ViewHolder</span><br><span class="line">            &#125;</span><br><span class="line">            holder.textView?.text = items[position]</span><br><span class="line">            <span class="keyword">return</span> view!!</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">ViewHolder</span></span>&#123;</span><br><span class="line">            <span class="keyword">var</span> textView:TextView? = <span class="literal">null</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//自定义选项对话框</span></span><br><span class="line">        btn5.setOnClickListener &#123;</span><br><span class="line">            Log.d(localClassName,<span class="string">"btn5"</span>)</span><br><span class="line">            SingleCustomSelectListDialogFragment(items,<span class="keyword">object</span> :SingleCustomSelectListDialogFragment.OnItemSelected&#123;</span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(index: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">                    Toast.makeText(<span class="keyword">this</span><span class="symbol">@MainActivity</span>, <span class="string">"选择了<span class="subst">$&#123;items[index]&#125;</span>"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;).show(supportFragmentManager,<span class="string">"customSelcet"</span>)</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/8.png" alt></p>
+</li>
+</ol>
+<h2 id="AppCompatResources"><a href="#AppCompatResources" class="headerlink" title="AppCompatResources"></a>AppCompatResources</h2><p>​        自从 Android 5.0 开始，Resources 对象引入了两个新方法，分别是 getColorStateList()；和 getDrawable()；。这两个方法在某些需求中非常实用，AppCompatResources 提供了在低版本 Android 中调用这两个方法的途径。</p>
+<h3 id="定义不同点击状态的颜色值"><a href="#定义不同点击状态的颜色值" class="headerlink" title="定义不同点击状态的颜色值"></a>定义不同点击状态的颜色值</h3><p>​        AppCompatResources.getColorStateList()；方法用于处理点击时的颜色变化，借助它可以实现不同点击状态的不同样式。</p>
+<p>​        1. 首先，我们需要通过 XML 文件定义在不同点击状态时的颜色值。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">selector</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:state_pressed</span>=<span class="string">"true"</span> <span class="attr">android:color</span>=<span class="string">"#FF0000FF"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:state_focused</span>=<span class="string">"true"</span> <span class="attr">android:color</span>=<span class="string">"#FF018786"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:color</span>=<span class="string">"#FF000000"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">selector</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​        2.为控件设置点击状态</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * getColorStateList()；方法用于处理点击时的颜色变化，借助它可以实现不同点击状态的不同样式。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="meta">@SuppressLint(<span class="meta-string">"ResourceType"</span>)</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">colorStateListDemo</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">val</span> colorStateList = AppCompatResources.getColorStateList(<span class="keyword">this</span>,R.drawable.selector_button_text)</span><br><span class="line">    </span><br><span class="line">    mBinding.activityMainHelloTv.setTextColor(colorStateList)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    TextView控件点击后颜色为蓝色：</p>
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/9.png" alt></p>
+<h3 id="从-resId-获取-Drawable-对象"><a href="#从-resId-获取-Drawable-对象" class="headerlink" title="从 resId 获取 Drawable 对象"></a>从 resId 获取 Drawable 对象</h3><p>​        AppCompatResources.getDrawable()；方法用于从 resId 获取 Drawable 对象以便后面使用。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * getDrawable()；方法用于从 resId 获取 Drawable 对象以便后面使用。</span></span><br><span class="line"><span class="comment">     * getDrawable(): 可以随时调用这个方法获取 Drawable 或 Mipmap 资源。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> Drawable?</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">drawableDemo</span><span class="params">()</span></span>: Drawable? &#123;</span><br><span class="line">        <span class="keyword">return</span> AppCompatResources.getDrawable(<span class="keyword">this</span>,R.mipmap.ic_launcher)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>完整代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> mBinding:ActivityMainBinding</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        mBinding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(mBinding.root)</span><br><span class="line">        colorStateListDemo()</span><br><span class="line">        mBinding.activityMainHelloTv.setOnClickListener &#123;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span>,<span class="string">"hello"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        mBinding.activityMainIconIv.setImageDrawable(drawableDemo())</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * getColorStateList()；方法用于处理点击时的颜色变化，借助它可以实现不同点击状态的不同样式。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@SuppressLint(<span class="meta-string">"ResourceType"</span>)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">colorStateListDemo</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> colorStateList = AppCompatResources.getColorStateList(<span class="keyword">this</span>,R.drawable.selector_button_text)</span><br><span class="line">        mBinding.activityMainHelloTv.setTextColor(colorStateList)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * getDrawable()；方法用于从 resId 获取 Drawable 对象以便后面使用。</span></span><br><span class="line"><span class="comment">     * getDrawable(): 可以随时调用这个方法获取 Drawable 或 Mipmap 资源。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> Drawable?</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">drawableDemo</span><span class="params">()</span></span>: Drawable? &#123;</span><br><span class="line">        <span class="keyword">return</span> AppCompatResources.getDrawable(<span class="keyword">this</span>,R.mipmap.ic_launcher)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/10.png" alt></p>
+<h2 id="AnimatedStateListDrawable"><a href="#AnimatedStateListDrawable" class="headerlink" title="AnimatedStateListDrawable"></a>AnimatedStateListDrawable</h2><p>​        AnimatedStateListDrawable 是从 Android 5.0 引入的新 API，它是 Drawable 的子类，用于实现在不同状态下显示不同的图像内容。它有点类似按钮，当用户点击了这个按钮后，按钮从未点击切换到点击状态。但是，这其中的变化只有两个—点击和未点击。而 AnimatedStateListDrawable 为变化提供了更多可能。它允许我们自定义状态发生改变时的执行动画。AnimatedStateListDrawableCompat 让该特性在较低版本的 Android 设备上同样适用。</p>
+<p><strong>定义动画执行脚本</strong></p>
+<p>​    现在，想象这样一个效果：有一个 ImageView，默认显示蓝色，当用户点击这个 ImageView 时，显示为绿色。</p>
+<ol>
+<li><p>第一步是定义动画的执行脚本，在项目 Module 的 drawable 目录下创建一个 XML 文件，名为 anim_image.xml，然后输入以下代码：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">animated-selector</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--    两个 item 元素定义了动画起始和终止的状态和条件，</span></span><br><span class="line"><span class="comment">        transition 元素定义了动画由哪里开始，到哪里结束。</span></span><br><span class="line"><span class="comment">        --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/off"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:drawable</span>=<span class="string">"@drawable/blue"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:state_pressed</span>=<span class="string">"false"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/on"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:drawable</span>=<span class="string">"@drawable/green"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:state_pressed</span>=<span class="string">"true"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">transition</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:fromId</span>=<span class="string">"@id/off"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:toId</span>=<span class="string">"@id/on"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">animation-list</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">item</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:drawable</span>=<span class="string">"@drawable/blue"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:duration</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">item</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:drawable</span>=<span class="string">"@drawable/green"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:duration</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">animation-list</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">transition</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">animated-selector</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​        整个 animated-selector 由 3 个元素组成。两个 item 元素定义了动画起始和终止的状态和条件，transition 元素定义了动画由哪里开始，到哪里结束。Transition 中的 animation-list 节点定义了动画执行的过程。我们可以在这里添加多个 item 节点，动画开始后，每个 item 节点会依次被执行。</p>
+</li>
+</ol>
+<p><strong>执行动画</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line">        initData()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">initData</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> animatedDrawable = AnimatedStateListDrawableCompat.create(<span class="keyword">this</span>,R.drawable.anim_image,<span class="literal">null</span>)</span><br><span class="line">        binding.iv.setImageDrawable(animatedDrawable)</span><br><span class="line">        binding.iv.isClickable = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​                                                                <img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/11.png" alt></p>
+<p>​    由于 ImageView 默认是不可点击的，因此不要忘记执行 setClickable（true）；，使其变为可点击。</p>
+<p>​    完成后运行 App，当用户保持点击 ImageView 不松手时，它将显示为绿色；当用户没有点击或放开手指后，将显示为蓝色。</p>
+<h2 id="ActionMenuView"><a href="#ActionMenuView" class="headerlink" title="ActionMenuView"></a>ActionMenuView</h2><p>​        ActionMenuView 允许我们在界面的任何位置摆放菜单。</p>
+<ol>
+<li><p>要使用 ActionMenuView，首先要定义菜单项</p>
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/12.png" alt></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">menu</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span>&gt;</span></span><br><span class="line">   </span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/menu_1"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:title</span>=<span class="string">"Menu 1"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:showAsAction</span>=<span class="string">"ifRoom"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/menu_two"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:icon</span>=<span class="string">"@mipmap/ic_launcher"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:title</span>=<span class="string">"Menu 2"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:showAsAction</span>=<span class="string">"ifRoom"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/menu_three"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:icon</span>=<span class="string">"@mipmap/ic_launcher"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:title</span>=<span class="string">"Menu 3"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:showAsAction</span>=<span class="string">"never"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">menu</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>本例中，我们在界面中央添加一个 ActionMenuView，完整的布局文件代码如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">androidx.constraintlayout.widget.ConstraintLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">tools:context</span>=<span class="string">".MainActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">androidx.appcompat.widget.ActionMenuView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/amv"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintBottom_toBottomOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintLeft_toLeftOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintRight_toRightOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintTop_toTopOf</span>=<span class="string">"parent"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">androidx.constraintlayout.widget.ConstraintLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>由于我们可以在一个界面中添加多个 ActionMenuView，因此需要把它们和对应的菜单项绑定起来。绑定的方法依旧是通过回调的 onCreateOptionsMenu()；方法实现，具体代码片段如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateOptionsMenu</span><span class="params">(menu: <span class="type">Menu</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        menuInflater.inflate(R.menu.action_menu,binding.amv.menu)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onCreateOptionsMenu(menu)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>总代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line"></span><br><span class="line">        binding.amv.setOnMenuItemClickListener &#123;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span>, <span class="string">"点击了："</span> + it.title, Toast.LENGTH_SHORT).show();</span><br><span class="line">            <span class="keyword">return</span><span class="symbol">@setOnMenuItemClickListener</span> <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateOptionsMenu</span><span class="params">(menu: <span class="type">Menu</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        menuInflater.inflate(R.menu.action_menu,binding.amv.menu)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onCreateOptionsMenu(menu)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/13.png" alt></p>
+<h2 id="AutoCompleteTextView-和MultiAutoCompleteTextView"><a href="#AutoCompleteTextView-和MultiAutoCompleteTextView" class="headerlink" title="AutoCompleteTextView 和MultiAutoCompleteTextView"></a>AutoCompleteTextView 和MultiAutoCompleteTextView</h2><p>​        AutoCompleteTextView 和 MultiAutoCompleteTextView 控件自 Android 诞生之初就存在了，它<strong>提供了输入提示功能，即当用户在文本框中输入的文字和预设的数据匹配时，则弹出匹配的值列表</strong>。只是后者在前者的基础上可以通过分隔符同时搜索多个匹配结果。这样一来，用户可以直接选取列表项作为输入内容，省去了手动输入的麻烦。从名称上看，它虽然叫作 TextView，本质上更像是 EditText。</p>
+<p>​        在 Android 5.0 及之后的版本中，开发者可以调用 setBackgroundTintList()；以及 setBackgroundTintMode()；方法，通过改变色调达到更改背景色的目的。为了兼容较低版本的 Android API，我们可以使用 ViewCompat 类作为「桥梁」，与 AppCompatAutoCompleteTextView 配合使用，达到与高版本 Android 设备显示效果一致的目的。</p>
+<p>​        ViewCompat 提供了常用控件通用的版本兼容能力，比如本例提及的更改背景色调，不仅在 AppCompatAutoCompleteTextView 中存在，AppCompatButton 以及后文的众多控件中同样支持。</p>
+<p>​        对于设置背景色调特性，我们可以通过 ViewCompat 类的静态方法实现，其方法名依然是 setBackgroundTintList ()；和 setBackgroundTintMode()；。</p>
+<p>​        <strong>在调用设定色调相关的 API 时，我们通常使用 PorterDuff 混合模式的值作为参数传递。</strong></p>
+<p>原始图：<img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/14.png" alt></p>
+<p><strong>混合方式的名称及混合结果</strong></p>
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/15.png" alt></p>
+<p>​        现在，我们来实现这些样式：修改默认的输入框下画线颜色，在非活动状态下显示为 colorPrimary 的色值，在输入或取得焦点的状态下显示为 colorPrimaryVariant 的色值。</p>
+<ol>
+<li><p>首先，新建一个 XML 文件，命名为 act_underline.xml，位于 res 下的 color 目录中。完整代码如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">selector</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:color</span>=<span class="string">"@color/purple_700"</span> <span class="attr">android:state_pressed</span>=<span class="string">"true"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:color</span>=<span class="string">"@color/purple_700"</span> <span class="attr">android:state_focused</span>=<span class="string">"true"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:color</span>=<span class="string">"@color/purple_500"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">selector</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后，在布局文件中添加 AppCompatAutoCompleteTextView 控件：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">androidx.appcompat.widget.AppCompatAutoCompleteTextView</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/autoTv"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最后，来到 MainActivity，设置控件样式：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> arr = arrayOf(<span class="string">"Alice"</span>, <span class="string">"Bob"</span>, <span class="string">"Cindy"</span>, <span class="string">"David"</span>, <span class="string">"Edward"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line">        initData()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">initData</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> adapter = ArrayAdapter&lt;String&gt;(<span class="keyword">this</span>,android.R.layout.simple_dropdown_item_1line,arr)</span><br><span class="line">        ViewCompat.setBackgroundTintList(binding.autoTv,AppCompatResources.getColorStateList(<span class="keyword">this</span>,R.color.act_underline))</span><br><span class="line">        ViewCompat.setBackgroundTintMode(binding.autoTv,PorterDuff.Mode.SRC_IN)</span><br><span class="line">        binding.autoTv.setAdapter(adapter)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/16.png" alt></p>
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/17.png" alt></p>
+</li>
+</ol>
+<h2 id="AppCompatButton和AppCompatToggleButton"><a href="#AppCompatButton和AppCompatToggleButton" class="headerlink" title="AppCompatButton和AppCompatToggleButton"></a>AppCompatButton和AppCompatToggleButton</h2><p>​        AppCompatButton 和 AppCompatToggleButton 控件都提供了 3 个常用 API 的兼容实现，分别是自 Android 6.0 引入的 setTextAppearence()；、自 Android 4.0 引入的 setAllCaps()；以及 2.9 节中提及的更改背景色调特性相关的 API。</p>
+<p>​        <strong>setTextAppearence()；用于设置按钮的文本风格，setAllCaps()；用于设定文字是否全部以大写的形式显示。</strong>设置背景色调特性 API 的用法与 2.9 节相同，这里不再赘述。下面以 AppCompatButton 为例进行阐述。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line"></span><br><span class="line"><span class="comment">//    private val arr = arrayOf("Alice", "Bob", "Cindy", "David", "Edward")</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line">        initData()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">initData</span><span class="params">()</span></span>&#123;</span><br><span class="line">        ViewCompat.setBackgroundTintList(binding.activityMainDemoAcb,AppCompatResources.getColorStateList(<span class="keyword">this</span>,R.color.act_underline))</span><br><span class="line">        ViewCompat.setBackgroundTintMode(binding.activityMainDemoAcb,PorterDuff.Mode.SRC_IN)</span><br><span class="line"></span><br><span class="line">        binding.activityMainDemoAcb.setTextAppearance(<span class="keyword">this</span>, androidx.appcompat.R.style.TextAppearance_AppCompat_Button)</span><br><span class="line">        binding.activityMainDemoAcb.isAllCaps = <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/18.png" alt></p>
+<p>​        通过 setAllCaps()；修改。当传入的参数为 false 时，按钮文本原样显示；当传入的参数为 true 时，按钮文本所有的小写字符将自动变为大写显示，默认值为 true。</p>
+<h2 id="AppCompatCheckBox和AppCompatRadioButton"><a href="#AppCompatCheckBox和AppCompatRadioButton" class="headerlink" title="AppCompatCheckBox和AppCompatRadioButton"></a>AppCompatCheckBox和AppCompatRadioButton</h2><p>​        AppCompatCheckBox 和 AppCompatRadioButton 仅提供了设置背景色调特性兼容的能力。</p>
+<p>​        需要特别注意的是，设置背景色调特性不可以通过 CompatView 静态方法实现，而要通过 CompoundButtonCompat 静态方法实现。具体代码片段如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">initData</span><span class="params">()</span></span>&#123;</span><br><span class="line">  CompoundButtonCompat.setButtonTintList(binding.activityMainCb,AppCompatResources.getColorStateList(<span class="keyword">this</span>,R.color.act_underline))</span><br><span class="line">        CompoundButtonCompat.setButtonTintMode(binding.activityMainCb,PorterDuff.Mode.SRC_IN)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/19.png" alt></p>
+<h2 id="AppCompatCheckedTextView"><a href="#AppCompatCheckedTextView" class="headerlink" title="AppCompatCheckedTextView"></a>AppCompatCheckedTextView</h2><p>​        AppCompatCheckedTextView 控件则把复选框放在了文字的右侧。此外，我们需要通过 setCheckMarkDrawable（int resId）方法设置复选框的样式。如果不进行设置，AppCompatCheckedTextView 和普通的 TextView 并无二致。</p>
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/20.png" alt></p>
+<p>xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">androidx.appcompat.widget.AppCompatCheckedTextView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/activity_main_ctv"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"Hello World!"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintBottom_toBottomOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintLeft_toLeftOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintRight_toRightOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintTop_toTopOf</span>=<span class="string">"parent"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>activity:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line"></span><br><span class="line"><span class="comment">//    private val arr = arrayOf("Alice", "Bob", "Cindy", "David", "Edward")</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line">        initData()</span><br><span class="line">        binding.activityMainCtv.setOnClickListener&#123;</span><br><span class="line">            binding.activityMainCtv.isChecked = !binding.activityMainCtv.isChecked</span><br><span class="line">            Log.d(localClassName,<span class="string">"选中状态：<span class="subst">$&#123;binding.activityMainCtv.isChecked&#125;</span>"</span>)</span><br><span class="line">            <span class="keyword">if</span> (binding.activityMainCtv.isChecked)&#123;</span><br><span class="line">                binding.activityMainCtv.setCheckMarkDrawable(android.R.drawable.checkbox_on_background)</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                binding.activityMainCtv.setCheckMarkDrawable(android.R.drawable.checkbox_off_background)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">initData</span><span class="params">()</span></span>&#123;</span><br><span class="line">        binding.activityMainCtv.setCheckMarkDrawable(android.R.drawable.checkbox_off_background)</span><br><span class="line">        <span class="comment">//自 Android 6.0 起,引入了 setTextAppearance（int resId）</span></span><br><span class="line">        binding.activityMainCtv.setTextAppearance(<span class="keyword">this</span>,androidx.appcompat.R.style.TextAppearance_AppCompat_Caption)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="AppCompatEditText"><a href="#AppCompatEditText" class="headerlink" title="AppCompatEditText"></a>AppCompatEditText</h2><p>​        EditText 是文本输入控件，AppCompatEditText 提供了设置背景色调、自定义文本风格以及<strong>自定义所选文本操作</strong> 3 个高版本 API 特性。</p>
+<ol>
+<li><p>定义操作菜单</p>
+<p>​        当我们选中输入框中的文字后，通常系统会提供一系列默认操作，比如复制、剪切等，如果想添加或取代文本操作，首先要对弹出的菜单进行自定义。</p>
+<p>本例中将添加一个用于回显选中文字的菜单，并将该菜单命名为 edittext_selection_menu.xml，保存于 res 目录的 menu 目录下。完整代码如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">menu</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/action_show_text"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:title</span>=<span class="string">"回显选中文本"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">menu</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>回到布局文件，添加 AppCompatEditText 控件</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">androidx.appcompat.widget.AppCompatEditText</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/activity_main_et"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintBottom_toBottomOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintLeft_toLeftOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintRight_toRightOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintTop_toTopOf</span>=<span class="string">"parent"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>回到 MainActivity 的 Java 代码文件，通过 setCustomSelectionActionModeCallback()；方法将菜单项与 AppCompatEditText 绑定，并实现菜单项操作。代码片段如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line"></span><br><span class="line"><span class="comment">//    private val arr = arrayOf("Alice", "Bob", "Cindy", "David", "Edward")</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequiresApi(Build.VERSION_CODES.M)</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line">        initData()</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 大于android6setTextAppearance(int resId)</span></span><br><span class="line">    <span class="meta">@RequiresApi(Build.VERSION_CODES.M)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">initData</span><span class="params">()</span></span>&#123;</span><br><span class="line">        ViewCompat.setBackgroundTintList(binding.activityMainEt,AppCompatResources.getColorStateList(<span class="keyword">this</span>,R.color.act_underline))</span><br><span class="line">        ViewCompat.setBackgroundTintMode(binding.activityMainEt,PorterDuff.Mode.SRC_IN)</span><br><span class="line">        binding.activityMainEt.setTextAppearance(com.google.android.material.R.style.TextAppearance_AppCompat_Large)</span><br><span class="line">        binding.activityMainEt.customSelectionActionModeCallback = <span class="keyword">object</span> : ActionMode.Callback&#123;</span><br><span class="line">            <span class="comment">//绑定了视图与菜单项</span></span><br><span class="line">            <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateActionMode</span><span class="params">(mode: <span class="type">ActionMode</span>?, menu: <span class="type">Menu</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">                <span class="keyword">val</span> menuInflater = mode?.menuInflater</span><br><span class="line">                menuInflater?.inflate(R.menu.edittext_selection_menu,menu)</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onPrepareActionMode</span><span class="params">(mode: <span class="type">ActionMode</span>?, menu: <span class="type">Menu</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line">			<span class="comment">//实现了菜单点击后的具体动作。</span></span><br><span class="line">            <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onActionItemClicked</span><span class="params">(mode: <span class="type">ActionMode</span>?, item: <span class="type">MenuItem</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">                <span class="keyword">when</span>(item?.itemId)&#123;</span><br><span class="line">                    R.id.action_show_text -&gt; &#123;</span><br><span class="line">                        <span class="keyword">val</span> selectedText = binding.activityMainEt.text.toString().substring(</span><br><span class="line">                            binding.activityMainEt.selectionStart,binding.activityMainEt.selectionEnd)</span><br><span class="line">                        Toast.makeText(<span class="keyword">this</span><span class="symbol">@MainActivity</span>, selectedText, Toast.LENGTH_SHORT).show()</span><br><span class="line">                        <span class="comment">//让菜单消失的方法是 mode.finish()；</span></span><br><span class="line">                        mode?.finish()</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDestroyActionMode</span><span class="params">(mode: <span class="type">ActionMode</span>?)</span></span> &#123;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/21.png" alt></p>
+</li>
+</ol>
+<h2 id="AppCompatImageButton-和-AppCompatImageView"><a href="#AppCompatImageButton-和-AppCompatImageView" class="headerlink" title="AppCompatImageButton 和 AppCompatImageView"></a>AppCompatImageButton 和 AppCompatImageView</h2><p>​        AppCompatImageButton 则继承自 ImageButton，它不仅提供了背景色调设置，还支持图片色调设置。</p>
+<p>​        从 Android 5.0 开始，ImageButton 提供了更改图片色调的 API。我们只需使用一张 SVG 矢量图或 PSD 文件，然后定义它在不同状态下的不同颜色即可。而且，因为使用的是矢量图，素材文件大小会被大概率缩小，并会伴随视图大小不失真地缩放，堪称一举两得。</p>
+<p>​        ImageView 在某些场景下和 ImageButton 面临一样的情况。比如，图片可用与否，甚至我们有时还需要给 ImageView 设置监听器，让它可以响应点击事件。因此，只要学会如何使用 ImageButton，当使用 ImageView 时就会驾轻就熟了。</p>
+<ol>
+<li><p><strong>添加矢量图素材</strong></p>
+<p>​        SVG 或 PSD 素材并不能直接使用，我们需要将其转换为 XML 文件。素材来源可以是自带的图标，也可以是外部的 SVG 或 PSD 文件，我们这里以Android studio自带的图标为例。</p>
+</li>
+<li><p>定义矢量图的色调，具体代码如下：res/color/R.color.icon_btn.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">selector</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:color</span>=<span class="string">"@color/purple_700"</span> <span class="attr">android:state_pressed</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">android:color</span>=<span class="string">"@color/purple_500"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">selector</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在布局文件中添加一个 AppCompatImageButton，为了效果更加明显，将该控件的宽高均设置为 200dp。完整代码如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">androidx.appcompat.widget.AppCompatImageButton</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/activity_main_ib"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"200dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"200dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:scaleType</span>=<span class="string">"fitCenter"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintBottom_toBottomOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintLeft_toLeftOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintRight_toRightOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintTop_toTopOf</span>=<span class="string">"parent"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>回到 MainActivity 的 Java 代码。如使用 ViewCompat 静态方法类似，这里要使用 ImageViewCompat 类的静态方法设置色调，具体代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ImageViewCompat.setImageTintList(binding.activityMainIb,AppCompatResources.getColorStateList(<span class="keyword">this</span>,R.color.icon_btn))</span><br><span class="line">        ImageViewCompat.setImageTintMode(binding.activityMainIb,PorterDuff.Mode.SRC_IN)</span><br></pre></td></tr></table></figure>
+
+<p>​        为什么不能用 ViewCompat 类呢？</p>
+<p>​        这是因为 setImageTintList()；方法并不适用于大部分控件，它基本只用于 ImageView 控件或 ImageView 的子类控件。所以，setImageTintList()；实际上是在 ImageView 中实现的，而 ImageView 实际上是 View 的子类。我们都知道在 Java 中子类可以调用父类中的方法，但父类想要调用子类的方法基本是不可能的。所以，这里无法使用 ViewCompat 类。</p>
+</li>
+<li><p>activity:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">initData</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="comment">//设置图片资源</span></span><br><span class="line">    binding.activityMainIb.setImageResource(R.drawable.image_adb)</span><br><span class="line">   <span class="comment">//设置视图背景色调 ViewCompat.setBackgroundTintList(binding.activityMainIb,AppCompatResources.getColorStateList(this,R.color.bg_btn))</span></span><br><span class="line">    ViewCompat.setBackgroundTintMode(binding.activityMainIb,PorterDuff.Mode.SRC_IN)</span><br><span class="line"></span><br><span class="line">   <span class="comment">//设置图片资源的背景色调 ImageViewCompat.setImageTintList(binding.activityMainIb,AppCompatResources.getColorStateList(this,R.color.icon_btn))</span></span><br><span class="line">    ImageViewCompat.setImageTintMode(binding.activityMainIb,PorterDuff.Mode.SRC_IN)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>点击前：</p>
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/22.png" alt></p>
+<p>点击时：</p>
+</li>
+</ol>
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/23.png" alt></p>
+<h2 id="AppCompatSpinner"><a href="#AppCompatSpinner" class="headerlink" title="AppCompatSpinner"></a>AppCompatSpinner</h2><p>​        AppCompatSpinner 提供了设置背景色调和改变菜单背景的兼容能力。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">androidx.appcompat.widget.AppCompatSpinner</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/activity_main_sp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:entries</span>=<span class="string">"@array/person_name"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintBottom_toBottomOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintLeft_toLeftOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintRight_toRightOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintTop_toTopOf</span>=<span class="string">"parent"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">initData</span><span class="params">()</span></span>&#123;</span><br><span class="line">        binding.activityMainSp.onItemSelectedListener = <span class="keyword">object</span> :AdapterView.OnItemSelectedListener&#123;</span><br><span class="line">            <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">                parent: <span class="type">AdapterView</span>&lt;*&gt;?,</span></span></span><br><span class="line"><span class="function"><span class="params">                view: <span class="type">View</span>?,</span></span></span><br><span class="line"><span class="function"><span class="params">                position: <span class="type">Int</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                id: <span class="type">Long</span></span></span></span><br><span class="line"><span class="function"><span class="params">            )</span></span> &#123;</span><br><span class="line">                Toast.makeText(</span><br><span class="line">                    <span class="keyword">this</span><span class="symbol">@MainActivity</span>,</span><br><span class="line">                    resources.getStringArray(R.array.person_name)[position], Toast.LENGTH_SHORT</span><br><span class="line">                ).show()</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onNothingSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?)</span></span> &#123;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        ViewCompat.setBackgroundTintList(binding.activityMainSp,AppCompatResources.getColorStateList(<span class="keyword">this</span>,R.color.sp_bg))</span><br><span class="line">        ViewCompat.setBackgroundTintMode(binding.activityMainSp,PorterDuff.Mode.SRC_IN)</span><br><span class="line">        binding.activityMainSp.setPopupBackgroundResource(R.color.teal_700)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/24.png" alt></p>
+<h2 id="AppCompatTextView"><a href="#AppCompatTextView" class="headerlink" title="AppCompatTextView"></a>AppCompatTextView</h2><p>​        AppCompatTextView 提供了两个兼容性能力，分别是设置背景色调和文本自动缩放。</p>
+<p>​        从 Android 8.0 开始，Android API 引入了自适应文本大小的简易实现。它不仅可以用于 TextView，对于 TextView 的子类，比如 Button 等具有文本显示的控件同样适用。通过 AppCompatTextView 控件，还可以适配到低版本的 Android 中。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">androidx.appcompat.widget.AppCompatTextView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/activity_main_tv"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"100dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"20dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"abcdefghijklmnopqrstuvwxyz"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintBottom_toBottomOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintLeft_toLeftOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintRight_toRightOf</span>=<span class="string">"parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintTop_toTopOf</span>=<span class="string">"parent"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/25.png" alt></p>
+<p>​        调用 setAutoSizeTextTypeWithDefaults()；方法开启自适应缩放。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">initData</span><span class="params">()</span></span>&#123;       TextViewCompat.setAutoSizeTextTypeWithDefaults(binding.activityMainTv,TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/09/Appcompat%20UI%E7%BB%84%E4%BB%B6/26.png" alt></p>
+<p>​        对于 setAutoSizeTextTypeWithDefaults()；方法，我们可以传入的参数值通常有两个，分别是 TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM 和 TextView.AUTO_SIZE_TEXT_TYPE_NONE，对应开启自适应文本大小与否。</p>
+<p>​        设定缩放配置实现自定义缩放的方法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(demoTv, <span class="number">4</span>, <span class="number">15</span>, <span class="number">2</span>,</span><br><span class="line">TypedValue.COMPLEX_UNIT_SP);</span><br></pre></td></tr></table></figure>
+
+<p>setAutoSizeTextTypeUniformWithConfiguration()；是实现这种缩放方式的关键，它由 5 个参数构成：</p>
+<ul>
+<li><p>demoTV：AppCompatTextView 对象。</p>
+</li>
+<li><p>4：表示文本缩放的最小值。</p>
+</li>
+<li><p>15：表示文本缩放的最大值。</p>
+</li>
+<li><p>2：表示文本缩放的尝试步长。</p>
+</li>
+<li><p>TypedValue.COMPLEX_UNIT_SP：指定前 3 个参数使用 SP 作为单位。</p>
+<p>​        可以这样理解，当文本无法显示完全时，系统将以步长为单位递减文本大小设定值，直到文本完全显示，或者尝试值小于给定的文本缩放的最小值。</p>
+</li>
+</ul>
+<p>第二种方式是通过定义预设值实现:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TextViewCompat.setAutoSizeTextTypeUniformWithPresetSizes(demoTv, <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;<span class="number">9</span>,</span><br><span class="line"><span class="number">11</span>, <span class="number">13</span>, <span class="number">15</span>&#125;, TypedValue.COMPLEX_UNIT_SP);</span><br></pre></td></tr></table></figure>
+
+<p>​        通过 setAutoSizeTextTypeUniformWithPresetSizes()；方法定义预设值，需要三个参数，第一个依然是 AppCompatTextView 对象，第二个是预设值的具体数值；第三个则是预设值的单位。</p>
+<p>​        以上面的代码为例，在进行文字缩放时，文字大小只能从 9SP、11SP、13SP 和 15SP 这 4 个值中取。</p>
+<h2 id="Tooltips"><a href="#Tooltips" class="headerlink" title="Tooltips"></a>Tooltips</h2><p>​        Tooltips 是从 Android 8.0 引入的，它的作用是当用户长按或鼠标指针悬停在某个控件时，显示提示文本。</p>
+<p>TooltipCompat 的使用方法很简单，也很唯一，仅需执行它的静态方法即可，示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TooltipCompat.setTooltipText(demoTv,</span><br><span class="line">getResources().getText(R.string.tool_tip_str));</span><br></pre></td></tr></table></figure>
+
+<p>setTooltipText()；方法的两个参数：demoTv 是 TextView 对象，另一个参数则是要显示的文本内容。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/02/UDP%E4%B8%8ETCP%E5%85%A5%E9%97%A8/" rel="prev" title="UDP与TCP入门">
+      <i class="fa fa-chevron-left"></i> UDP与TCP入门
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/08/10/Android%20KTX%E6%89%A9%E5%B1%95/" rel="next" title="Android KTX扩展">
+      Android KTX扩展 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#App-Bar"><span class="nav-number">1.</span> <span class="nav-text">App Bar</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ToolBar小结"><span class="nav-number">1.1.</span> <span class="nav-text">ToolBar小结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AppCompatActivity-与AppCompatDelegate"><span class="nav-number">2.</span> <span class="nav-text">AppCompatActivity 与AppCompatDelegate</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AppCompatActivity"><span class="nav-number">2.1.</span> <span class="nav-text">AppCompatActivity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AppCompatDelegate"><span class="nav-number">2.2.</span> <span class="nav-text">AppCompatDelegate</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AppCompatDialogFragment"><span class="nav-number">3.</span> <span class="nav-text">AppCompatDialogFragment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AppCompatResources"><span class="nav-number">4.</span> <span class="nav-text">AppCompatResources</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义不同点击状态的颜色值"><span class="nav-number">4.1.</span> <span class="nav-text">定义不同点击状态的颜色值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从-resId-获取-Drawable-对象"><span class="nav-number">4.2.</span> <span class="nav-text">从 resId 获取 Drawable 对象</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AnimatedStateListDrawable"><span class="nav-number">5.</span> <span class="nav-text">AnimatedStateListDrawable</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ActionMenuView"><span class="nav-number">6.</span> <span class="nav-text">ActionMenuView</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AutoCompleteTextView-和MultiAutoCompleteTextView"><span class="nav-number">7.</span> <span class="nav-text">AutoCompleteTextView 和MultiAutoCompleteTextView</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AppCompatButton和AppCompatToggleButton"><span class="nav-number">8.</span> <span class="nav-text">AppCompatButton和AppCompatToggleButton</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AppCompatCheckBox和AppCompatRadioButton"><span class="nav-number">9.</span> <span class="nav-text">AppCompatCheckBox和AppCompatRadioButton</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AppCompatCheckedTextView"><span class="nav-number">10.</span> <span class="nav-text">AppCompatCheckedTextView</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AppCompatEditText"><span class="nav-number">11.</span> <span class="nav-text">AppCompatEditText</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AppCompatImageButton-和-AppCompatImageView"><span class="nav-number">12.</span> <span class="nav-text">AppCompatImageButton 和 AppCompatImageView</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AppCompatSpinner"><span class="nav-number">13.</span> <span class="nav-text">AppCompatSpinner</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AppCompatTextView"><span class="nav-number">14.</span> <span class="nav-text">AppCompatTextView</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tooltips"><span class="nav-number">15.</span> <span class="nav-text">Tooltips</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

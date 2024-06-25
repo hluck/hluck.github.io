@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="声明和使用ActivityActivity的基本用法1234567891011121314&lt;activity          android:name&#x3D;&quot;.MainActivity&quot;          android:exported&#x3D;&quot;true&quot;          android:label&#x3D;&quot;@string&#x2F;title_activity_datetime&quot;&gt;    &lt;int">
+<meta property="og:type" content="article">
+<meta property="og:title" content="窗口（Activity）与视图（View）">
+<meta property="og:url" content="https://hluck.github.io/2022/12/19/%E7%AA%97%E5%8F%A3%EF%BC%88Activity%EF%BC%89%E4%B8%8E%E8%A7%86%E5%9B%BE%EF%BC%88View%EF%BC%89/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="声明和使用ActivityActivity的基本用法1234567891011121314&lt;activity          android:name&#x3D;&quot;.MainActivity&quot;          android:exported&#x3D;&quot;true&quot;          android:label&#x3D;&quot;@string&#x2F;title_activity_datetime&quot;&gt;    &lt;int">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/12/19/%E7%AA%97%E5%8F%A3%EF%BC%88Activity%EF%BC%89%E4%B8%8E%E8%A7%86%E5%9B%BE%EF%BC%88View%EF%BC%89/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/12/19/%E7%AA%97%E5%8F%A3%EF%BC%88Activity%EF%BC%89%E4%B8%8E%E8%A7%86%E5%9B%BE%EF%BC%88View%EF%BC%89/2.png">
+<meta property="article:published_time" content="2022-12-19T03:58:23.688Z">
+<meta property="article:modified_time" content="2022-12-28T14:06:27.073Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Android权威指南2">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/12/19/%E7%AA%97%E5%8F%A3%EF%BC%88Activity%EF%BC%89%E4%B8%8E%E8%A7%86%E5%9B%BE%EF%BC%88View%EF%BC%89/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/12/19/%E7%AA%97%E5%8F%A3%EF%BC%88Activity%EF%BC%89%E4%B8%8E%E8%A7%86%E5%9B%BE%EF%BC%88View%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>窗口（Activity）与视图（View） | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/12/19/%E7%AA%97%E5%8F%A3%EF%BC%88Activity%EF%BC%89%E4%B8%8E%E8%A7%86%E5%9B%BE%EF%BC%88View%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          窗口（Activity）与视图（View）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-12-19 11:58:23" itemprop="dateCreated datePublished" datetime="2022-12-19T11:58:23+08:00">2022-12-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-12-28 22:06:27" itemprop="dateModified" datetime="2022-12-28T22:06:27+08:00">2022-12-28</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>20k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>18 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="声明和使用Activity"><a href="#声明和使用Activity" class="headerlink" title="声明和使用Activity"></a>声明和使用Activity</h3><h4 id="Activity的基本用法"><a href="#Activity的基本用法" class="headerlink" title="Activity的基本用法"></a>Activity的基本用法</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:name</span>=<span class="string">".MainActivity"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:exported</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">android:label</span>=<span class="string">"@string/title_activity_datetime"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:name</span>=<span class="string">"android.app.lib_name"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:value</span>=<span class="string">""</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​        Action和Category分别是android.intent.action.MAIN和android.intent.category.LAUNCHER,这是系统用于调用第一个显示的Activity的Action和Category。这个Action和Category可以在多个Activity中使用，如果在一个应用程序中声明了多个使用该Action和Category的窗口，系统会在程序列表中生成多个程序图标，每个图标对应某一个使用android.intent.action.MAIN和android.intent.category.LAUNCHER的窗口。当单击某个图标后就会显示与其对应的窗口。程序启动时还是显示第一个使用android.intent.action.MAIN和android.intent.category.LAUNCHER的窗口。</p>
+<h4 id="Activity的生命周期"><a href="#Activity的生命周期" class="headerlink" title="Activity的生命周期"></a>Activity的生命周期</h4><p>7个生命周期方法的定义如下：</p>
+<a id="more"></a>
+<ul>
+<li>protected void onCreate(Bundle savedInstanceState)</li>
+<li>protected void onStart()</li>
+<li>protected void onResume()</li>
+<li>protected void onPause()</li>
+<li>protected void onStop()</li>
+<li>protected void onRestart()</li>
+<li>protected void onDestroy()</li>
+</ul>
+<p>上面7个生命周期方法分别在4个阶段按一定的顺序进行调用，这4个阶段如下:</p>
+<p><strong>开始Activity：</strong>在这个阶段依次执行3个生命周期方法，分别是<strong>onCreate</strong>、<strong>onStart</strong>和<strong>onResume</strong>。</p>
+<p><strong>Activity失去焦点：</strong>如果在Activity获得焦点的情况下进入其他的Activity或应用程序，当前的Activity会失去焦点。在这一阶段会依次执行<strong>onPause</strong>和<strong>onStop</strong>方法。</p>
+<p><strong>Activity重新获得焦点：</strong>如果Activity重新获得焦点，会依次执行3个生命周期方法，分别是<strong>onRestart</strong>、<strong>onStart</strong>和<strong>onResume</strong>。</p>
+<p><strong>关闭Activity：</strong>当Activity被关闭时系统会依次执行3个生命周期方法，分别是<strong>onPause</strong>、<strong>onStop</strong>和<strong>onDestroy</strong>。</p>
+<p>​        如果在执行onPause方法的过程中Activity重新获得了焦点，然后又失去了焦点，系统将不会再执行onStop方法，而是按如下顺序执行相应的生命周期方法：<strong>onPause -＞ onResume-＞ onPause</strong></p>
+<p>​        如果在执行onStop方法的过程中Activity重新获得了焦点，然后又失去了焦点，系统将不会执行onDestroy方法，而是按如下顺序执行相应的生命周期方法：<strong>onStop→onRestart→onStart→onResume→onPause→onStop</strong></p>
+<p><img src="/2022/12/19/%E7%AA%97%E5%8F%A3%EF%BC%88Activity%EF%BC%89%E4%B8%8E%E8%A7%86%E5%9B%BE%EF%BC%88View%EF%BC%89/1.png" alt></p>
+<p>Activity有如下3种生命周期：</p>
+<p><strong>整体生命周期：</strong>onCreate→……→onDestroy。</p>
+<p><strong>可视生命周期：</strong>onStart→……→onStop。</p>
+<p><strong>焦点生命周期：</strong>onResume→onPause。</p>
+<h3 id="窗口的常用事件"><a href="#窗口的常用事件" class="headerlink" title="窗口的常用事件"></a>窗口的常用事件</h3><h4 id="设置窗口标题事件（onTitleChanged）"><a href="#设置窗口标题事件（onTitleChanged）" class="headerlink" title="设置窗口标题事件（onTitleChanged）"></a>设置窗口标题事件（onTitleChanged）</h4><p>​        窗口的标题可以在声明窗口时通过＜activity＞标签的android:label属性指定，也可以在代码中通过setTitle方法动态设置。当窗口标题被设置后，会调用onTitleChanged方法,该方法的原型如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onTitleChanged</span><span class="params">(CharSequence title, <span class="keyword">int</span> color)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>​        其中title参数表示改变后的窗口标题，可通过setTitle方法设置，color参数表示改变后的窗口标题颜色，可以通过setTitleColor方法设置。无论是调用setTitle方法还是调用setTitleColor方法都会调用onTitleChanged来捕获标题的变化。</p>
+<p>​        onPostCreate方法，该方法会在窗口完全显示后调用，也就是说onTitleChanged方法会在onCreate和onRestoreInstanceState方法之后调用,也就是说在默认情况下onPostCreate方法也调用了onTitleChanged方法</p>
+<h4 id="键盘按下和抬起事件（onKeyDown和onKeyUp）"><a href="#键盘按下和抬起事件（onKeyDown和onKeyUp）" class="headerlink" title="键盘按下和抬起事件（onKeyDown和onKeyUp）"></a>键盘按下和抬起事件（onKeyDown和onKeyUp）</h4><p>​        其实按键单击就是按键按下和抬起的组合动作，所以窗口事件中并不能捕获按键单击事件，而只能捕获按键按下和抬起事件，分别用onKeyDown和onKeyUp方法捕获。这两个方法的原型如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onKeyDown</span><span class="params">(<span class="keyword">int</span> keyCode, KeyEvent event)</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onKeyUp</span><span class="params">(<span class="keyword">int</span> keyCode, KeyEvent event)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>​        keyCode表示按下或抬起的按键代码，通过event参数则可以获得更多的按键信息。        </p>
+<p>​        如果这两个方法返回true，表示按键事件已经处理完毕，不会再调用其他回调方法处理按键事件了。如果还想将处理动作继续传递下去，该方法应返回false。</p>
+<h5 id="如何捕捉Home键的动作"><a href="#如何捕捉Home键的动作" class="headerlink" title="如何捕捉Home键的动作"></a>如何捕捉Home键的动作</h5><p>​        onKeyDown和onKeyUp方法无法来捕获Home键的动作.</p>
+<p>​        按Home键程序并没有退出（窗口的生命周期只执行到onStop方法），只是切换到后台运行了。而按Back键或调用finish方法则关闭当前程序，当前窗口的生命周期也就结束了。系统会在调用onDestroy方法后释放窗口对象（但一些资源并未释放，如静态变量），按Home和Back键都执行的最后一个方法是onStop，所以很容易想到在onStop方法中处理按Home键的动作。</p>
+<p>​        由于窗口不管以何种方式关闭（按Back键、执行finish方法等），都会调用Activity.finish方法，而且该方法是在调用窗口生命周期方法之前就调用了，也就是说调用onPause方法之前会首先调用finish方法。而按Home键系统并不会调用finish方法，所以覆盖finish方法，并在finish方法中设置标志</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityMainBinding</span>&gt;</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//true：窗口退出　 false：窗口切换到后台执行，并没有退出</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> isFinished = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityMainBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        title = taskId.toString()</span><br><span class="line">        mBinding.btnShowDate.setOnClickListener &#123;</span><br><span class="line">            <span class="keyword">val</span> sdf = SimpleDateFormat(<span class="string">"yyyy-MM-dd"</span>)</span><br><span class="line">            showDialog(<span class="string">"显示当前日期"</span>,sdf.format(Date()))</span><br><span class="line">        &#125;</span><br><span class="line">        mBinding.btnShowTime.setOnClickListener &#123;</span><br><span class="line">            <span class="keyword">val</span> sdf = SimpleDateFormat(<span class="string">"HH:mm:ss"</span>)</span><br><span class="line">            showDialog(<span class="string">"显示当前时间"</span>,sdf.format(Date()))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 当窗口重新开始时执行该方法，该方法可以处理重新切换回当前程序后要完成的工作</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onStart</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onStart()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 当窗口移到后台执行或退出时执行该方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onStop</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="comment">//如果isFinished=false，表示当前窗口只是切换到后台运行，并没有退出</span></span><br><span class="line">        <span class="keyword">if</span> (!isFinished)&#123;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span>,<span class="string">"窗口已经在后台运行（按了Home键）!"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">super</span>.onStop()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">showDialog</span><span class="params">(title:<span class="type">String</span>, msg:<span class="type">String</span>)</span></span>&#123;</span><br><span class="line">        AlertDialog.Builder(<span class="keyword">this</span>)</span><br><span class="line">            .setIcon(android.R.drawable.ic_dialog_info)</span><br><span class="line">            .setTitle(title)</span><br><span class="line">            .setMessage(msg)</span><br><span class="line">            .setPositiveButton(<span class="string">"确定"</span>,<span class="literal">null</span>)</span><br><span class="line">            .show()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 捕捉按键按下事件</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> keyCode Int 按键代码</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> event KeyEvent</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> Boolean</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onKeyDown</span><span class="params">(keyCode: <span class="type">Int</span>, event: <span class="type">KeyEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        Log.d(<span class="string">"KeyCode"</span>,keyCode.toString())</span><br><span class="line">        <span class="comment">//输出按键的重复次数</span></span><br><span class="line">        Log.d(<span class="string">"RepeatCount"</span>,event?.repeatCount.toString())</span><br><span class="line">        <span class="keyword">if</span> (event?.repeatCount == <span class="number">200</span>)&#123;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span>,<span class="string">"已经按了一会了，累了吧，该松开了"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (keyCode == KeyEvent.KEYCODE_BACK)&#123;</span><br><span class="line">            Log.d(<span class="string">"main"</span>,<span class="string">"BACK DOWN"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onKeyDown(keyCode, event)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 只要窗口退出，就一定会调用finish方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">finish</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="comment">//设置标志</span></span><br><span class="line">        isFinished = <span class="literal">true</span></span><br><span class="line">        <span class="keyword">super</span>.finish()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * //　捕获按键抬起事件</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> keyCode Int</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> event KeyEvent</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> Boolean</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onKeyUp</span><span class="params">(keyCode: <span class="type">Int</span>, event: <span class="type">KeyEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (keyCode == KeyEvent.KEYCODE_BACK)&#123;</span><br><span class="line">            Log.d(<span class="string">"main"</span>,<span class="string">"BACK UP"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onKeyUp(keyCode,event)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="任意情况下捕捉键盘事件（dispatchKeyEvent）"><a href="#任意情况下捕捉键盘事件（dispatchKeyEvent）" class="headerlink" title="任意情况下捕捉键盘事件（dispatchKeyEvent）"></a>任意情况下捕捉键盘事件（dispatchKeyEvent）</h4><p>​        通过dispatchKeyEvent方法在任何情况下捕捉到按键事件（仍然无法捕捉到Home按键的动作）。</p>
+<p>dispatchKeyEvent方法的原型如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchKeyEvent</span><span class="params">(KeyEvent event)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>​        event参数的含义与onKeyDown及onKeyUp方法的event参数的含义相同。该方法返回true，表示已经处理了按键事件，其他的处理方法不再调用，如果还想让其他按键事件方法进行处理，该方法要返回false。</p>
+<p>​        由于按键分为按下和抬起两个动作，而只有一个dispatchKeyEvent方法，所以该方法会被调用两次（按下调用一次，抬起调用一次）,通过如下代码判断是按下的动作，还是抬起的动作:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">dispatchKeyEvent</span><span class="params">(event: <span class="type">KeyEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (event?.action == KeyEvent.ACTION_DOWN)&#123;</span><br><span class="line">        Log.d(<span class="string">"Main"</span>,<span class="string">"down"</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (event?.action == KeyEvent.ACTION_UP)&#123;</span><br><span class="line">        Log.d(<span class="string">"Main"</span>,<span class="string">"up"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">super</span>.dispatchKeyEvent(event)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="回退事件（onBackPressed）"><a href="#回退事件（onBackPressed）" class="headerlink" title="回退事件（onBackPressed）"></a>回退事件（onBackPressed）</h4><p>​        <strong>onBackPressed方法单独捕捉Back键的动作</strong>。该方法没有参数，也没有返回值，因为该方法是调用链上最后一个调用的，而且只捕获Back按键的动作，所以并不需要参数和返回值。onBackPressed方法始终只调用一次，不管是按下和抬起。</p>
+<h4 id="按键长按事件（onKeyLongPress）"><a href="#按键长按事件（onKeyLongPress）" class="headerlink" title="按键长按事件（onKeyLongPress）"></a>按键长按事件（onKeyLongPress）</h4><p>​        简单地实现onKeyLongPress方法并不会被调用，还必须在onKeyDown方法中调用KeyEvent.startTracking方法，并且onKeyDown方法返回true才可能捕捉到按键长按事件。</p>
+<p>​        <strong>startTracking</strong>方法用于跟踪按键动作，例如按下的时间等。</p>
+<p>​        使用startTracking方法还应注意的是该方法同时只能跟踪一个按键，如果在跟踪的过程中按下了别的按键，当前跟踪过程将停止，转而跟踪新按下的按键。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 捕捉按键按下事件</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> keyCode Int 按键代码</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> event KeyEvent</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> Boolean</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onKeyDown</span><span class="params">(keyCode: <span class="type">Int</span>, event: <span class="type">KeyEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        Log.d(<span class="string">"KeyCode"</span>,keyCode.toString())</span><br><span class="line">        <span class="comment">//输出按键的重复次数</span></span><br><span class="line">        Log.d(<span class="string">"RepeatCount"</span>,event?.repeatCount.toString())</span><br><span class="line">        <span class="keyword">if</span> (event?.repeatCount == <span class="number">200</span>)&#123;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span>,<span class="string">"已经按了一会了，累了吧，该松开了"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (keyCode == KeyEvent.KEYCODE_BACK)&#123;</span><br><span class="line">            Log.d(<span class="string">"main"</span>,<span class="string">"BACK DOWN"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//必须调用startTracking方法</span></span><br><span class="line">        event?.startTracking()</span><br><span class="line">        <span class="comment">//必须返回true</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onKeyLongPress</span><span class="params">(keyCode: <span class="type">Int</span>, event: <span class="type">KeyEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        Log.d(<span class="string">"main"</span>,<span class="string">"长按了"</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onKeyLongPress(keyCode, event)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="屏幕触摸事件（onTouchEvent）"><a href="#屏幕触摸事件（onTouchEvent）" class="headerlink" title="屏幕触摸事件（onTouchEvent）"></a>屏幕触摸事件（onTouchEvent）</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTouchEvent</span><span class="params">(MotionEvent event)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>​        event参数可以获取与触摸相关的信息,例如，触摸点的屏幕坐标，当前的触摸状态是按下，还是抬起，如果Android支持鼠标，还可以获取按下的是鼠标的哪几个键。</p>
+<p>​        如果onTouchEvent方法返回true，表示该方法已经处理完了屏幕触摸工作，不会再将屏幕触摸动作传递给下一个可以接收到该事件的方法。如果该方法返回false，则会允许调用下一个可以处理屏幕触摸动作的方法。</p>
+<p>输出当前触摸屏幕的状态以及触摸点的X、Y坐标值:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Android系统使用的坐标系的0点坐标在屏幕的左上角，坐标值是（0,0）。</span></span><br><span class="line"><span class="comment">     * 屏幕从左向右为x轴的正方向，</span></span><br><span class="line"><span class="comment">     * 屏幕从上到下为y轴的正方向。</span></span><br><span class="line"><span class="comment">     * MotionEvent.getY方法返回的Y坐标值包括标题栏的高度。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> event MotionEvent</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> Boolean</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onTouchEvent</span><span class="params">(event: <span class="type">MotionEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">    <span class="comment">//　按下状态</span></span><br><span class="line">    <span class="keyword">if</span>(event?.action == MotionEvent.ACTION_DOWN)&#123;</span><br><span class="line">        Log.d(<span class="string">"onTouchEvent"</span>,<span class="string">"DOWN"</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (event?.action == MotionEvent.ACTION_UP)&#123; <span class="comment">//　抬起状态</span></span><br><span class="line">        Log.d(<span class="string">"onTouchEvent"</span>,<span class="string">"UP"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    Log.d(<span class="string">"onTouchEvent"</span>,<span class="string">"X坐标：<span class="subst">$&#123;event?.x&#125;</span>"</span>)</span><br><span class="line">    Log.d(<span class="string">"onTouchEvent"</span>,<span class="string">"Y坐标：<span class="subst">$&#123;event?.y&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">super</span>.onTouchEvent(event)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="窗口获得焦点事件（onWindowFocusChanged）"><a href="#窗口获得焦点事件（onWindowFocusChanged）" class="headerlink" title="窗口获得焦点事件（onWindowFocusChanged）"></a>窗口获得焦点事件（onWindowFocusChanged）</h4><p>​        除了可以使用窗口生命周期的onResume和onPause方法处理窗口获得和失去焦点的动作，还可以使用onWindowFocusChanged方法来处理窗口获得和失去焦点的动作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onWindowFocusChanged</span><span class="params">(<span class="keyword">boolean</span> hasFocus)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>​        其中hasFocus参数表示窗口是否获得了焦点，如果该参数值为true，表示窗口已经获得了焦点；如果为false，表示窗口失去了焦点。</p>
+<p>​        如果窗口的焦点发生变化，该方法会在onResume或onPause方法后面调用。</p>
+<h3 id="在不同Activity之间传递数据"><a href="#在不同Activity之间传递数据" class="headerlink" title="在不同Activity之间传递数据"></a>在不同Activity之间传递数据</h3><h4 id="使用Intent传递数据"><a href="#使用Intent传递数据" class="headerlink" title="使用Intent传递数据"></a>使用Intent传递数据</h4><p>​        通过Intent.putExtra方法可以将简单类型的数据或可序列化的对象保存在Intent对象中，然后在目标Activity中使用getXxx（getInt、getString等）方法获得这些数据。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> intent = Intent(<span class="keyword">this</span>,MainActivity::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>)</span></span><br><span class="line"><span class="comment">//传递String类型的值</span></span><br><span class="line">intent.putExtra(<span class="string">"something"</span>,<span class="string">"lucky to you."</span>)</span><br><span class="line"><span class="comment">//传递int类型的值</span></span><br><span class="line">intent.putExtra(<span class="string">"intValue"</span>,<span class="number">100</span>)</span><br><span class="line"><span class="keyword">val</span> <span class="keyword">data</span> = Data()</span><br><span class="line"><span class="keyword">data</span>.id = <span class="number">1000</span></span><br><span class="line"><span class="keyword">data</span>.name = <span class="string">"heloo"</span></span><br><span class="line"><span class="comment">//传递可序列化的对象</span></span><br><span class="line">intent.putExtra(<span class="string">"objValue"</span>,<span class="keyword">data</span>)</span><br><span class="line">startActivity(intent)</span><br></pre></td></tr></table></figure>
+
+<p>获取Intent传来的值：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//　获得String类型的值　　　　</span></span><br><span class="line">String intentString =　getIntent().getStringExtra(<span class="string">"intent_string"</span>);</span><br><span class="line"><span class="comment">//　获得Integer类型的值　　　　</span></span><br><span class="line"><span class="keyword">int</span> intentInteger = getIntent().getExtras().getInt(<span class="string">"intent_integer"</span>);</span><br><span class="line"><span class="comment">//　获得Data类型的值　　　　</span></span><br><span class="line">Data data = (Data)getIntent().getExtras().get(<span class="string">"intent_object"</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="使用静态变量传递数据"><a href="#使用静态变量传递数据" class="headerlink" title="使用静态变量传递数据"></a>使用静态变量传递数据</h4><p>​        Intent无法传递不能序列化的对象，也就是没有实现java.io.Serializable接口的类创建的对象。例如，存储图像数据的Bitmap对象就无法通过Intent对象进行传递。如果传递自定义类的对象，也必须实现java.io.Serializable接口才可以。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyActivity2</span> <span class="keyword">extends</span> <span class="title">Activity</span></span>&#123;　　</span><br><span class="line">    <span class="comment">//　下面定义了3个静态变量　　</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String name;　　</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> id;　　</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Data data;</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<p>​        之后在显示MyActivity2之前（调用startActivity方法之前）为这些静态变量赋值。</p>
+<h4 id="使用剪贴板传递数据"><a href="#使用剪贴板传递数据" class="headerlink" title="使用剪贴板传递数据"></a>使用剪贴板传递数据</h4><p>​        剪贴板只能存储简单类型数据或可序列化的对象，对于某些不可序列化的对象如果可以将其转换成字节流（字节数组），也可以将这些对象保存到剪贴板中，例如Bitmap对象（保存图像的对象）是不可序列化的，但可以将其保存的图像数据转换为字节数组，这样就可以将其保存到剪贴板中了。</p>
+<p>将可序列化的Data对象转换为Base64编码后以字符串形式存储在剪贴板中：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">mBinding.btn3.setOnClickListener &#123;</span><br><span class="line">    <span class="keyword">val</span> intent3 = Intent(<span class="keyword">this</span><span class="symbol">@MainActivity</span>,Activity2::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>)</span></span><br><span class="line">    <span class="comment">//获取剪贴板对象（ClipboardManager）</span></span><br><span class="line">    <span class="keyword">val</span> clipboard = getSystemService(Context.CLIPBOARD_SERVICE) <span class="keyword">as</span> ClipboardManager</span><br><span class="line">    <span class="comment">//创建Data对象</span></span><br><span class="line">    <span class="keyword">val</span> clipData = Data(<span class="number">666</span>,<span class="string">"通过Clipboard传递的数据"</span>)</span><br><span class="line">    <span class="comment">//　创建字节数组输出流对象，用于将Data对象转换为字节流</span></span><br><span class="line">    <span class="keyword">val</span> baos = ByteArrayOutputStream()</span><br><span class="line">    <span class="comment">//用于保存Data对象生成的Base64格式的字符串</span></span><br><span class="line">    <span class="keyword">var</span> base64Str = <span class="string">""</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">val</span> oos = ObjectOutputStream(baos)</span><br><span class="line">        <span class="comment">//将Data对象写入对象输出流</span></span><br><span class="line">        oos.writeObject(clipData)</span><br><span class="line">        <span class="comment">//将字节流进行Base64编码</span></span><br><span class="line">        base64Str = android.util.Base64.encodeToString(baos.toByteArray(),android.util.Base64.DEFAULT)</span><br><span class="line">        oos.close()</span><br><span class="line">    &#125;<span class="keyword">catch</span> (e:java.lang.Exception)&#123;</span><br><span class="line">        e.printStackTrace()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//获取存储文本数据的剪贴板数据对象（ClipData）</span></span><br><span class="line">    <span class="keyword">val</span> clipDate = ClipData.newPlainText(<span class="string">"data"</span>,base64Str)</span><br><span class="line">    <span class="comment">//设置主剪贴板</span></span><br><span class="line">    clipboard.setPrimaryClip(clipDate)</span><br><span class="line">    <span class="comment">//显示MyActivity3窗口</span></span><br><span class="line">    startActivity(intent3)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        在MyActivity2窗口类的onCreate方法中会从剪贴板中获取Base64编码字符串，并将该编码字符串还原为Data对象：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> Activity2Binding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">//获取剪贴板对象（ClipboardManager）</span></span><br><span class="line">    <span class="keyword">val</span> clipboard = getSystemService(Context.CLIPBOARD_SERVICE) <span class="keyword">as</span> ClipboardManager</span><br><span class="line">    <span class="comment">//从剪贴板中获取Base64编码字符串</span></span><br><span class="line">    <span class="keyword">val</span> base64Str = clipboard.primaryClip!!.getItemAt(<span class="number">0</span>).text.toString()</span><br><span class="line">    <span class="comment">//将Base64编码字符串解码成字节数组</span></span><br><span class="line">    <span class="keyword">val</span> buff:ByteArray = Base64.decode(base64Str,Base64.DEFAULT)</span><br><span class="line">    <span class="keyword">val</span> bais = ByteArrayInputStream(buff)</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">val</span> ois = ObjectInputStream(bais)</span><br><span class="line">        <span class="comment">//将字节流还原成Data对象</span></span><br><span class="line">        <span class="keyword">val</span> <span class="keyword">data</span> = ois.readObject() <span class="keyword">as</span> Data</span><br><span class="line">        <span class="comment">//将Base64编码原文和Data对象的字段值显示在TextView控件中</span></span><br><span class="line">        mBinding.textView.text = <span class="string">"<span class="variable">$base64Str</span>  data.id:<span class="subst">$&#123;data.id&#125;</span>  data.name:<span class="subst">$&#123;data.name&#125;</span>"</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (e:Exception)&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="获取系统管理对象"><a href="#获取系统管理对象" class="headerlink" title="获取系统管理对象"></a>获取系统管理对象</h5><p>​        在Context类中定义了若干个常量，分别对应系统的不同管理对象，例如，Context.ACCOUNT_SERVICE（账户管理对象）、Context.ACTIVITY_SERVICE（窗口管理对象）、Context.AUDIO_SERVICE（音频管理对象）等。下面是获得这3个管理对象的代码，在后面的章节中会逐渐使用到这些以及更多的管理对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取账户管理对象</span></span><br><span class="line">AccountManager accountManager = (AccountManager)getSystemService(Context.ACCOUNT_SERVICE);</span><br><span class="line"><span class="comment">//　获取窗口管理对象</span></span><br><span class="line">ActivityManager activityManager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);</span><br><span class="line"><span class="comment">//获取音频管理对象</span></span><br><span class="line">AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);</span><br></pre></td></tr></table></figure>
+
+<h4 id="使用全局对象传递数据"><a href="#使用全局对象传递数据" class="headerlink" title="使用全局对象传递数据"></a>使用全局对象传递数据</h4><p>​        虽然使用静态变量可以传递任意类型的数据，但官方并不建议这样做。</p>
+<p>​        全局对象这种方式可完全取代静态变量。</p>
+<p>​        Android中的全局对象类似于Java Web中的这个Application域，除非将Android应用程序彻底清除出内存，否则全局对象将一直可以访问。</p>
+<p>​        全局对象所对应的类必须从android.app.Application继承。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyAPP</span> <span class="keyword">extends</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String country;</span><br><span class="line">    <span class="keyword">public</span> Data data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意:</strong></p>
+<p>​        全局类中不需要定义静态变量，只需要定义普通成员变量即可，但全局类中必须要有一个无参数的构造方法，或不编写构造方法（系统会自动建立一个无参数的构造方法）。全局类和窗口类是一样的，由系统使用全局类自动创建全局对象，因此，全局类必须要有一个无参数的构造方法。</p>
+<p>​        在编写完全局类后，还需要通过＜application＞标签的android:name属性指定全局类名，否则系统是不会自动创建全局对象的。</p>
+<p>​        无论读写全局对象，都必须先获取全局对象，通过Activity.<strong>getApplicationContext</strong>方法可以很容易地在程序的任何位置获取全局对象.</p>
+<p>首先获得了MyApp对象，然后为MyApp对象中的字段赋值:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//　获取MyApp对象</span></span><br><span class="line">MyApp myApp = (MyApp) getApplicationContext();</span><br><span class="line">myApp.country = <span class="string">"美国"</span>;</span><br><span class="line">myApp.data.id = <span class="number">1234</span>;</span><br><span class="line">myApp.data.name = <span class="string">"飞碟"</span>;</span><br><span class="line">intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, MyActivity4<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">startActivity(intent);</span><br></pre></td></tr></table></figure>
+
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><p>​        对于向其他窗口传递简单类型（int、String、short、Boolean等）或可序列化的对象时，建议使用Intent对象进行数据传递。如果传递不可序列化的对象，可以采用静态变量或全局对象的方式，不过按照官方的建议，最好采用全局对象的方式。另外，如果想使某些数据长时间驻留内存，以便程序随时取用，最好采用全局对象的形式，当然，如果数据不复杂，也可以采用静态变量。至于剪贴板，如果不是非常特殊的情况，并不建议使用。因为这可能会影响到其他的程序（因为其他的程序可能会使用到剪贴板）。</p>
+<h3 id="从Activity返回数据"><a href="#从Activity返回数据" class="headerlink" title="从Activity返回数据"></a>从Activity返回数据</h3><p>​        采用Intent对象的方式来返回数据。使用这种方式返回数据，需要使用startActivityForResult方法来显示Activity，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(<span class="keyword">this</span>, MyActivity<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">startActivityForResult(intent, <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>​        其中startActivityForResult方法的第2个参数是一个int类型的请求码，可以是任意的整数，只是为了区分请求的来源，以便处理返回结果。</p>
+<p>MyActivity向上一个acitvity返回数据:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//　metEditText是从布局文件创建的EditText对象</span></span><br><span class="line">String value = metEditText.getText().toString();</span><br><span class="line">Intent intent = <span class="keyword">new</span> Intent();</span><br><span class="line">intent.putExtra(<span class="string">"value"</span>, value);</span><br><span class="line"><span class="comment">//　通过Intent对象返回结果，setResult方法的第1个参数是一个响应码，与请求码类似</span></span><br><span class="line">setResult(<span class="number">2</span>, intent);</span><br><span class="line"><span class="comment">//　关闭当前的Activity,返回上一个Activity</span></span><br><span class="line">finish();</span><br></pre></td></tr></table></figure>
+
+<p>在显示MyActivity的ResultActivity类中实现onActivityResult方法来处理返回的结果，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Overrideprotected</span> </span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onActivityResult</span><span class="params">(<span class="keyword">int</span> requestCode, <span class="keyword">int</span> resultCode, Intent data)</span></span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onActivityResult(requestCode, resultCode, data);</span><br><span class="line">    　<span class="keyword">switch</span> (requestCode)&#123;</span><br><span class="line">         <span class="keyword">case</span> <span class="number">1</span>:　<span class="comment">//　请求码</span></span><br><span class="line">             <span class="keyword">switch</span> (resultCode)&#123;</span><br><span class="line">                  <span class="keyword">case</span> <span class="number">2</span>:　　<span class="comment">//　响应码</span></span><br><span class="line">                     setTitle(data.getStringExtra(<span class="string">"value"</span>));　　<span class="comment">//　将返回值作为标题来设置</span></span><br><span class="line">                     <span class="keyword">break</span>;</span><br><span class="line">                  <span class="keyword">default</span>:</span><br><span class="line">                     <span class="keyword">break</span>;</span><br><span class="line">             &#125;</span><br><span class="line">             <span class="keyword">break</span>;</span><br><span class="line">         <span class="keyword">default</span>:</span><br><span class="line">             <span class="keyword">break</span>;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="视图（View）"><a href="#视图（View）" class="headerlink" title="视图（View）"></a>视图（View）</h3><h4 id="视图简介"><a href="#视图简介" class="headerlink" title="视图简介"></a>视图简介</h4><p>​        Android SDK中的视图类可分为3种：布局（Layout）类、视图容器（View Container）类和视图类（例如，TextView就是一个直接继承于View类的视图类）。这3种类都是android.view.View的子类。</p>
+<p><img src="/2022/12/19/%E7%AA%97%E5%8F%A3%EF%BC%88Activity%EF%BC%89%E4%B8%8E%E8%A7%86%E5%9B%BE%EF%BC%88View%EF%BC%89/2.png" alt></p>
+<h4 id="在代码中控制视图"><a href="#在代码中控制视图" class="headerlink" title="在代码中控制视图"></a>在代码中控制视图</h4><p>动态添加视图:</p>
+<ol>
+<li>获得当前的容器视图对象。</li>
+<li>获得或创建待添加的视图对象。</li>
+<li>将相应的视图对象添加到容器视图中。</li>
+</ol>
+<p>假设有两个XML布局文件：test1.xml和test2.xml。将test2.xml添加到test1.xml的LinearLayout对象中:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//　获得test1.xml中的LinearLayout对象</span></span><br><span class="line">LinearLayout textLinearLayout1 = (LinearLayout)getLayoutInflater().inflate(R.layout. test1, <span class="keyword">null</span>);</span><br><span class="line"><span class="comment">//将test1.xml中的LinearLayout对象设为当前容器视图</span></span><br><span class="line">setContentView(testLinearLayout1);</span><br><span class="line"><span class="comment">//获得test2.xml中的LinearLayout对象，并将该对象添加到test1.xml的LinearLayout对象中</span></span><br><span class="line"><span class="comment">//getLayoutInflater方法可以获取LayoutInflater对象，通常该对象用来装载独立的XML布局文件</span></span><br><span class="line">LinearLayout testLinearLayout2 = (LinearLayout)getLayoutInflater().inflate(R.layout. test2, testLinearLayout1);</span><br></pre></td></tr></table></figure>
+
+<p>​        其中inflate方法的第1个参数表示XML布局资源文件的ID，第2个参数表示获得容器视图对象后，要将该对象添加到哪个容器视图对象中，在这里是testLinearLayout1对象。如果不想将获得的容器视图对象添加到任何其他的容器中，inflate方法的第2个参数值为null。</p>
+<p>也可以使用addView方法向容器视图中添加视图对象，但要将inflate方法的第2个参数值设为null:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获得test1.xml中的LinearLayout对象</span></span><br><span class="line">LinearLayout textLinearLayout1 = (LinearLayout)getLayoutInflater().inflate(R.layout. test1, <span class="keyword">null</span>);</span><br><span class="line"><span class="comment">//将test1.xml中的LinearLayout对象设为当前容器视图</span></span><br><span class="line">setContentView(testLinearLayout1);</span><br><span class="line"><span class="comment">//获得test2.xml中的LinearLayout对象，并将该对象添加到test1.xml的LinearLayout对象中</span></span><br><span class="line">LinearLayout testLinearLayout2 = (LinearLayout)getLayoutInflater().inflate(R.layout. test2, <span class="keyword">null</span>);</span><br><span class="line"><span class="comment">//将testLinearLayout2添加到testLinearLayout1中</span></span><br><span class="line">testLinearLayout1.addView(testLinearLayout2);</span><br></pre></td></tr></table></figure>
+
+<p>还可以完全使用Java代码创建一个视图对象，并将该对象添加到容器视图中:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">EditText editText = <span class="keyword">new</span> EditText(<span class="keyword">this</span>);</span><br><span class="line">testLinearLayout1.addView(editText);</span><br></pre></td></tr></table></figure>
+
+<h3 id="显示系统窗口"><a href="#显示系统窗口" class="headerlink" title="显示系统窗口"></a>显示系统窗口</h3><p>​        任何一个窗口都可以与一个字符串绑定，这些字符串被称为Activity Action，也可以简称为Action。系统中的任何程序都可以通过这个字符串找到在任何程序中的任何窗口，而且系统中的很多可以调用的窗口都定义了相应的常量。这些常量大多在Intent类中定义，例如，Intent.ACTION_CALL对应于电话拨号窗口。如果系统中有多个窗口与同一个Action绑定，会首先显示一个选择菜单，由用户选择显示哪个窗口。</p>
+<h4 id="直接拨号"><a href="#直接拨号" class="headerlink" title="直接拨号"></a>直接拨号</h4><p>拨号功能对应的Action是Intent.ACTION_CALL，使用这个Action必须要指定一个Uri</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent callIntent = <span class="keyword">new</span> Intent(Intent.ACTION_CALL,Uri.parse(<span class="string">"tel:12345678"</span>));</span><br><span class="line">startActivity(callIntent);</span><br></pre></td></tr></table></figure>
+
+<h4 id="将电话号传入拨号程序"><a href="#将电话号传入拨号程序" class="headerlink" title="将电话号传入拨号程序"></a>将电话号传入拨号程序</h4><p>​        想将电话号自动传入Android内置的拨号程序，然后再做进一步的处理，需要使用Intent.ACTION_DIAL，该Action也需要一个“tel:电话号”格式的Uri</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent dialIntent = <span class="keyword">new</span> Intent(Intent.ACTION_DIAL,Uri.parse(<span class="string">"tel:87654321"</span>));</span><br><span class="line">startActivity(dialIntent);</span><br></pre></td></tr></table></figure>
+
+<h4 id="调用拨号程序"><a href="#调用拨号程序" class="headerlink" title="调用拨号程序"></a>调用拨号程序</h4><p>如果不想将电话号传入拨号程序，而只想显示拨号窗口:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//显示拨号窗口只需要指定Intent类构造方法的第1个参数，并不需要指定任何的Uri</span></span><br><span class="line">Intent touchDialerIntent = <span class="keyword">new</span> Intent(<span class="string">"com.android.phone.action.TOUCH_DIALER"</span>);</span><br><span class="line">startActivity(touchDialerIntent);</span><br></pre></td></tr></table></figure>
+
+<h4 id="浏览网页"><a href="#浏览网页" class="headerlink" title="浏览网页"></a>浏览网页</h4><p>​        Android SDK内置的Web浏览器也对外提供了Action，可以通过这个Action来传递一个Web网址，并通过Web浏览器来打开这个Web网址:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent webIntent = <span class="keyword">new</span> Intent(Intent.ACTION_VIEW,Uri.parse(<span class="string">"http://blog.csdn.net/nokiaguy"</span>));</span><br><span class="line">startActivity(webIntent);</span><br></pre></td></tr></table></figure>
+
+<h4 id="查看联系人"><a href="#查看联系人" class="headerlink" title="查看联系人"></a>查看联系人</h4><p>查看联系人的Action是“com.android.contacts.action.LIST_CONTACTS”</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent contactListIntent = <span class="keyword">new</span> Intent(<span class="string">"com.android.contacts.action.LIST_CONTACTS"</span>);</span><br><span class="line">startActivity(contactListIntent);</span><br></pre></td></tr></table></figure>
+
+<h4 id="显示系统设置界面（设置主界面、Wi-Fi设置界面）"><a href="#显示系统设置界面（设置主界面、Wi-Fi设置界面）" class="headerlink" title="显示系统设置界面（设置主界面、Wi-Fi设置界面）"></a>显示系统设置界面（设置主界面、Wi-Fi设置界面）</h4><p>​        显示系统设置主界面的Action是“android.settings. SETTINGS”:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent settingsIntent = <span class="keyword">new</span> Intent(<span class="string">"android.settings.SETTINGS"</span>);</span><br><span class="line">startActivity(settingsIntent);</span><br></pre></td></tr></table></figure>
+
+<p>​        显示Wi-Fi设置界面的Action是“android.settings.WIFI_ SETTINGS”:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Intent wifiSettingsIntent = <span class="keyword">new</span> Intent(<span class="string">"android.settings.WIFI_SETTINGS"</span>);</span><br><span class="line">startActivity(wifiSettingsIntent);</span><br></pre></td></tr></table></figure>
+
+<h4 id="启动处理音频的程序"><a href="#启动处理音频的程序" class="headerlink" title="启动处理音频的程序"></a>启动处理音频的程序</h4><p>​        通过Intent.ACTION_GET_CONTENT动作来选择拥有相同类型的应用，如下面的代码会显示一个包含所有处理音频的程序列表:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Intent audioIntent = <span class="keyword">new</span> Intent(Intent.ACTION_GET_CONTENT);</span><br><span class="line">audioIntent.setType(<span class="string">"audio/ *"</span>);</span><br><span class="line">startActivity(Intent.createChooser(audioIntent, <span class="string">"选择音频程序"</span>));</span><br></pre></td></tr></table></figure>
+
+<h4 id="回到Home窗口（相当于按Home键）"><a href="#回到Home窗口（相当于按Home键）" class="headerlink" title="回到Home窗口（相当于按Home键）"></a>回到Home窗口（相当于按Home键）</h4><p>其实整个桌面程序（包括Home主界面、程序列表、动态壁纸等）是Android系统启动后运行的第一个程序（程序名称为Launcher2），而在Launcher2中的Home窗口恰巧有如下一个Action。</p>
+<p><strong>android.intent.action.MAIN</strong></p>
+<p>Category是另外一类与窗口绑定的字符串。与Action共同定位某一个或某一组窗口</p>
+<p>与Home窗口绑定的Category是android.intent.category.HOME。所以回到主界面的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Intent gohomeIntent = <span class="keyword">new</span> Intent(<span class="string">"android.intent.action.MAIN"</span>);</span><br><span class="line">gohomeIntent.addCategory(<span class="string">"android.intent.category.HOME"</span>);</span><br><span class="line">startActivity(gohomeIntent);</span><br></pre></td></tr></table></figure>
+
+<h3 id="与Activity相关的技巧与特效"><a href="#与Activity相关的技巧与特效" class="headerlink" title="与Activity相关的技巧与特效"></a>与Activity相关的技巧与特效</h3><h4 id="全屏显示（隐藏标题栏和状态栏）"><a href="#全屏显示（隐藏标题栏和状态栏）" class="headerlink" title="全屏显示（隐藏标题栏和状态栏）"></a>全屏显示（隐藏标题栏和状态栏）</h4><p>​        全屏需要隐藏两部分内容：标题栏和状态栏。</p>
+<p>​        其中标题栏是属于窗口的一部分，而状态栏是属于Android系统的一部分，通常会在状态栏中显示各种通知信息以及网络、电池等硬件状态、当前时间等信息。</p>
+<p>​        1.在Activity.onCreate方法中通过requestWindowFeature和setFlags方法隐藏标题栏和状态栏：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FullScreenActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span></span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        <span class="comment">//隐藏窗口标题栏,requestWindowFeature方法必须在setContentView方法之前调用。</span></span><br><span class="line">        requestWindowFeature(Window.FEATURE_NO_TITLE);</span><br><span class="line">        setContentView(R.layout.activity_full_screen);</span><br><span class="line">        <span class="comment">//　隐藏系统状态栏,setFlags方法只是控制系统的UI，所以该方法可以在代码的任何位置调用。</span></span><br><span class="line">        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,　　　　　　　　WindowManager.LayoutParams.FLAG_FULLSCREEN);</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        除了使用Java代码隐藏窗口标题栏和系统状态栏外，还可以在AndroidManifest.xml文件中声明窗口时就设置窗口为全屏状态，或单独隐藏标题栏和状态栏。</p>
+<p>​        如果只想隐藏窗口标题栏，可以使用Theme.NoTitleBar主题，如果想连系统状态栏一起隐藏，可以使用Theme.NoTitleBar.Fullscreen主题（系统未提供只隐藏系统状态栏的主题）。</p>
+<p>只隐藏窗口标题栏。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;activityandroid:theme=<span class="string">"@android:style/Theme.NoTitleBar"</span>　　		            android:name=<span class="string">"mobile.android.fullscreen.FullScreenActivity"</span>&gt;</span><br><span class="line">    </span><br><span class="line">&lt;/activity&gt;</span><br></pre></td></tr></table></figure>
+
+<p>隐藏窗口标题栏和系统状态栏（全屏状态）。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:theme</span>=<span class="string">"@android:style/Theme.NoTitleBar.Fullscreen"</span>　　<span class="attr">android:name</span>=<span class="string">"mobile.android.fullscreen.FullScreenActivity"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>自定义主题。例如，可以在res/values目录建立一个styles.xml文件:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span> <span class="attr">name</span>=<span class="string">"Theme.FullScreen"</span> <span class="attr">parent</span>=<span class="string">"android:Theme"</span>&gt;</span></span><br><span class="line"><span class="xml">	<span class="comment">&lt;!--　隐藏标题栏　--&gt;</span></span></span><br><span class="line"><span class="xml">	<span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:windowNoTitle"</span>&gt;</span>true<span class="tag">&lt;/<span class="name">item</span>&gt;</span></span></span><br><span class="line"><span class="xml">	<span class="comment">&lt;!--　隐藏状态栏　--&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:windowFullscreen"</span>&gt;</span>true<span class="tag">&lt;/<span class="name">item</span>&gt;</span></span></span><br><span class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>使用下面的形式设置＜activity＞标签的android:theme属性:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:theme</span>=<span class="string">"@style/Theme.FullScreen"</span>　　	    <span class="attr">android:name</span>=<span class="string">"mobile.android.fullscreen.FullScreenActivity"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>setContentView方法不仅将根视图与窗口绑定，而且还根据某些特性设置了标题栏的各种状态</p>
+<h4 id="定制窗口标题栏"><a href="#定制窗口标题栏" class="headerlink" title="定制窗口标题栏"></a>定制窗口标题栏</h4><h5 id="直接修改标题栏上的控件"><a href="#直接修改标题栏上的控件" class="headerlink" title="直接修改标题栏上的控件"></a>直接修改标题栏上的控件</h5><p>​        <strong>Window.getDecorView方法可以获取窗口最顶层的视图对象</strong>，标题布局和窗口中控件的布局都在该视图中，所以理论上通过控件的ID就可以获取相应的视图对象（类型强行转换后就可以变成相应控件类的对象），不过对于显示标题文本的TextView控件的ID我们并不知道，就算知道了也不建议使用，因为这是Android内部使用的常量，很有可能不同Android版本的ID不一样，所以需要使用其他方法来获取该TextView控件。</p>
+<h4 id="改变窗口大小、位置和透明度"><a href="#改变窗口大小、位置和透明度" class="headerlink" title="改变窗口大小、位置和透明度"></a>改变窗口大小、位置和透明度</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">class ChangeActivity : BaseActivity&lt;ActivityChangeBinding&gt;(),OnSeekBarChangeListener &#123;</span><br><span class="line"></span><br><span class="line">    override fun ActivityChangeBinding.initBinding() &#123;</span><br><span class="line">        <span class="comment">//获取用于设置窗口属性的LayoutParams的对象</span></span><br><span class="line">        val layoutParams = window.attributes</span><br><span class="line">        layoutParams.height = <span class="number">200</span></span><br><span class="line">        layoutParams.width = <span class="number">300</span></span><br><span class="line">        layoutParams.y = <span class="number">50</span></span><br><span class="line">        <span class="comment">//设置窗口垂直位置时必须设置Gravity.TOP或Gravity.BOTTOM</span></span><br><span class="line">        layoutParams.gravity = Gravity.TOP</span><br><span class="line">        <span class="comment">//设置窗口属性</span></span><br><span class="line">        window.attributes = layoutParams</span><br><span class="line">        mBinding.seekBar.setOnSeekBarChangeListener(<span class="keyword">this</span><span class="meta">@ChangeActivity</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">override fun <span class="title">onProgressChanged</span><span class="params">(seekBar: SeekBar?, progress: Int, fromUser: Boolean)</span> </span>&#123;</span><br><span class="line">        val layoutParams = window.attributes</span><br><span class="line">        Log.d(<span class="string">"TAG"</span>,<span class="string">"$progress"</span>)</span><br><span class="line">        <span class="comment">//设置窗口的透明度。alpha为0表示窗口完全透明，为1表示窗口不透明</span></span><br><span class="line">        layoutParams.alpha = (progress/<span class="number">100</span>).toFloat()</span><br><span class="line">        window.attributes = layoutParams</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">override fun <span class="title">onStartTrackingTouch</span><span class="params">(seekBar: SeekBar?)</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function">override fun <span class="title">onStopTrackingTouch</span><span class="params">(seekBar: SeekBar?)</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        LayoutParams.y会根据LayoutParams.gravity的值来确定具体的含义，如果LayoutParams.gravity的值是Gravity.TOP，LayoutParams.y表示窗口顶边到顶端的距离；如果为Gravity.BOTTOM，LayoutParams.y表示窗口底边到底端的距离。</p>
+<p>通过主题设置窗口透明度:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span> <span class="attr">name</span>=<span class="string">"Transparent"</span> <span class="attr">parent</span>=<span class="string">"Theme.ShowDateTime"</span>&gt;</span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:windowBackground"</span>&gt;</span>@android:drawable/toast_frame<span class="tag">&lt;/<span class="name">item</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="comment">&lt;!--   设置窗口是透明的     --&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android:windowIsTranslucent"</span>&gt;</span>true<span class="tag">&lt;/<span class="name">item</span>&gt;</span></span></span><br><span class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">activity</span></span></span><br><span class="line"><span class="tag">           <span class="attr">android:name</span>=<span class="string">".ChangeActivity"</span></span></span><br><span class="line"><span class="tag">           <span class="attr">android:theme</span>=<span class="string">"@style/Transparent"</span></span></span><br><span class="line"><span class="tag">           <span class="attr">android:exported</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:name</span>=<span class="string">"android.app.lib_name"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:value</span>=<span class="string">""</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="按两次关闭窗口"><a href="#按两次关闭窗口" class="headerlink" title="按两次关闭窗口"></a>按两次关闭窗口</h4><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ChangeActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityChangeBinding</span>&gt;</span>(),OnSeekBarChangeListener &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//按Back键关闭窗口的计数，本例要求按两次关闭窗口，所以只有count=2时才关闭窗口</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> count = <span class="number">1</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">finish</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span>(count == <span class="number">2</span>)&#123;</span><br><span class="line">            <span class="keyword">super</span>.finish()</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span><span class="symbol">@ChangeActivity</span>,<span class="string">"再按一次退出"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">            count ++</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="窗口截屏"><a href="#窗口截屏" class="headerlink" title="窗口截屏"></a>窗口截屏</h4><p><a href="https://blog.csdn.net/m0_56144365/article/details/124803826" target="_blank" rel="noopener">窗口截屏</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%972/" rel="tag"># Android权威指南2</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/12/19/Android%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E6%9E%B6%E6%9E%84/" rel="prev" title="Android应用程序架构">
+      <i class="fa fa-chevron-left"></i> Android应用程序架构
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/12/21/Intent%E4%B8%8EIntent%20Filter/" rel="next" title="Intent与Intent Filter">
+      Intent与Intent Filter <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#声明和使用Activity"><span class="nav-number">1.</span> <span class="nav-text">声明和使用Activity</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Activity的基本用法"><span class="nav-number">1.1.</span> <span class="nav-text">Activity的基本用法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Activity的生命周期"><span class="nav-number">1.2.</span> <span class="nav-text">Activity的生命周期</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#窗口的常用事件"><span class="nav-number">2.</span> <span class="nav-text">窗口的常用事件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#设置窗口标题事件（onTitleChanged）"><span class="nav-number">2.1.</span> <span class="nav-text">设置窗口标题事件（onTitleChanged）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#键盘按下和抬起事件（onKeyDown和onKeyUp）"><span class="nav-number">2.2.</span> <span class="nav-text">键盘按下和抬起事件（onKeyDown和onKeyUp）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#如何捕捉Home键的动作"><span class="nav-number">2.2.1.</span> <span class="nav-text">如何捕捉Home键的动作</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#任意情况下捕捉键盘事件（dispatchKeyEvent）"><span class="nav-number">2.3.</span> <span class="nav-text">任意情况下捕捉键盘事件（dispatchKeyEvent）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#回退事件（onBackPressed）"><span class="nav-number">2.4.</span> <span class="nav-text">回退事件（onBackPressed）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#按键长按事件（onKeyLongPress）"><span class="nav-number">2.5.</span> <span class="nav-text">按键长按事件（onKeyLongPress）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#屏幕触摸事件（onTouchEvent）"><span class="nav-number">2.6.</span> <span class="nav-text">屏幕触摸事件（onTouchEvent）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#窗口获得焦点事件（onWindowFocusChanged）"><span class="nav-number">2.7.</span> <span class="nav-text">窗口获得焦点事件（onWindowFocusChanged）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在不同Activity之间传递数据"><span class="nav-number">3.</span> <span class="nav-text">在不同Activity之间传递数据</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用Intent传递数据"><span class="nav-number">3.1.</span> <span class="nav-text">使用Intent传递数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用静态变量传递数据"><span class="nav-number">3.2.</span> <span class="nav-text">使用静态变量传递数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用剪贴板传递数据"><span class="nav-number">3.3.</span> <span class="nav-text">使用剪贴板传递数据</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#获取系统管理对象"><span class="nav-number">3.3.1.</span> <span class="nav-text">获取系统管理对象</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用全局对象传递数据"><span class="nav-number">3.4.</span> <span class="nav-text">使用全局对象传递数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#小结"><span class="nav-number">3.5.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从Activity返回数据"><span class="nav-number">4.</span> <span class="nav-text">从Activity返回数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#视图（View）"><span class="nav-number">5.</span> <span class="nav-text">视图（View）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#视图简介"><span class="nav-number">5.1.</span> <span class="nav-text">视图简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#在代码中控制视图"><span class="nav-number">5.2.</span> <span class="nav-text">在代码中控制视图</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#显示系统窗口"><span class="nav-number">6.</span> <span class="nav-text">显示系统窗口</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#直接拨号"><span class="nav-number">6.1.</span> <span class="nav-text">直接拨号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#将电话号传入拨号程序"><span class="nav-number">6.2.</span> <span class="nav-text">将电话号传入拨号程序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#调用拨号程序"><span class="nav-number">6.3.</span> <span class="nav-text">调用拨号程序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#浏览网页"><span class="nav-number">6.4.</span> <span class="nav-text">浏览网页</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看联系人"><span class="nav-number">6.5.</span> <span class="nav-text">查看联系人</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#显示系统设置界面（设置主界面、Wi-Fi设置界面）"><span class="nav-number">6.6.</span> <span class="nav-text">显示系统设置界面（设置主界面、Wi-Fi设置界面）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动处理音频的程序"><span class="nav-number">6.7.</span> <span class="nav-text">启动处理音频的程序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#回到Home窗口（相当于按Home键）"><span class="nav-number">6.8.</span> <span class="nav-text">回到Home窗口（相当于按Home键）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与Activity相关的技巧与特效"><span class="nav-number">7.</span> <span class="nav-text">与Activity相关的技巧与特效</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#全屏显示（隐藏标题栏和状态栏）"><span class="nav-number">7.1.</span> <span class="nav-text">全屏显示（隐藏标题栏和状态栏）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定制窗口标题栏"><span class="nav-number">7.2.</span> <span class="nav-text">定制窗口标题栏</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#直接修改标题栏上的控件"><span class="nav-number">7.2.1.</span> <span class="nav-text">直接修改标题栏上的控件</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#改变窗口大小、位置和透明度"><span class="nav-number">7.3.</span> <span class="nav-text">改变窗口大小、位置和透明度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#按两次关闭窗口"><span class="nav-number">7.4.</span> <span class="nav-text">按两次关闭窗口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#窗口截屏"><span class="nav-number">7.5.</span> <span class="nav-text">窗口截屏</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

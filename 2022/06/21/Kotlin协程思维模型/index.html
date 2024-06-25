@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="笔记出自朱涛 · Kotlin编程第一课 Kotlin 的协程，可以帮我们极大地简化异步、并发编程、优化软件架构。 什么是协程​        Kotlin 的协程，是 2017 年初在 1.1 版本加入进来的，那时协程还只是实验性的（Experimental）；等到 2018 年底，Kotlin 更新到 1.3 版本的时候，协程才成为 Kotlin 的正式特性；接着又过了一年，到 2019 年">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kotlin协程思维模型">
+<meta property="og:url" content="https://hluck.github.io/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="笔记出自朱涛 · Kotlin编程第一课 Kotlin 的协程，可以帮我们极大地简化异步、并发编程、优化软件架构。 什么是协程​        Kotlin 的协程，是 2017 年初在 1.1 版本加入进来的，那时协程还只是实验性的（Experimental）；等到 2018 年底，Kotlin 更新到 1.3 版本的时候，协程才成为 Kotlin 的正式特性；接着又过了一年，到 2019 年">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/3.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/1.gif">
+<meta property="og:image" content="https://hluck.github.io/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/2.gif">
+<meta property="og:image" content="https://hluck.github.io/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/3.gif">
+<meta property="og:image" content="https://hluck.github.io/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/4.png">
+<meta property="og:image" content="https://hluck.github.io/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/4.gif">
+<meta property="og:image" content="https://hluck.github.io/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/5.png">
+<meta property="article:published_time" content="2022-06-21T09:57:10.797Z">
+<meta property="article:modified_time" content="2022-06-26T05:59:01.191Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Kotlin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Kotlin协程思维模型 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kotlin协程思维模型
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-21 17:57:10" itemprop="dateCreated datePublished" datetime="2022-06-21T17:57:10+08:00">2022-06-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-26 13:59:01" itemprop="dateModified" datetime="2022-06-26T13:59:01+08:00">2022-06-26</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>笔记出自<a href="https://time.geekbang.org/column/article/485632?cid=100103401&screen=full" target="_blank" rel="noopener">朱涛 · Kotlin编程第一课</a></p>
+<p>Kotlin 的协程，可以帮我们极大地<strong>简化异步、并发编程、优化软件架构</strong>。</p>
+<h2 id="什么是协程"><a href="#什么是协程" class="headerlink" title="什么是协程"></a>什么是协程</h2><p>​        Kotlin 的协程，是 2017 年初在 1.1 版本加入进来的，那时协程还只是实验性的（Experimental）；等到 2018 年底，Kotlin 更新到 1.3 版本的时候，协程才成为 Kotlin 的正式特性；接着又过了一年，到 2019 年 Kotlin 协程才推出 Flow 相关的 API。</p>
+<p>​        如果要用简单的语言来描述协程的话，我们可以将其称为：“<strong>互相协作的程序</strong>”。</p>
+<p>为了弄清普通的程序（Routine）与协程（Coroutine）之间的差异，我们来看一个具体的例子：</p>
+<p>普通程序：</p>
+<a id="more"></a>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> list = getList()</span><br><span class="line">    printList(list)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">getList</span><span class="params">()</span></span>: List&lt;<span class="built_in">Int</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">val</span> list = mutableListOf&lt;<span class="built_in">Int</span>&gt;()</span><br><span class="line">    println(<span class="string">"Add 1"</span>)</span><br><span class="line">    list.add(<span class="number">1</span>)</span><br><span class="line">    println(<span class="string">"Add 2"</span>)</span><br><span class="line">    list.add(<span class="number">2</span>)</span><br><span class="line">    println(<span class="string">"Add 3"</span>)</span><br><span class="line">    list.add(<span class="number">3</span>)</span><br><span class="line">    println(<span class="string">"Add 4"</span>)</span><br><span class="line">    list.add(<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> list</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">printList</span><span class="params">(list: <span class="type">List</span>&lt;<span class="type">Int</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> i = list[<span class="number">0</span>]</span><br><span class="line">    println(<span class="string">"Get<span class="variable">$i</span>"</span>)</span><br><span class="line">    <span class="keyword">val</span> j = list[<span class="number">1</span>]</span><br><span class="line">    println(<span class="string">"Get<span class="variable">$j</span>"</span>)</span><br><span class="line">    <span class="keyword">val</span> k = list[<span class="number">2</span>]</span><br><span class="line">    println(<span class="string">"Get<span class="variable">$k</span>"</span>)</span><br><span class="line">    <span class="keyword">val</span> m = list[<span class="number">3</span>]</span><br><span class="line">    println(<span class="string">"Get<span class="variable">$m</span>"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 运行结果：</span></span><br><span class="line"><span class="comment">Add 1</span></span><br><span class="line"><span class="comment">Add 2</span></span><br><span class="line"><span class="comment">Add 3</span></span><br><span class="line"><span class="comment">Add 4</span></span><br><span class="line"><span class="comment">Get1</span></span><br><span class="line"><span class="comment">Get2</span></span><br><span class="line"><span class="comment">Get3</span></span><br><span class="line"><span class="comment">Get4</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>协程：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// 看不懂代码没关系，目前咱们只需要关心代码的执行结果</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    <span class="keyword">val</span> sequence = getSequence()</span><br><span class="line">    printSequence(sequence)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">getSequence</span><span class="params">()</span></span> = sequence &#123;</span><br><span class="line">    println(<span class="string">"Add 1"</span>)</span><br><span class="line">    <span class="comment">//让步，让出执行权给对方</span></span><br><span class="line">    yield(<span class="number">1</span>)</span><br><span class="line">    println(<span class="string">"Add 2"</span>)</span><br><span class="line">    yield(<span class="number">2</span>)</span><br><span class="line">    println(<span class="string">"Add 3"</span>)</span><br><span class="line">    yield(<span class="number">3</span>)</span><br><span class="line">    println(<span class="string">"Add 4"</span>)</span><br><span class="line">    yield(<span class="number">4</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">printSequence</span><span class="params">(sequence: <span class="type">Sequence</span>&lt;<span class="type">Int</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> iterator = sequence.iterator()</span><br><span class="line">    <span class="keyword">val</span> i = iterator.next()</span><br><span class="line">    println(<span class="string">"Get<span class="variable">$i</span>"</span>)</span><br><span class="line">    <span class="keyword">val</span> j = iterator.next()</span><br><span class="line">    println(<span class="string">"Get<span class="variable">$j</span>"</span>)</span><br><span class="line">    <span class="keyword">val</span> k = iterator.next()</span><br><span class="line">    println(<span class="string">"Get<span class="variable">$k</span>"</span>)</span><br><span class="line">    <span class="keyword">val</span> m = iterator.next()</span><br><span class="line">    println(<span class="string">"Get<span class="variable">$m</span>"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出结果：</span></span><br><span class="line"><span class="comment">Add 1</span></span><br><span class="line"><span class="comment">Get1</span></span><br><span class="line"><span class="comment">Add 2</span></span><br><span class="line"><span class="comment">Get2</span></span><br><span class="line"><span class="comment">Add 3</span></span><br><span class="line"><span class="comment">Get3</span></span><br><span class="line"><span class="comment">Add 4</span></span><br><span class="line"><span class="comment">Get4</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>getSequence() 与 printSequence() 这两个函数，它们是交替执行的：</p>
+<p><img src="/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/1.png" alt></p>
+<p>前面的getList() 和 printList() 的执行流程则完全不一样，getList() 执行完以后，才会轮到 printList() 来执行：</p>
+<p><img src="/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/2.png" alt></p>
+<p>这两种迥然不同的代码运行方式，其实就是协程与普通程序之间最大的差异。</p>
+<ul>
+<li>普通程序在被调用以后，只会在末尾的地方返回，并且只会返回一次，比如前面的 getList() 函数；而协程则不受此限制，<strong>协程的代码可以在任意 yield 的地方挂起（Suspend）让出执行权，然后等到合适的时机再恢复（Resume）。在这个情况下，yield 是代表了“让步”的意思。</strong></li>
+<li>普通程序需要一次性收集完所有的值，然后统一返回；而<strong>协程则可以每次只返回（yield）一个值</strong>，比如我们前面写的 getSequence() 方法。在这个情况下，yield 既有“让步”的意思，也有“产出”的意思。它不仅能让出执行权，还同时产生一个值，<strong>比如前面的 yield(1)，就代表产出的值为 1</strong>。</li>
+</ul>
+<p>除了 yield 以外，我们也可以借助 Kotlin 协程当中的 Channel 来实现类似的代码模式：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// 看不懂代码没关系，目前咱们只需要关心代码的执行结果</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    <span class="keyword">val</span> channel = getProducer(<span class="keyword">this</span>)</span><br><span class="line">    testConsumer(channel)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">getProducer</span><span class="params">(scope: <span class="type">CoroutineScope</span>)</span></span> = scope.produce &#123;</span><br><span class="line">    println(<span class="string">"Send:1"</span>)</span><br><span class="line">    send(<span class="number">1</span>)</span><br><span class="line">    println(<span class="string">"Send:2"</span>)</span><br><span class="line">    send(<span class="number">2</span>)</span><br><span class="line">    println(<span class="string">"Send:3"</span>)</span><br><span class="line">    send(<span class="number">3</span>)</span><br><span class="line">    println(<span class="string">"Send:4"</span>)</span><br><span class="line">    send(<span class="number">4</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">testConsumer</span><span class="params">(channel: <span class="type">ReceiveChannel</span>&lt;<span class="type">Int</span>&gt;)</span></span> &#123;</span><br><span class="line">    delay(<span class="number">100</span>)</span><br><span class="line">    <span class="keyword">val</span> i = channel.receive()</span><br><span class="line">    println(<span class="string">"Receive<span class="variable">$i</span>"</span>)</span><br><span class="line">    delay(<span class="number">100</span>)</span><br><span class="line">    <span class="keyword">val</span> j = channel.receive()</span><br><span class="line">    println(<span class="string">"Receive<span class="variable">$j</span>"</span>)</span><br><span class="line">    delay(<span class="number">100</span>)</span><br><span class="line">    <span class="keyword">val</span> k = channel.receive()</span><br><span class="line">    println(<span class="string">"Receive<span class="variable">$k</span>"</span>)</span><br><span class="line">    delay(<span class="number">100</span>)</span><br><span class="line">    <span class="keyword">val</span> m = channel.receive()</span><br><span class="line">    println(<span class="string">"Receive<span class="variable">$m</span>"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出结果：</span></span><br><span class="line"><span class="comment">Send:1</span></span><br><span class="line"><span class="comment">Receive1</span></span><br><span class="line"><span class="comment">Send:2</span></span><br><span class="line"><span class="comment">Receive2</span></span><br><span class="line"><span class="comment">Send:3</span></span><br><span class="line"><span class="comment">Receive3</span></span><br><span class="line"><span class="comment">Send:4</span></span><br><span class="line"><span class="comment">Receive4</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>从广义上来讲，协程就代表了“互相协作的程序”</strong>.</p>
+<p>​        我们再来看看 Kotlin 协程的另外两个概念：协程、协程框架。注意，这是两个不一样的概念，前者是代表了程序当中被创建的协程；后者，则是一个整体的框架。</p>
+<h2 id="如何理解-Kotlin-的协程？"><a href="#如何理解-Kotlin-的协程？" class="headerlink" title="如何理解 Kotlin 的协程？"></a>如何理解 Kotlin 的协程？</h2><p>​        在 Kotlin 当中，协程是一个独立的框架。跟 Kotlin 的反射库类似，协程并不是直接集成在标准库当中的。如果我们想要使用 Kotlin 的协程，就必须手动进行依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'</span><br></pre></td></tr></table></figure>
+
+<p>​        在学习 Kotlin 协程的时候，做法就是建立起<strong>协程的思维模型（Mental Model）</strong>。Kotlin 的协程，我们可以将其想象成一个“更加轻量的线程”。</p>
+<p><img src="/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/3.png" alt></p>
+<p>​        从包含关系上看，协程跟线程的关系，有点像线程与进程的关系，毕竟协程不可能脱离线程运行。所以，<strong>协程可以理解为运行在线程当中的、更加轻量的 Task。</strong></p>
+<h2 id="协程的轻量"><a href="#协程的轻量" class="headerlink" title="协程的轻量"></a>协程的轻量</h2><p>​        协程虽然运行在线程之上，但协程并不会和某个线程绑定，在某些情况下，协程是可以在不同的线程之间切换的。我们可以来看看下面的代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking(Dispatchers.IO) &#123;</span><br><span class="line">    repeat(<span class="number">3</span>) &#123;</span><br><span class="line">        launch &#123;</span><br><span class="line">            repeat(<span class="number">3</span>) &#123;</span><br><span class="line">                println(Thread.currentThread().name)</span><br><span class="line">                delay(<span class="number">100</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    delay(<span class="number">5000L</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出结果：</span></span><br><span class="line"><span class="comment">DefaultDispatcher-worker-3 @coroutine#2</span></span><br><span class="line"><span class="comment">DefaultDispatcher-worker-2 @coroutine#3</span></span><br><span class="line"><span class="comment">DefaultDispatcher-worker-4 @coroutine#4</span></span><br><span class="line"><span class="comment">DefaultDispatcher-worker-1 @coroutine#2 // 线程切换了</span></span><br><span class="line"><span class="comment">DefaultDispatcher-worker-4 @coroutine#4</span></span><br><span class="line"><span class="comment">DefaultDispatcher-worker-2 @coroutine#3</span></span><br><span class="line"><span class="comment">DefaultDispatcher-worker-2 @coroutine#2 // 线程切换了</span></span><br><span class="line"><span class="comment">DefaultDispatcher-worker-1 @coroutine#4</span></span><br><span class="line"><span class="comment">DefaultDispatcher-worker-4 @coroutine#3</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>​        以上代码的运行结果是随机的，这里以我运行的结果来分析的话，可以看到，“coroutine#2”的三次执行，每一次都在不同的线程上。第一次，它在“worker-3”执行，第二次在“worker-1”执行，第三次在“worker-2”执行。</p>
+<p><img src="/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/1.gif" alt></p>
+<p>我们来做个小结：</p>
+<ul>
+<li>协程，可以理解为更加轻量的线程，成千上万个协程可以同时运行在一个线程当中；</li>
+<li>协程，其实是运行在线程当中的轻量的 Task；</li>
+<li>协程，不会与特定的线程绑定，它可以在不同的线程之间灵活切换。</li>
+</ul>
+<h2 id="协程的“非阻塞”"><a href="#协程的“非阻塞”" class="headerlink" title="协程的“非阻塞”"></a>协程的“非阻塞”</h2><p>​        协程对比线程还有一个特点，那就是<strong>非阻塞（Non Blocking）</strong>，而线程则往往是阻塞式的。这个概念有点抽象，我们来看个具体的例子：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    repeat(<span class="number">3</span>) &#123;</span><br><span class="line">        Thread.sleep(<span class="number">1000L</span>)</span><br><span class="line">        println(<span class="string">"Print-1:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    repeat(<span class="number">3</span>) &#123;</span><br><span class="line">        Thread.sleep(<span class="number">900L</span>)</span><br><span class="line">        println(<span class="string">"Print-2:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出结果：</span></span><br><span class="line"><span class="comment">Print-1:main</span></span><br><span class="line"><span class="comment">Print-1:main</span></span><br><span class="line"><span class="comment">Print-1:main</span></span><br><span class="line"><span class="comment">Print-2:main</span></span><br><span class="line"><span class="comment">Print-2:main</span></span><br><span class="line"><span class="comment">Print-2:main</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>​        在上面的代码里有两个 repeat，第一个 repeat 当中，我们每次调用 sleep() 方法，让线程休眠 1 秒钟，而第二个 repeat 当中，我们每次只休眠 0.9 秒。由于线程的 sleep() 方法是阻塞式的，所以程序的执行流程是线性的。也就是说，“Print-1”会连续输出三次，然后“Print-2”会连续输出三次。即使 Print-2 休眠的时间更短。</p>
+<p>让我们来看看协程代码的表现有哪些不一样：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    launch &#123;</span><br><span class="line">        repeat(<span class="number">3</span>) &#123;</span><br><span class="line">            delay(<span class="number">1000L</span>)</span><br><span class="line">            println(<span class="string">"Print-1:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    launch &#123;</span><br><span class="line">        repeat(<span class="number">3</span>) &#123;</span><br><span class="line">            delay(<span class="number">900L</span>)</span><br><span class="line">            println(<span class="string">"Print-2:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    delay(<span class="number">3000L</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出结果：</span></span><br><span class="line"><span class="comment">Print-2:main @coroutine#3</span></span><br><span class="line"><span class="comment">Print-1:main @coroutine#2</span></span><br><span class="line"><span class="comment">Print-2:main @coroutine#3</span></span><br><span class="line"><span class="comment">Print-1:main @coroutine#2</span></span><br><span class="line"><span class="comment">Print-2:main @coroutine#3</span></span><br><span class="line"><span class="comment">Print-1:main @coroutine#2</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>​        在上面的代码中，我们用协程实现了类似的逻辑，但这次的执行结果却完全不一样。可以看到，Print-2 和 Print-1 是交替输出的，“coroutine#2”、“coroutine#3”这两个协程是并行的（Concurrent）。同时，由于协程的 delay() 方法是非阻塞的，所以，即使 Print-1 会先执行 delay(1000L)，但它也并不会阻塞 Print-2 的 delay(900L) 的运行。</p>
+<p>而如果我们将代码中的 delay 修改成 sleep，程序的运行结果就会不一样。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    launch &#123;</span><br><span class="line">        repeat(<span class="number">3</span>) &#123;</span><br><span class="line">            Thread.sleep(<span class="number">1000L</span>)</span><br><span class="line">            println(<span class="string">"Print-1:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    launch &#123;</span><br><span class="line">        repeat(<span class="number">3</span>) &#123;</span><br><span class="line">            Thread.sleep(<span class="number">900L</span>)</span><br><span class="line">            println(<span class="string">"Print-2:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    delay(<span class="number">3000L</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出结果：</span></span><br><span class="line"><span class="comment">Print-1:main @coroutine#2</span></span><br><span class="line"><span class="comment">Print-1:main @coroutine#2</span></span><br><span class="line"><span class="comment">Print-1:main @coroutine#2</span></span><br><span class="line"><span class="comment">Print-2:main @coroutine#3</span></span><br><span class="line"><span class="comment">Print-2:main @coroutine#3</span></span><br><span class="line"><span class="comment">Print-2:main @coroutine#3</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>​        由此可见，Kotlin 协程的“非阻塞”其实只是语言层面的，当我们调用 JVM 层面的 Thread.sleep() 的时候，它仍然会变成阻塞式的。与此同时，这也意味着我们在协程当中应该尽量避免出现阻塞式的行为。尽量使用 delay，而不是 sleep。</p>
+<p>​        那么，我们该如何理解 Kotlin 协程的“非阻塞”？答案是：<strong>挂起和恢复</strong>。这两个能力也是协程才拥有的特殊能力，普通的程序是不具备的。</p>
+<p>​        对于执行在普通线程当中的程序来说，如果我们站在 CPU 的角度上看，最终它会以类似这样的方式执行：</p>
+<p><img src="/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/2.gif" alt></p>
+<p>​        这时候，当某个任务发生了阻塞行为的时候，比如 sleep，当前执行的 Task 就会阻塞后面所有任务的执行。就像下面这张动图所展示的一样：</p>
+<p><img src="/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/3.gif" alt></p>
+<h2 id="协程是如何通过挂起和恢复来实现非阻塞的呢？"><a href="#协程是如何通过挂起和恢复来实现非阻塞的呢？" class="headerlink" title="协程是如何通过挂起和恢复来实现非阻塞的呢？"></a>协程是如何通过挂起和恢复来实现非阻塞的呢？</h2><p>​        大部分的语言当中都会存在一个类似“调度中心”的东西，它会来实现 Task 任务的执行和调度。如下图所示：</p>
+<p><img src="/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/4.png" alt></p>
+<p>​        而协程除了拥有“调度中心”以外，对于每个协程的 Task，还会多出一个类似“抓手”“挂钩”的东西，可以方便我们对它进行“挂起和恢复”。协程任务的总体执行流程，大致会像下图描述的这样：</p>
+<p><img src="/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/4.gif" alt></p>
+<p>​        通过对比可以看出，线程的 sleep 之所以是阻塞式的，是因为它会阻挡后续 Task 的执行。而协程之所以是非阻塞式的，是因为它可以支持挂起和恢复。当 Task 由于某种原因被挂起后，后续的 Task 并不会因此被阻塞。</p>
+<p>这时候，如果我们回过头再来看之前的代码，相信也会有新的体会：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    launch &#123;</span><br><span class="line">        repeat(<span class="number">3</span>) &#123;</span><br><span class="line">            delay(<span class="number">1000L</span>)</span><br><span class="line">            println(<span class="string">"Print-1:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    launch &#123;</span><br><span class="line">        repeat(<span class="number">3</span>) &#123;</span><br><span class="line">            delay(<span class="number">900L</span>)</span><br><span class="line">            println(<span class="string">"Print-2:<span class="subst">$&#123;Thread.currentThread().name&#125;</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    delay(<span class="number">3000L</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">输出结果：</span></span><br><span class="line"><span class="comment">Print-2:main @coroutine#3</span></span><br><span class="line"><span class="comment">Print-1:main @coroutine#2</span></span><br><span class="line"><span class="comment">Print-2:main @coroutine#3</span></span><br><span class="line"><span class="comment">Print-1:main @coroutine#2</span></span><br><span class="line"><span class="comment">Print-2:main @coroutine#3</span></span><br><span class="line"><span class="comment">Print-1:main @coroutine#2</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><ul>
+<li>广义的协程，可以理解为“互相协作的程序”，也就是“Cooperative-routine”。</li>
+<li>协程框架，是独立于 Kotlin 标准库的一套框架，它封装了 Java 的线程，对开发者暴露了协程的 API。</li>
+<li>程序当中运行的“协程”，可以理解为轻量的线程；</li>
+<li>一个线程当中，可以运行成千上万个协程；</li>
+<li>协程，也可以理解为运行在线程当中的非阻塞的 Task；</li>
+<li>协程，通过挂起和恢复的能力，实现了“非阻塞”；</li>
+<li>协程不会与特定的线程绑定，它可以在不同的线程之间灵活切换，而这其实也是通过“挂起和恢复”来实现的。</li>
+</ul>
+<p><img src="/2022/06/21/Kotlin%E5%8D%8F%E7%A8%8B%E6%80%9D%E7%BB%B4%E6%A8%A1%E5%9E%8B/5.png" alt></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/06/21/%E9%AB%98%E7%BA%A7%E6%8E%A7%E4%BB%B6/" rel="prev" title="高级控件">
+      <i class="fa fa-chevron-left"></i> 高级控件
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/22/%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E5%8D%8F%E7%A8%8B/" rel="next" title="如何启动协程">
+      如何启动协程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是协程"><span class="nav-number">1.</span> <span class="nav-text">什么是协程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何理解-Kotlin-的协程？"><span class="nav-number">2.</span> <span class="nav-text">如何理解 Kotlin 的协程？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协程的轻量"><span class="nav-number">3.</span> <span class="nav-text">协程的轻量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协程的“非阻塞”"><span class="nav-number">4.</span> <span class="nav-text">协程的“非阻塞”</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协程是如何通过挂起和恢复来实现非阻塞的呢？"><span class="nav-number">5.</span> <span class="nav-text">协程是如何通过挂起和恢复来实现非阻塞的呢？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">6.</span> <span class="nav-text">小结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

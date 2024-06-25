@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="图像装饰CardView">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图像加工">
+<meta property="og:url" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="图像装饰CardView">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/3.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/4.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/5.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/6.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/7.gif">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/7.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/8.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/9.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/10.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/11.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/12.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/13.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/14.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/15.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/16.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/17.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/18.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/19.png">
+<meta property="og:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/20.png">
+<meta property="article:published_time" content="2022-08-18T09:10:46.175Z">
+<meta property="article:modified_time" content="2023-01-05T13:50:27.685Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>图像加工 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          图像加工
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-08-18 17:10:46" itemprop="dateCreated datePublished" datetime="2022-08-18T17:10:46+08:00">2022-08-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-05 21:50:27" itemprop="dateModified" datetime="2023-01-05T21:50:27+08:00">2023-01-05</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>11 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="图像装饰"><a href="#图像装饰" class="headerlink" title="图像装饰"></a>图像装饰</h2><h3 id="CardView"><a href="#CardView" class="headerlink" title="CardView"></a>CardView</h3><p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/1.png" alt></p>
+<a id="more"></a>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".ui.CardViewActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"40dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:orientation</span>=<span class="string">"horizontal"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:paddingLeft</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"卡片视图样式："</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Spinner</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/sp_card"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"0dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_weight</span>=<span class="string">"1"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:spinnerMode</span>=<span class="string">"dialog"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">androidx.cardview.widget.CardView</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/cv_card"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_gravity</span>=<span class="string">"center_horizontal|top"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">app:cardCornerRadius</span>=<span class="string">"3dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">app:cardElevation</span>=<span class="string">"3dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">app:contentPadding</span>=<span class="string">"20dp"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">ImageView</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/iv_scene"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"250dp"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:src</span>=<span class="string">"@drawable/ylxs"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">androidx.cardview.widget.CardView</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>activity:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CardViewActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityCardViewBinding</span>&gt;</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> cardArray = arrayOf(<span class="string">"圆角与阴影均为3"</span>, <span class="string">"圆角与阴影均为6"</span>, <span class="string">"圆角与阴影均为10"</span>,</span><br><span class="line">        <span class="string">"圆角与阴影均为15"</span>, <span class="string">"圆角与阴影均为20"</span>)</span><br><span class="line">    <span class="comment">//圆角和阴影值</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> radiusArray = arrayOf(<span class="number">3</span>, <span class="number">6</span>, <span class="number">10</span>, <span class="number">15</span>, <span class="number">20</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityCardViewBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        initSpinner()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//初始化下拉框</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">initSpinner</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> adapter = ArrayAdapter&lt;String&gt;(<span class="keyword">this</span>,R.layout.item_select,cardArray)</span><br><span class="line">        mBinding.apply &#123;</span><br><span class="line">            spCard.prompt = <span class="string">"请选择卡片类型"</span></span><br><span class="line">            spCard.adapter = adapter</span><br><span class="line">            spCard.onItemSelectedListener = CardSelectedListener()</span><br><span class="line">            spCard.setSelection(<span class="number">0</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//下拉选择listener</span></span><br><span class="line">   <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">CardSelectedListener</span>:<span class="type">AdapterView.OnItemSelectedListener&#123;</span></span></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?, view: <span class="type">View</span>?, position: <span class="type">Int</span>, id: <span class="type">Long</span>)</span></span> &#123;</span><br><span class="line">            <span class="keyword">var</span> radius = Utils.dip2px(<span class="keyword">this</span><span class="symbol">@CardViewActivity</span>,radiusArray[position].toFloat()).toFloat()</span><br><span class="line">            mBinding.apply &#123;</span><br><span class="line">                <span class="comment">// 设置卡片视图的圆角半径</span></span><br><span class="line">                cvCard.radius = radius</span><br><span class="line">                <span class="comment">// 设置卡片视图的阴影长度</span></span><br><span class="line">                cvCard.elevation = radius</span><br><span class="line">                <span class="keyword">val</span> params = cvCard.layoutParams <span class="keyword">as</span> ViewGroup.MarginLayoutParams</span><br><span class="line">                <span class="keyword">val</span> marginValue = radius.toInt()</span><br><span class="line">                <span class="comment">// 设置布局参数的四周空白</span></span><br><span class="line">                params.setMargins(marginValue,marginValue,marginValue,marginValue)</span><br><span class="line">                <span class="comment">// 设置卡片视图的布局参数</span></span><br><span class="line">                cvCard.layoutParams = params</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onNothingSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?)</span></span> &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/2.png" alt></p>
+<h3 id="给图像添加装饰"><a href="#给图像添加装饰" class="headerlink" title="给图像添加装饰"></a>给图像添加装饰</h3><p>​        有时需要给图片添加一些小装饰，比如添加图片边框、添加文字水印、添加图标水印等,为此要求自定义图像控件，重写视图的onDraw方法，利用画布工具Canvas来绘制图案。</p>
+<p>Canvas相关用法：<a href="https://hluck.gitee.io/2022/06/28/%E8%87%AA%E5%AE%9A%E4%B9%89View%E4%B8%80/" target="_blank" rel="noopener">自定义View</a></p>
+<p>效果图：</p>
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/3.png" alt></p>
+<ol>
+<li><p>加文本：</p>
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/4.png" alt></p>
+</li>
+<li><p>加logo图：</p>
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/5.png" alt></p>
+</li>
+<li><p>加相框</p>
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/6.png" alt></p>
+</li>
+</ol>
+<p>DecorateImageView:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DecorateImageView</span></span>(context: Context, attrs:AttributeSet): ImageView(context, attrs) &#123;</span><br><span class="line">    <span class="comment">// 声明一个画笔对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mPaint = Paint()</span><br><span class="line">    <span class="comment">// 视图宽度、视图高度</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mWidth:<span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mHeight:<span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line">    <span class="comment">// 文字大小</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mTextSize:<span class="built_in">Int</span> = <span class="number">20</span></span><br><span class="line">    <span class="comment">// 时间戳文本</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mText:String = <span class="string">""</span></span><br><span class="line">    <span class="comment">// 标志图标</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mLogo:Bitmap? = <span class="literal">null</span></span><br><span class="line">    <span class="comment">// 照片相框</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mFrame:Bitmap? = <span class="literal">null</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span> &#123;</span><br><span class="line">        <span class="comment">// 设置画笔颜色</span></span><br><span class="line"><span class="comment">//        mPaint.color = Color.WHITE</span></span><br><span class="line">        mPaint.setColor(Color.parseColor(<span class="string">"#FFFFFF"</span>))</span><br><span class="line"><span class="comment">//        mPaint.setColor(Color.parseColor("#FFFFFF"))</span></span><br><span class="line">        <span class="comment">// 设置文字大小</span></span><br><span class="line">        mPaint.textSize = Utils.dip2px(context,mTextSize.toFloat()).toFloat()</span><br><span class="line">        mPaint.isAntiAlias = <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onMeasure</span><span class="params">(widthMeasureSpec: <span class="type">Int</span>, heightMeasureSpec: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onMeasure(widthMeasureSpec, heightMeasureSpec)</span><br><span class="line">        <span class="comment">// 获取视图的实际宽度</span></span><br><span class="line">        mWidth = measuredWidth</span><br><span class="line">        <span class="comment">// 获取视图的实际高度</span></span><br><span class="line">        mHeight = measuredHeight</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@SuppressLint(<span class="meta-string">"DrawAllocation"</span>)</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDraw</span><span class="params">(canvas: <span class="type">Canvas</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onDraw(canvas)</span><br><span class="line">        <span class="keyword">if</span> (!TextUtils.isEmpty(mText))&#123;</span><br><span class="line">            <span class="comment">//获取指定文本高度</span></span><br><span class="line">            <span class="keyword">val</span> textHeight = MeasureUtil.getTextHeight(mText,mTextSize.toFloat())</span><br><span class="line">            <span class="comment">//在画布上绘制文本</span></span><br><span class="line"><span class="comment">//            canvas?.drawText(mText,0f,mHeight - textHeight,mPaint)</span></span><br><span class="line">            canvas?.drawText(mText,mHeight-<span class="number">95f</span>,textHeight,mPaint)</span><br><span class="line">        &#125;</span><br><span class="line">        mFrame?.let &#123;</span><br><span class="line">            canvas?.drawBitmap(it,<span class="literal">null</span>, Rect(<span class="number">0</span>,<span class="number">0</span>,mWidth,mHeight),mPaint)</span><br><span class="line">        &#125;</span><br><span class="line">        mLogo?.let &#123;</span><br><span class="line">            canvas?.drawBitmap(it,(mWidth-it.width - <span class="number">100</span>).toFloat(),(mHeight - it.height).toFloat(),mPaint)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//不显示任何装饰</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">showNone</span><span class="params">()</span></span>&#123;</span><br><span class="line">        mText = <span class="string">""</span></span><br><span class="line">        mLogo = <span class="literal">null</span></span><br><span class="line">        mFrame = <span class="literal">null</span></span><br><span class="line">        <span class="comment">// 立即刷新视图（线程安全方式）</span></span><br><span class="line">        postInvalidate()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//显示装饰文本</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">showText</span><span class="params">(text:<span class="type">String</span>,isReset:<span class="type">Boolean</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (isReset)&#123;</span><br><span class="line">            showNone()</span><br><span class="line">        &#125;</span><br><span class="line">        mText = text</span><br><span class="line">        postInvalidate()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//设置文字字体</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setTypeface</span><span class="params">(typeface: <span class="type">Typeface</span>)</span></span>&#123;</span><br><span class="line">        <span class="comment">//设置文字字体</span></span><br><span class="line">        mPaint.typeface = typeface</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 显示装饰标志</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">showLogo</span><span class="params">(bitmap: <span class="type">Bitmap</span>,isReset:<span class="type">Boolean</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (isReset)&#123;</span><br><span class="line">            showNone()</span><br><span class="line">        &#125;</span><br><span class="line">        mLogo = bitmap</span><br><span class="line">        postInvalidate()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 显示装饰相框</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">showFrame</span><span class="params">(bitmap: <span class="type">Bitmap</span>,isReset:<span class="type">Boolean</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (isReset)&#123;</span><br><span class="line">            showNone()</span><br><span class="line">        &#125;</span><br><span class="line">        mFrame = bitmap</span><br><span class="line">        postInvalidate()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="给图像加水波纹"><a href="#给图像加水波纹" class="headerlink" title="给图像加水波纹"></a>给图像加水波纹</h3><p>效果：</p>
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/7.gif" alt></p>
+<p>RippleImageView:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SuppressLint(<span class="meta-string">"AppCompatCustomView"</span>)</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RippleImageView</span></span>(context: Context, attrs:AttributeSet):ImageView(context, attrs) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mContext = context</span><br><span class="line">    <span class="comment">// 声明一个画笔对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mPaint = Paint()</span><br><span class="line">    <span class="comment">// 视图宽度、视图高度</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mWidth = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mHeight = <span class="number">0</span></span><br><span class="line">    <span class="comment">// 水波的半径</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mRadius = <span class="number">0</span></span><br><span class="line">    <span class="comment">// 半径的增量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mIncrease = <span class="number">0</span></span><br><span class="line">    <span class="comment">// 声明一个处理器对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mHandler = Handler(Looper.myLooper()!!)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span> &#123;</span><br><span class="line">        mPaint.isAntiAlias = <span class="literal">true</span></span><br><span class="line">        mIncrease = Utils.dip2px(mContext,<span class="number">5F</span>)</span><br><span class="line">        mPaint.color = Color.WHITE</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onMeasure</span><span class="params">(widthMeasureSpec: <span class="type">Int</span>, heightMeasureSpec: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onMeasure(widthMeasureSpec, heightMeasureSpec)</span><br><span class="line">        <span class="comment">// 获取视图的实际宽度</span></span><br><span class="line">        mWidth = measuredWidth</span><br><span class="line">        <span class="comment">// 获取视图的实际高度</span></span><br><span class="line">        mHeight = measuredHeight</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDraw</span><span class="params">(canvas: <span class="type">Canvas</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onDraw(canvas)</span><br><span class="line">        <span class="keyword">if</span> (mRadius &gt; <span class="number">0</span>)&#123;</span><br><span class="line">            canvas?.drawCircle((mWidth/<span class="number">2</span>).toFloat(),(mHeight/<span class="number">2</span>).toFloat(),mRadius.toFloat(),mPaint)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 设置水波的颜色</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setRippleColor</span><span class="params">(color:<span class="type">String</span>)</span></span>&#123;</span><br><span class="line">        mPaint.color = Color.parseColor(color)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 开始播放水波动画</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">startRipple</span><span class="params">()</span></span>&#123;</span><br><span class="line">        mRadius = <span class="number">0</span></span><br><span class="line">        <span class="comment">// 立即启动水波刷新任务</span></span><br><span class="line">        mHandler.post(mRipple)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 定义一个水波刷新任务</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mRipple = <span class="keyword">object</span> :Runnable&#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">run</span><span class="params">()</span></span> &#123;</span><br><span class="line">            mRadius += mIncrease</span><br><span class="line">            <span class="comment">// 水波半径已超出对角线</span></span><br><span class="line">            <span class="keyword">if</span> (mRadius*mRadius &gt; (mWidth*mWidth/<span class="number">4</span> + mHeight*mHeight/<span class="number">4</span>))&#123;</span><br><span class="line">                mRadius = <span class="number">0</span></span><br><span class="line">                mIncrease = Utils.dip2px(mContext,<span class="number">5f</span>)</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;<span class="comment">// 水波半径未超出对角线</span></span><br><span class="line">                mIncrease += Utils.dip2px(mContext,<span class="number">1f</span>)</span><br><span class="line">                <span class="comment">// 延迟50毫秒后再次启动水波刷新任务</span></span><br><span class="line">                mHandler.postDelayed(<span class="keyword">this</span>,<span class="number">100</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 立即刷新视图（线程安全方式）</span></span><br><span class="line">            postInvalidate()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="位图加工"><a href="#位图加工" class="headerlink" title="位图加工"></a>位图加工</h2><h3 id="转换位图的像素色彩"><a href="#转换位图的像素色彩" class="headerlink" title="转换位图的像素色彩"></a>转换位图的像素色彩</h3><p>​        滤镜特效的加工处理用到了位图工具<strong>Bitmap</strong>，它有主要的三个操作方法，现说明如下：</p>
+<ul>
+<li>createBitmap：创建一个新位图。</li>
+<li>getPixels：获取位图对象所有点的像素数组。</li>
+<li>setPixels：设置位图对象所有点的像素数组。</li>
+</ul>
+<p>更详细的位图加工步骤说明如下：</p>
+<ol>
+<li>调用createBitmap方法创建新的空白位图。</li>
+<li>调用原位图的getPixels方法，把该位图所有像素的色值保存到指定的像素点数组。</li>
+<li>遍历第二步得到的像素点数组，分别获取每个点的灰度、红色、绿色以及蓝色的色值，并按照特定算法调整该点的色值。</li>
+<li>像素点数组全部调整完毕之后，调用新位图的setPixels方法更新所有像素的色值。</li>
+</ol>
+<p>上面四个步骤都做完之后得到的便是经过特效处理的新位图了。</p>
+<p>以常见的几种特效处理为例，它们的加工算法描述如下：</p>
+<ol>
+<li>黑白效果：黑白照片对于彩色照片来说，就好比黑白电视机之于彩色电视机，黑白照片只有灰度的深浅区别，而没有红绿蓝之分。</li>
+<li>怀旧效果：现实生活中的老照片都是泛黄的，而黄色又是由绿色和红色混合而成的，所以怀旧效果为了突出黄色，就得加大绿色和红色的比重，同时降低蓝色的比重。</li>
+<li>底片效果：在数码相机时代之前，占统治地位的是胶卷相机，胶卷底片与洗出来的照片相比，底片的RGB值就是照片的RGB值取反，即：底片的红色=255-照片的红色，底片的绿色=255-照片的绿色，底片的蓝色=255-照片的蓝色。</li>
+<li>模糊效果：要让图片变得模糊起来，每个点的颜色都由附近一片像素颜色混合而成，这样图片中每个景物的边缘就变模糊了。</li>
+</ol>
+<p>原图：</p>
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/7.png" alt></p>
+<p>黑白：</p>
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/8.png" alt></p>
+<p>底片：</p>
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/9.png" alt></p>
+<p>怀旧：</p>
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/10.png" alt></p>
+<p>模糊：</p>
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/11.png" alt></p>
+<h3 id="裁剪位图内部区域"><a href="#裁剪位图内部区域" class="headerlink" title="裁剪位图内部区域"></a>裁剪位图内部区域</h3><p>效果：</p>
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/12.png" alt></p>
+<h3 id="利用矩阵变换位图"><a href="#利用矩阵变换位图" class="headerlink" title="利用矩阵变换位图"></a>利用矩阵变换位图</h3><p>​        Android还支持缩放、旋转、平移等变换操作，不过位图工具不能直接完成这些操作，而要借助于矩阵工具Matrix。</p>
+<p>​        下面是Matrix工具常用的几个矩阵变换方法：</p>
+<ul>
+<li><p>postScale：指定横纵坐标两个方向的缩放比率。</p>
+</li>
+<li><p>postRotate：指定旋转角度。</p>
+</li>
+<li><p>postTranslate：指定横纵坐标两个方向的偏移大小。</p>
+</li>
+<li><p>postSkew：指定横纵坐标两个方向的倾斜比例。</p>
+<p>​        注意上述的几个变换方法仅仅设定了矩阵的变换形式，还得把矩阵对象传给位图工具的createBitmap方法，如此方能完成位图对象的变换操作。</p>
+</li>
+</ul>
+<p>​       以postScale方法为例，它的两个参数分别表示横坐标和纵坐标方向的缩放比率，值为0.5表示缩小成原来的一半，值为2表示放大成原来的两倍。这个比率值还可以是负数，表示在该方向上翻转，即镜像。比如postScale(-1, 1)表示在横坐标上翻转，且纵坐标上保持不变，最终便是镜子那样的水平镜像效果。</p>
+<p>原始：</p>
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/13.png" alt></p>
+<p>翻转：</p>
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/14.png" alt></p>
+<h2 id="自定义图形"><a href="#自定义图形" class="headerlink" title="自定义图形"></a>自定义图形</h2><p>​        内容包括如何在位图和图形之间相互转换以及将位图转换为图形的必要性、如何利用位图着色器剪裁图形内部的指定区域、如何通过画笔在图形内部添加小部件等。</p>
+<h3 id="位图与图形互转"><a href="#位图与图形互转" class="headerlink" title="位图与图形互转"></a>位图与图形互转</h3><p>​        Android的图形管理使用图形工具Drawable类，位图管理使用位图工具Bitmap类。其中，Drawable用于在界面上展示图片，Bitmap用于加工图像数据。</p>
+<p>​        位图图形BitmapDrawable正是二者之间的桥梁，图形对象与位图对象互转都需要它。其中，Bitmap转Drawable的代码如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 把位图对象转换为图形对象     </span></span><br><span class="line">Drawable drawable = <span class="keyword">new</span> BitmapDrawable(getResources(), bitmap);</span><br></pre></td></tr></table></figure>
+
+<p>Drawable转Bitmap的代码如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 把图形对象转换为位图对象    </span></span><br><span class="line">Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();</span><br></pre></td></tr></table></figure>
+
+<p>图形对象转成位图对象有个前提，就是该图形原本便是位图格式，否则会转换失败。</p>
+<p>​        位图对象为什么要转成图形对象呢？（ImageView已经存在setImageBitmap方法，根本不用转成图形对象后再调用setImageDrawable方法）这是因为有很多控件只支持设置图形，不支持设置位图，包括但不限于下列场合：</p>
+<ol>
+<li>视图基类View，调用setBackground方法设置背景图形。</li>
+<li>文本视图TextView，调用setCompoundDrawables方法设置上下左右四方向的图标。</li>
+<li>复合按钮CompoundButton，调用setButtonDrawable方法设置左侧的勾选图标。</li>
+</ol>
+<p>​       此外，位图对象转成图形对象之后能够调用Drawable的各个方法。例如，Drawable类有个setAlpha方法，可以设置图形的灰度值。其值为255时表示不透明，此时图形正常显示；其值为0时表示全透明，此时图形完全消失；其值为127时为半透明，此时图形若隐若现。</p>
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/15.png" alt></p>
+<h3 id="剪裁图形内部区域"><a href="#剪裁图形内部区域" class="headerlink" title="剪裁图形内部区域"></a>剪裁图形内部区域</h3><p>​        调用画笔工具的setShader方法，设置位图着色器之后再调用画布工具的draw***方法即可剪裁出指定几何形状的图像。</p>
+<p>CircleDrawable:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CircleDrawable</span></span>(context: Context,bitmap: Bitmap): BitmapDrawable(context.resources,bitmap) &#123;</span><br><span class="line">    <span class="comment">// 声明一个画笔对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mPaint = Paint()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span> &#123;</span><br><span class="line">        <span class="comment">// 创建一个位图着色器，CLAMP表示边缘拉伸</span></span><br><span class="line">        <span class="keyword">val</span> shader = BitmapShader(bitmap,Shader.TileMode.CLAMP,Shader.TileMode.CLAMP)</span><br><span class="line">        <span class="comment">// 设置画笔的着色器对象</span></span><br><span class="line">        mPaint.shader = shader</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">draw</span><span class="params">(canvas: <span class="type">Canvas</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> width = bitmap.width</span><br><span class="line">        <span class="keyword">val</span> height = bitmap.height</span><br><span class="line">        <span class="keyword">val</span> radius = Math.min(width,height) / <span class="number">2</span> - <span class="number">4</span></span><br><span class="line">        <span class="comment">// 在画布上绘制圆形，也就是只显示圆形内部的图像</span></span><br><span class="line">        canvas.drawCircle((width/<span class="number">2</span>).toFloat(), (height/<span class="number">2</span>).toFloat(), radius.toFloat(),mPaint)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/16.png" alt></p>
+<h3 id="给图形添加小部件"><a href="#给图形添加小部件" class="headerlink" title="给图形添加小部件"></a>给图形添加小部件</h3><p>​        除了剪裁图形之外，还能给图形添加小部件，比如文字、图标等。原来自定义图形类的时候，重写draw方法等同于重写视图的onDraw方法，因此在draw方法中挥毫泼墨就能添加图案。</p>
+<p>​        以添加文字为例，自定义图形之时，重写draw方法并调用画布对象的drawText方法，即可往图形中加入文字标记。为了让文字更加多姿，还能设置个性化字体，此时用到了字体工具Typeface的createFromAsset方法，该方法允许从assets目录下的字体文件生成字体对象，然后调用画笔对象的setTypeface方法，就能使文字呈现对应的字体样式，像Windows系统常见的楷体、隶书等皆可为我所用。</p>
+<h4 id="添加文字水印"><a href="#添加文字水印" class="headerlink" title="添加文字水印"></a>添加文字水印</h4><p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/17.png" alt></p>
+<h4 id="添加logo水印"><a href="#添加logo水印" class="headerlink" title="添加logo水印"></a>添加logo水印</h4><p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/18.png" alt></p>
+<p>MarkIconDrawable.kt:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>： LJH</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Time</span>： 2022/8/24</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>：</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MarkIconDrawable</span></span>(context: Context, bitmap: Bitmap): BitmapDrawable(context.resources,bitmap) &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mPaint = Paint()</span><br><span class="line">    <span class="comment">// 水印图标</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> marker:Bitmap? = <span class="literal">null</span></span><br><span class="line">    <span class="comment">// 水印方位</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mDirection = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span> &#123;</span><br><span class="line">        mPaint.color = Color.parseColor(<span class="string">"#FFFFFFFF"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置水印图标及其方位</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setMarkerIcon</span><span class="params">(bitmap: <span class="type">Bitmap</span>,direction:<span class="type">Int</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> originHeight = getBitmap().height</span><br><span class="line">        <span class="keyword">val</span> markerHeight = bitmap.height</span><br><span class="line">        <span class="keyword">val</span> ratio:<span class="built_in">Double</span> = <span class="number">1.0</span> * originHeight / markerHeight / <span class="number">3</span></span><br><span class="line">        <span class="comment">// 创建缩放后的水印图标</span></span><br><span class="line">        marker = BitmapUtil.getScaleBitmap(bitmap,ratio)</span><br><span class="line">        mDirection = direction</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">draw</span><span class="params">(canvas: <span class="type">Canvas</span>)</span></span> &#123;</span><br><span class="line">        <span class="comment">//注意：这句话不能删，否则原图不显示</span></span><br><span class="line">        <span class="keyword">super</span>.draw(canvas)</span><br><span class="line">        <span class="keyword">if</span> (marker == <span class="literal">null</span>)&#123;</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">val</span> widthGap = bitmap.width - marker!!.width</span><br><span class="line">        Log.e(<span class="string">"Tag"</span>,<span class="string">"<span class="variable">$widthGap</span>"</span>)</span><br><span class="line">        <span class="keyword">val</span> heightGap = bitmap.height - marker!!.height</span><br><span class="line">        Log.e(<span class="string">"Tag"</span>,<span class="string">"<span class="variable">$heightGap</span>"</span>)</span><br><span class="line">        <span class="keyword">when</span>(mDirection)&#123;</span><br><span class="line">            <span class="comment">// 在中间</span></span><br><span class="line">            <span class="number">0</span> -&gt; canvas.drawBitmap(marker!!,(widthGap/<span class="number">2</span>).toFloat(),(heightGap/<span class="number">2</span>).toFloat(),mPaint)</span><br><span class="line">            <span class="comment">// 左上角</span></span><br><span class="line">            <span class="number">1</span> -&gt; canvas.drawBitmap(marker!!,<span class="number">0f</span>,<span class="number">0f</span>,mPaint)</span><br><span class="line">            <span class="comment">// 右上角</span></span><br><span class="line">            <span class="number">2</span> -&gt; canvas.drawBitmap(marker!!,widthGap.toFloat(),<span class="number">0f</span>,mPaint)</span><br><span class="line">            <span class="comment">// 左下角</span></span><br><span class="line">            <span class="number">3</span> -&gt; canvas.drawBitmap(marker!!,<span class="number">0f</span>,heightGap.toFloat(),mPaint)</span><br><span class="line">            <span class="comment">// 右下角</span></span><br><span class="line">            <span class="number">4</span> -&gt; canvas.drawBitmap(marker!!,widthGap.toFloat(),heightGap.toFloat(),mPaint)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="大头贴案例"><a href="#大头贴案例" class="headerlink" title="大头贴案例"></a>大头贴案例</h2><p>​                                                    <img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/19.png" alt></p>
+<p><img src="/2022/08/18/%E5%9B%BE%E5%83%8F%E5%8A%A0%E5%B7%A5/20.png" alt></p>
+<h3 id="动态请求权限"><a href="#动态请求权限" class="headerlink" title="动态请求权限"></a>动态请求权限</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> android.app.Activity;</span><br><span class="line"><span class="keyword">import</span> android.content.pm.PackageManager;</span><br><span class="line"><span class="keyword">import</span> android.os.Build;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> androidx.core.app.ActivityCompat;</span><br><span class="line"><span class="keyword">import</span> androidx.core.content.ContextCompat;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PermissionUtil</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> String TAG = <span class="string">"PermissionUtil"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 检查某个权限。返回true表示已启用该权限，返回false表示未启用该权限</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">checkPermission</span><span class="params">(Activity act, String permission, <span class="keyword">int</span> requestCode)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> checkPermission(act, <span class="keyword">new</span> String[]&#123;permission&#125;, requestCode);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 检查多个权限。返回true表示已完全启用权限，返回false表示未完全启用权限</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">checkPermission</span><span class="params">(Activity act, String[] permissions, <span class="keyword">int</span> requestCode)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">boolean</span> result = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.M) &#123;</span><br><span class="line">            <span class="keyword">int</span> check = PackageManager.PERMISSION_GRANTED;</span><br><span class="line">            <span class="comment">// 通过权限数组检查是否都开启了这些权限</span></span><br><span class="line">            <span class="keyword">for</span> (String permission : permissions) &#123;</span><br><span class="line">                check = ContextCompat.checkSelfPermission(act, permission);</span><br><span class="line">                <span class="keyword">if</span> (check != PackageManager.PERMISSION_GRANTED) &#123;</span><br><span class="line">                    <span class="keyword">break</span>; <span class="comment">// 有个权限没有开启，就跳出循环</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (check != PackageManager.PERMISSION_GRANTED) &#123;</span><br><span class="line">                <span class="comment">// 未开启该权限，则请求系统弹窗，好让用户选择是否立即开启权限</span></span><br><span class="line">                ActivityCompat.requestPermissions(act, permissions, requestCode);</span><br><span class="line">                result = <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 检查权限结果数组，返回true表示都已经获得授权。返回false表示至少有一个未获得授权</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">checkGrant</span><span class="params">(<span class="keyword">int</span>[] grantResults)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">boolean</span> result = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">if</span> (grantResults != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> grant : grantResults) &#123; <span class="comment">// 遍历权限结果数组中的每条选择结果</span></span><br><span class="line">                <span class="keyword">if</span> (grant != PackageManager.PERMISSION_GRANTED) &#123; <span class="comment">// 未获得授权</span></span><br><span class="line">                    result = <span class="keyword">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            result = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="项目地址"><a href="#项目地址" class="headerlink" title="项目地址"></a>项目地址</h2><p><a href="https://gitee.com/hluck/image-processing" target="_blank" rel="noopener">项目地址</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/11/WeatherMvvm%E9%A1%B9%E7%9B%AE%E7%AC%94%E8%AE%B0/" rel="prev" title="WeatherMvvm项目笔记">
+      <i class="fa fa-chevron-left"></i> WeatherMvvm项目笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/08/24/WanAndriod%E9%A1%B9%E7%9B%AE%E8%AE%B0%E5%BD%95/" rel="next" title="WanAndriod项目记录">
+      WanAndriod项目记录 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#图像装饰"><span class="nav-number">1.</span> <span class="nav-text">图像装饰</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CardView"><span class="nav-number">1.1.</span> <span class="nav-text">CardView</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#给图像添加装饰"><span class="nav-number">1.2.</span> <span class="nav-text">给图像添加装饰</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#给图像加水波纹"><span class="nav-number">1.3.</span> <span class="nav-text">给图像加水波纹</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#位图加工"><span class="nav-number">2.</span> <span class="nav-text">位图加工</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#转换位图的像素色彩"><span class="nav-number">2.1.</span> <span class="nav-text">转换位图的像素色彩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#裁剪位图内部区域"><span class="nav-number">2.2.</span> <span class="nav-text">裁剪位图内部区域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用矩阵变换位图"><span class="nav-number">2.3.</span> <span class="nav-text">利用矩阵变换位图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义图形"><span class="nav-number">3.</span> <span class="nav-text">自定义图形</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#位图与图形互转"><span class="nav-number">3.1.</span> <span class="nav-text">位图与图形互转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#剪裁图形内部区域"><span class="nav-number">3.2.</span> <span class="nav-text">剪裁图形内部区域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#给图形添加小部件"><span class="nav-number">3.3.</span> <span class="nav-text">给图形添加小部件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#添加文字水印"><span class="nav-number">3.3.1.</span> <span class="nav-text">添加文字水印</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#添加logo水印"><span class="nav-number">3.3.2.</span> <span class="nav-text">添加logo水印</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大头贴案例"><span class="nav-number">4.</span> <span class="nav-text">大头贴案例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#动态请求权限"><span class="nav-number">4.1.</span> <span class="nav-text">动态请求权限</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#项目地址"><span class="nav-number">5.</span> <span class="nav-text">项目地址</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1.简单查询1.显示所有部门名称 1select dname from dept  2.显示所有雇员名及其全年收入13月（工资+补助），并指定列别名”年收入” 1select ename,13*(sal+IFNULL(comm,0)) as &#39;年收入&#39; from emp  2.限制查询数据1.显示工资超过2850的雇员姓名和工资。 12select ename,sal from emp		wher">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL练习">
+<meta property="og:url" content="https://hluck.github.io/2021/08/03/MySQL%E7%BB%83%E4%B9%A0/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="1.简单查询1.显示所有部门名称 1select dname from dept  2.显示所有雇员名及其全年收入13月（工资+补助），并指定列别名”年收入” 1select ename,13*(sal+IFNULL(comm,0)) as &#39;年收入&#39; from emp  2.限制查询数据1.显示工资超过2850的雇员姓名和工资。 12select ename,sal from emp		wher">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-08-03T03:12:42.818Z">
+<meta property="article:modified_time" content="2021-08-04T09:55:24.436Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="重拾MySQL">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://hluck.github.io/2021/08/03/MySQL%E7%BB%83%E4%B9%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MySQL练习 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2021/08/03/MySQL%E7%BB%83%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL练习
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-08-03 11:12:42" itemprop="dateCreated datePublished" datetime="2021-08-03T11:12:42+08:00">2021-08-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-08-04 17:55:24" itemprop="dateModified" datetime="2021-08-04T17:55:24+08:00">2021-08-04</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-简单查询"><a href="#1-简单查询" class="headerlink" title="1.简单查询"></a>1.简单查询</h2><p>1.显示所有部门名称</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> dname <span class="keyword">from</span> dept</span><br></pre></td></tr></table></figure>
+
+<p>2.显示所有雇员名及其全年收入13月（工资+补助），并指定列别名”年收入”</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,<span class="number">13</span>*(sal+<span class="keyword">IFNULL</span>(comm,<span class="number">0</span>)) <span class="keyword">as</span> <span class="string">'年收入'</span> <span class="keyword">from</span> emp</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-限制查询数据"><a href="#2-限制查询数据" class="headerlink" title="2.限制查询数据"></a>2.限制查询数据</h2><p>1.显示工资超过2850的雇员姓名和工资。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,sal <span class="keyword">from</span> emp</span><br><span class="line">		<span class="keyword">where</span> sal&gt;<span class="number">2850</span></span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>2.显示工资不在1500到2850之间的所有雇员名及工资</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,sal <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> sal&lt;<span class="number">1500</span> <span class="keyword">or</span> sal&gt;<span class="number">2850</span></span><br><span class="line">		</span><br><span class="line"><span class="keyword">select</span> ename,sal <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> <span class="keyword">not</span> (sal&gt;=<span class="number">1500</span> <span class="keyword">and</span> sal&lt;=<span class="number">2850</span>)</span><br></pre></td></tr></table></figure>
+
+<p>3.显示编号为7566的雇员姓名及所在部门编号</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,deptno <span class="keyword">from</span> emp</span><br><span class="line">		<span class="keyword">where</span> empno = <span class="number">7566</span></span><br></pre></td></tr></table></figure>
+
+<p>4.显示部门为10和30中工资超过1500的雇员名及工资</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,sal <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> (deptno =<span class="number">10</span> <span class="keyword">or</span> deptno = <span class="number">30</span>) <span class="keyword">and</span> sal &gt; <span class="number">1500</span></span><br></pre></td></tr></table></figure>
+
+<p>5.显示无管理者的雇员名及岗位</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,job <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> mgr <span class="keyword">is</span> <span class="literal">null</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-排序数据"><a href="#3-排序数据" class="headerlink" title="3.排序数据"></a>3.排序数据</h2><p>1.显示在1991年2月1日到1991年5月1日之间雇佣的雇员名，岗位及雇佣日期，并以雇佣日期进行排序</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,job,hiredate <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> hiredate &gt;= <span class="string">'1991-02-01'</span> <span class="keyword">and</span> hiredate &lt;= <span class="string">'1991-05-01'</span></span><br><span class="line">		<span class="keyword">order</span> <span class="keyword">by</span> hiredate</span><br></pre></td></tr></table></figure>
+
+<p>2.显示获得补助的所有雇员名，工资及补助，并以工资降序排序</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,sal,comm <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> comm &gt; <span class="number">0</span></span><br><span class="line">		<span class="keyword">order</span> sal <span class="keyword">desc</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="4-作业4"><a href="#4-作业4" class="headerlink" title="4.作业4"></a>4.作业4</h2><p>1.选择部门30中的所有员工</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> emp</span><br><span class="line">		<span class="keyword">where</span> deptno = <span class="number">30</span></span><br></pre></td></tr></table></figure>
+
+<p>2.列出所有办事员(CLERK)的姓名，编号和部门编号</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,empno,deptno <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> job = <span class="string">'CLERK'</span></span><br></pre></td></tr></table></figure>
+
+<p>3.找出佣金高于薪金的员工</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> <span class="keyword">ifnull</span>(comm,<span class="number">0</span>) &gt; sal</span><br></pre></td></tr></table></figure>
+
+<p>4.找出佣金高于薪金60%的员工</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> <span class="keyword">ifnull</span>(comm,<span class="number">0</span>) &gt; sal*<span class="number">0.6</span></span><br></pre></td></tr></table></figure>
+
+<p>5.找出部门10中所有经理(MANAGER)和部门20中所有办事员(CLERK)的详细资料</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> (deptno = <span class="number">10</span> <span class="keyword">and</span> job = <span class="string">'MANAGER'</span>) </span><br><span class="line">		<span class="keyword">or</span> (deptno = <span class="number">20</span> <span class="keyword">and</span> job = <span class="string">'CLERK'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>6.找出部门10中的所有经理（MANAGER）部门20中所有办事员(CLERK),还有既不是经理又不是办事员，但其薪资大于等于2000的所有员工的详细资料。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> (deptno = <span class="number">10</span> <span class="keyword">and</span> job = <span class="string">'MANAGER'</span>) </span><br><span class="line">		<span class="keyword">or</span> (deptno = <span class="number">20</span> <span class="keyword">and</span> job = <span class="string">'CLERK'</span>) </span><br><span class="line">		<span class="keyword">or</span> (job != <span class="string">'MANAGER'</span> <span class="keyword">and</span> job != <span class="string">'CLERK'</span> <span class="keyword">and</span> sal &gt;= <span class="number">2000</span>)</span><br></pre></td></tr></table></figure>
+
+<p>7.找出收取佣金的员工的不同工作</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">distinct</span> job <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> comm <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">null</span></span><br></pre></td></tr></table></figure>
+
+<p>8.找出不收取佣金或收取的佣金低于100的员工</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> comm <span class="keyword">is</span>  <span class="literal">null</span> </span><br><span class="line">		<span class="keyword">or</span> <span class="keyword">ifnull</span>(comm,<span class="number">0</span>) &lt; <span class="number">100</span></span><br></pre></td></tr></table></figure>
+
+<p>9.找出各月倒数第3天受雇的所有员工</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> <span class="keyword">last_day</span>(hiredate) - <span class="number">2</span> = hiredate</span><br></pre></td></tr></table></figure>
+
+<p>10.找出早于12年前受雇的员工</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> <span class="keyword">date_add</span>(<span class="keyword">start</span>,<span class="built_in">interval</span> <span class="number">12</span> <span class="keyword">year</span>) &lt; <span class="keyword">now</span>()</span><br></pre></td></tr></table></figure>
+
+<p>11.以首字母小写的方式显示所有员工的姓名</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">concat</span>(<span class="keyword">lcase</span>(<span class="keyword">substring</span>(ename,<span class="number">1</span>,<span class="number">1</span>)),<span class="keyword">substring</span>(ename,<span class="number">2</span>));</span><br></pre></td></tr></table></figure>
+
+<p>12.显示正好为5个字符的员工的姓名</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> emp</span><br><span class="line">		<span class="keyword">where</span> <span class="keyword">length</span>(ename) = <span class="number">5</span></span><br></pre></td></tr></table></figure>
+
+<p>13.显示不带有”R”的员工的姓名</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> ename <span class="keyword">not</span> <span class="keyword">like</span> <span class="string">'%R%'</span></span><br></pre></td></tr></table></figure>
+
+<p>14.显示所有员工姓名的前三个字符</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">substring</span>(ename,<span class="number">1</span>,<span class="number">3</span>) <span class="keyword">from</span> emp</span><br></pre></td></tr></table></figure>
+
+<p>15.显示所有员工的姓名，用a代替所有’A’</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">replace</span>(ename,<span class="string">'A'</span>,<span class="string">'a'</span>) <span class="keyword">from</span> emp</span><br></pre></td></tr></table></figure>
+
+<p>16.显示满10年服务年限的员工的姓名和受雇日期</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,hiredate <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> <span class="keyword">date_add</span>(hiredate,<span class="built_in">interval</span> <span class="number">10</span> <span class="keyword">year</span>) &lt;= <span class="keyword">now</span>();</span><br></pre></td></tr></table></figure>
+
+<p>17.显示员工的详细资料，按姓名排序</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">order</span> <span class="keyword">by</span> ename</span><br></pre></td></tr></table></figure>
+
+<p>18.显示员工的姓名和受雇日期，根据其服务年限，将最老的员工排在最前面</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,hiredate <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">order</span> <span class="keyword">by</span> hiredate</span><br></pre></td></tr></table></figure>
+
+<p>19.显示所有员工的姓名，工作和薪金，按工作降序排序，若工作相同则按薪金排序</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,job,sal <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">order</span> <span class="keyword">by</span> job <span class="keyword">desc</span>,sal</span><br></pre></td></tr></table></figure>
+
+<p>20.显示所有员工姓名，加入公司的年份和月份，按受雇日期所在月排序，若月份相同则将最早年份的员工排在最前面。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,<span class="keyword">concat</span>(<span class="keyword">year</span>(hiredate),<span class="string">'-'</span>,<span class="keyword">month</span>(hiredate)) <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">month</span>(hiredate),<span class="keyword">year</span>(hiredate);</span><br></pre></td></tr></table></figure>
+
+<p>21.显示在一个月为30天的情况所有员工的日薪金，忽略余数。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">floor</span>(sal/<span class="number">30</span>) <span class="keyword">from</span> emp</span><br></pre></td></tr></table></figure>
+
+<p>22.找出在（任何年份的）2月受聘的所有员工</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> <span class="keyword">month</span>(hiredate) = <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>23.对于每个员工，显示其加入公司的天数</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">datediff</span>(<span class="keyword">now</span>(),hiredate) <span class="keyword">from</span> emp</span><br></pre></td></tr></table></figure>
+
+<p>24.显示姓名字段的任何位置包含’A’的所有员工姓名。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> emp</span><br><span class="line">		<span class="keyword">where</span> ename <span class="keyword">like</span> <span class="string">'%A%'</span></span><br></pre></td></tr></table></figure>
+
+<p>25.以年月日的方式显示所有员工的服务年限。（大概）</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,<span class="keyword">floor</span>(<span class="keyword">datediff</span>(<span class="keyword">now</span>(),hiredate) / <span class="number">365</span>) <span class="keyword">as</span> <span class="string">'工作年'</span>，</span><br><span class="line">			<span class="keyword">floor</span>((<span class="keyword">datediff</span>(<span class="keyword">now</span>(),hiredate) % <span class="number">365</span>) / <span class="number">31</span>) <span class="keyword">as</span> <span class="string">'工作月'</span>，</span><br><span class="line">			<span class="keyword">datediff</span>(<span class="keyword">now</span>(),hiredate) % <span class="number">31</span> <span class="keyword">as</span> <span class="string">'工作天'</span></span><br><span class="line">			<span class="keyword">from</span> emp;</span><br></pre></td></tr></table></figure>
+
+<p>26.列出至少有一个员工的所有部门</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">as</span> c,deptno <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">group</span> <span class="keyword">by</span> deptno </span><br><span class="line">		<span class="keyword">having</span> c &gt; <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>27.列出薪金比’SMITH’多的所有员工</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> sal &gt; (</span><br><span class="line">        	<span class="keyword">select</span> sal <span class="keyword">from</span> emp <span class="keyword">where</span> <span class="keyword">name</span> = <span class="string">'SMITH'</span></span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p><strong>28.列出受雇日期晚于其直接上级的所有员工</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> worker.ename <span class="keyword">as</span> <span class="string">'员工名'</span>,worker.hiredate <span class="keyword">as</span> <span class="string">'员工入职时间'</span>,</span><br><span class="line">		leader.ename <span class="keyword">as</span> <span class="string">'上级名'</span>,leader.hiredate <span class="keyword">as</span> <span class="string">'上级入职时间'</span> </span><br><span class="line">		<span class="keyword">from</span> emp worker,emp leader </span><br><span class="line">		<span class="keyword">where</span> worker.hiredate &gt; leader.hiredate</span><br><span class="line">		<span class="keyword">and</span> worker.mgr = leader.empno</span><br></pre></td></tr></table></figure>
+
+<p>29.列出部门名称和这些部门的员工信息，同时列出那些没有员工的部门</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> emp.*,dname <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">right</span> <span class="keyword">join</span> dept <span class="keyword">on</span> dept.deptno = emp.deptno</span><br></pre></td></tr></table></figure>
+
+<p><strong>30.列出所有”CLERK”办事员的姓名及其部门名称</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,dname <span class="keyword">from</span> emp,dept</span><br><span class="line">	<span class="keyword">where</span> emp.deptno = dept.deptno</span><br><span class="line">	<span class="keyword">and</span> emp.job = <span class="string">'CLERK'</span></span><br></pre></td></tr></table></figure>
+
+<p>31.列出最低薪金大于1500的各种工作。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">min</span>(sal) <span class="keyword">as</span> min_sal,job <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">group</span> <span class="keyword">by</span> job </span><br><span class="line">		<span class="keyword">having</span> min_sal&gt;<span class="number">1500</span></span><br></pre></td></tr></table></figure>
+
+<p>32.列出在部门”SALES”销售部工作的员工姓名</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,dname <span class="keyword">from</span> emp,dept</span><br><span class="line">		<span class="keyword">where</span> emp.deptno = dept.deptno</span><br><span class="line">		<span class="keyword">and</span> job = <span class="string">'SALES'</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>33.列出薪金高于公司平均薪金的所有员工</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">where</span> sal &gt; (<span class="keyword">select</span> <span class="keyword">avg</span>(sal) <span class="keyword">from</span> emp)</span><br></pre></td></tr></table></figure>
+
+<p>34.列出与”SCOTT”从事相同工作的所有员工</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> emp </span><br><span class="line">	<span class="keyword">where</span> job = (</span><br><span class="line">    	<span class="keyword">select</span> job <span class="keyword">from</span> emp <span class="keyword">where</span> <span class="keyword">name</span> = <span class="string">'SCOTT'</span></span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+
+<p>35.列出薪金高于在部门30工作的所有员工的薪金的员工姓名和薪金。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span>  ename,sal <span class="keyword">from</span> emp</span><br><span class="line">		<span class="keyword">where</span> sal &gt; (</span><br><span class="line">        	<span class="keyword">select</span> <span class="keyword">max</span>(sal) <span class="keyword">from</span> emp <span class="keyword">where</span> deptno = <span class="number">30</span></span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p>36.列出在每个部门工作的员工数量，平均工资和平均服务期限(年)</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*),<span class="keyword">avg</span>(sal),</span><br><span class="line">		<span class="keyword">avg</span>(diffdate(<span class="keyword">now</span>(),hiredate) / <span class="number">365</span>) <span class="keyword">from</span> emp </span><br><span class="line">		<span class="keyword">group</span> <span class="keyword">by</span> deptno</span><br></pre></td></tr></table></figure>
+
+<p>37.列出所有员工的姓名，部门名称和工资</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,dname,(sal+comm) <span class="keyword">as</span> allsal <span class="keyword">from</span> emp,dept </span><br><span class="line">		<span class="keyword">where</span> emp.deptno = dept.deptno</span><br></pre></td></tr></table></figure>
+
+<p>38.列出所有部门的详细信息和部门人数</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> dept.*,temp.c <span class="keyword">from</span> dept,(</span><br><span class="line">		<span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">as</span> c,deptno <span class="keyword">from</span> emp <span class="keyword">group</span> <span class="keyword">by</span> deptno</span><br><span class="line">	) temp</span><br><span class="line">	<span class="keyword">where</span> dept.deptno = temp.deptno</span><br></pre></td></tr></table></figure>
+
+<p>39.列出各种工作的最低工资</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">min</span>(sal),job <span class="keyword">from</span> emp <span class="keyword">group</span> <span class="keyword">by</span> job</span><br></pre></td></tr></table></figure>
+
+<p>40.列出MANAGER（经理）的最低薪资</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">min</span>(sal),job <span class="keyword">from</span> emp <span class="keyword">where</span> job = <span class="string">'MANAGER'</span></span><br></pre></td></tr></table></figure>
+
+<p>41.列出所有员工的年工资，按年薪从低到高排序</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> ename,(sal+<span class="keyword">ifnull</span>(comm,<span class="number">0</span>))*<span class="number">12</span> <span class="keyword">as</span> sumsal <span class="keyword">from</span> emp <span class="keyword">order</span> <span class="keyword">by</span> sumsal</span><br></pre></td></tr></table></figure>
+
+<p>42.找出所有姓李的学生</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> student <span class="keyword">where</span> <span class="keyword">name</span> <span class="keyword">like</span> <span class="string">'李%'</span></span><br></pre></td></tr></table></figure>
+
+<p>43.列出所有开设超过一个专业的系的名字</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> deptname,<span class="keyword">count</span>(*) <span class="keyword">as</span> a <span class="keyword">from</span> <span class="keyword">class</span> </span><br><span class="line">		<span class="keyword">group</span> <span class="keyword">by</span> deptname</span><br><span class="line">        <span class="keyword">having</span> a &gt; <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>44.列出人数大于等于30的系的编号和名字</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> temp.*,departmentid <span class="keyword">from</span> department,(</span><br><span class="line">			<span class="keyword">select</span> <span class="keyword">sum</span>(<span class="keyword">num</span>) <span class="keyword">as</span> nums,deptname <span class="keyword">from</span> <span class="keyword">class</span> </span><br><span class="line">    				gruop <span class="keyword">by</span> deptname </span><br><span class="line">    				<span class="keyword">having</span> nums &gt; <span class="number">30</span></span><br><span class="line">		) temp</span><br><span class="line">		<span class="keyword">where</span> temp.deptname = department.deptname</span><br></pre></td></tr></table></figure>
+
+<p>45.学校增加了一个物理系，编号为006</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> department <span class="keyword">values</span>(<span class="string">'006'</span>,<span class="string">'物理'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>46.张三退学，请更新相关的表</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--开启事务</span></span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span></span><br><span class="line"><span class="comment">-- 更新张三所在班级人数</span></span><br><span class="line"><span class="keyword">update</span> <span class="keyword">class</span> <span class="keyword">set</span> <span class="keyword">num</span> = <span class="keyword">num</span> - <span class="number">1</span> </span><br><span class="line">		<span class="keyword">where</span> classid = (</span><br><span class="line">        	<span class="keyword">select</span> classid <span class="keyword">from</span> student </span><br><span class="line">            		<span class="keyword">where</span> <span class="keyword">name</span> = <span class="string">'张三'</span></span><br><span class="line">        )</span><br><span class="line"><span class="comment">-- 删除张三数据</span></span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> student <span class="keyword">where</span> <span class="keyword">name</span> = <span class="string">'张三'</span> </span><br><span class="line"><span class="comment">-- 提交事务</span></span><br><span class="line"><span class="keyword">commit</span></span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%87%8D%E6%8B%BEMySQL/" rel="tag"># 重拾MySQL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/08/02/MySQL%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E4%B8%8E%E8%A7%86%E5%9B%BE/" rel="prev" title="MySQL存储引擎与视图">
+      <i class="fa fa-chevron-left"></i> MySQL存储引擎与视图
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/08/05/Java%E5%85%A5%E9%97%A8%E7%9F%A5%E8%AF%86/" rel="next" title="Java入门知识">
+      Java入门知识 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-简单查询"><span class="nav-number">1.</span> <span class="nav-text">1.简单查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-限制查询数据"><span class="nav-number">2.</span> <span class="nav-text">2.限制查询数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-排序数据"><span class="nav-number">3.</span> <span class="nav-text">3.排序数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-作业4"><span class="nav-number">4.</span> <span class="nav-text">4.作业4</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

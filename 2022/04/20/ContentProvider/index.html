@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="简介​    ContentProvider主要用于在不同的应用程序之间实现数据共享的功能，它提供了一套完整的机制，允许一个程序访问另一个程序中的数据，同时还能保证被访问数据的安全性。目前，使用ContentProvider是Android实现跨程序共享数据的标准方式。 ​    ContentProvider可以选择只对哪一部分数据进行共享，从而保证我们程序中的隐私数据不会有泄漏的风险。 运行时">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ContentProvider">
+<meta property="og:url" content="https://hluck.github.io/2022/04/20/ContentProvider/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="简介​    ContentProvider主要用于在不同的应用程序之间实现数据共享的功能，它提供了一套完整的机制，允许一个程序访问另一个程序中的数据，同时还能保证被访问数据的安全性。目前，使用ContentProvider是Android实现跨程序共享数据的标准方式。 ​    ContentProvider可以选择只对哪一部分数据进行共享，从而保证我们程序中的隐私数据不会有泄漏的风险。 运行时">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/04/20/ContentProvider/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/04/20/ContentProvider/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/04/20/ContentProvider/3.png">
+<meta property="article:published_time" content="2022-04-20T06:45:18.023Z">
+<meta property="article:modified_time" content="2022-04-25T13:39:57.213Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/04/20/ContentProvider/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/04/20/ContentProvider/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ContentProvider | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/04/20/ContentProvider/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ContentProvider
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-04-20 14:45:18" itemprop="dateCreated datePublished" datetime="2022-04-20T14:45:18+08:00">2022-04-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-04-25 21:39:57" itemprop="dateModified" datetime="2022-04-25T21:39:57+08:00">2022-04-25</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>22k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>20 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>​    <strong>ContentProvider主要用于在不同的应用程序之间实现数据共享的功能</strong>，它提供了一套完整的机制，允许一个程序访问另一个程序中的数据，同时还能保证被访问数据的安全性。目前，使用ContentProvider是Android实现跨程序共享数据的标准方式。</p>
+<p>​    ContentProvider可以选择只对哪一部分数据进行共享，从而保证我们程序中的隐私数据不会有泄漏的风险。</p>
+<h2 id="运行时权限"><a href="#运行时权限" class="headerlink" title="运行时权限"></a>运行时权限</h2><p>Android开发团队在Android 6.0系统中引入了运行时权限这个功能，从而更好地保护了用户的安全和隐私</p>
+<h3 id="Android权限机制详解"><a href="#Android权限机制详解" class="headerlink" title="Android权限机制详解"></a>Android权限机制详解</h3><p>监听开机广播，我们在AndroidManifest.xml文件中添加了这样一句权限声明：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.RECEIVE_BOOT_COMPLETED"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>​    加入了这句权限声明后,用户主要在两个方面得到了保护。</p>
+<ul>
+<li>一方面，如果用户在低于Android 6.0系统的设备上安装该程序，会在安装界面给出提醒。这样用户就可以清楚地知晓该程序一共申请了哪些权限，从而决定是否要安装这个程序。</li>
+<li>另一方面，用户可以随时在应用程序管理界面查看任意一个程序的权限申请情况，这样该程序申请的所有权限就尽收眼底，以此保证应用程序不会出现各种滥用权限的情况。    </li>
+</ul>
+<p>​     Android 6.0系统中加入了运行时权限功能。也就是说，用户不需要在安装软件的时候一次性授权所有申请的权限，而是可以在软件的使用过程中再对某一项权限申请进行授权。比如一款相机应用在运行时申请了地理位置定位权限，就算我拒绝了这个权限，也应该可以使用这个应用的其他功能，而不是像之前那样直接无法安装它。</p>
+<p>Android现在将常用的权限大致归成了两类:</p>
+<ul>
+<li>一类是普通权限，普通权限指的是那些不会直接威胁到用户的安全和隐私的权限，对于这部分权限申请，系统会自动帮我们进行授权，不需要用户手动操作</li>
+<li>一类是危险权限。危险权限则表示那些可能会触及用户隐私或者对设备安全性造成影响的权限，如获取设备联系人信息、定位设备的地理位置等，对于这部分权限申请，必须由用户手动授权才可以，否则程序就无法使用相应的功能。<!--more-->
+Android中一共有上百种权限,到Android 10系统为止所有的危险权限，一共是11组30个权限。</li>
+</ul>
+<p><img src="/2022/04/20/ContentProvider/1.png" alt></p>
+<p>​    不需要了解表格中每个权限的作用，只要把它当成一个参照表来查看就行了。每当要使用一个权限时，可以先到这张表中查一下，如果是这张表中的权限，就需要进行运行时权限处理，否则，只需要在AndroidManifest.xml文件中添加一下权限声明就可以了。</p>
+<p>​    表格中每个危险权限都属于一个权限组，我们在进行运行时权限处理时使用的是权限名。原则上，用户一旦同意了某个权限申请之后，同组的其他权限也会被系统自动授权。但是请谨记，不要基于此规则来实现任何功能逻辑，因为Android系统随时有可能调整权限的分组。</p>
+<h3 id="在程序运行时申请权限"><a href="#在程序运行时申请权限" class="headerlink" title="在程序运行时申请权限"></a>在程序运行时申请权限</h3><p>​    CALL_PHONE这个权限是编写拨打电话功能的时候需要声明的，因为拨打电话会涉及用户手机的资费问题，因而被列为了危险权限。</p>
+<p>在Android 6.0系统出现之前，拨打电话功能的实现其实非常简单</p>
+<ol>
+<li><p>修改activity_main.xml布局文件，如下所示：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">tools:context</span>=<span class="string">".MainActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/makeCall"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"Make call"</span></span></span><br><span class="line"><span class="tag">       /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>接着修改MainActivity中的代码，如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line">        binding.makeCall.setOnClickListener &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">val</span> intent = Intent(Intent.ACTION_CALL)</span><br><span class="line">                intent.<span class="keyword">data</span> = Uri.parse(<span class="string">"tel:10086"</span>)</span><br><span class="line">                startActivity(intent)</span><br><span class="line">            &#125;<span class="keyword">catch</span> (e:Exception)&#123;</span><br><span class="line">                e.printStackTrace()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    构建了一个隐式Intent，Intent的action指定为Intent.ACTION_CALL，这是一个系统内置的打电话的动作，然后在data部分指定了协议是tel，号码是10086。</p>
+</li>
+<li><p>接下来修改AndroidManifest.xml文件，在其中声明如下权限：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.CALL_PHONE"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果是Android 6.0及以上系统在使用危险权限时必须进行运行时权限处理。修改MainActivity中的代码，如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">   <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">       <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line">       <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">           <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">           binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">           setContentView(binding.root)</span><br><span class="line">           binding.makeCall.setOnClickListener &#123;</span><br><span class="line">               <span class="comment">//先判断用户是不是已经给过我们授权了</span></span><br><span class="line">               <span class="keyword">if</span> (ContextCompat.checkSelfPermission(<span class="keyword">this</span>,</span><br><span class="line">                       Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED)&#123;</span><br><span class="line">                   <span class="comment">//没有授权，向用户申请授权</span></span><br><span class="line">                   <span class="comment">//第一个参数要求是Activity的实例；</span></span><br><span class="line">                   <span class="comment">//第二个参数是一个String数组，我们把要申请的权限名放在数组中即可；</span></span><br><span class="line">                   <span class="comment">//第三个参数是请求码，只要是唯一值就可以了，这里传入了1</span></span><br><span class="line">                   ActivityCompat.requestPermissions(<span class="keyword">this</span>,</span><br><span class="line">                       arrayOf(Manifest.permission.CALL_PHONE),<span class="number">1</span>)</span><br><span class="line">               &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                   call()</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   </span><br><span class="line">       <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onRequestPermissionsResult</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">           requestCode: <span class="type">Int</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">           permissions: <span class="type">Array</span>&lt;<span class="type">out</span> <span class="type">String</span>&gt;,</span></span></span><br><span class="line"><span class="function"><span class="params">           grantResults: <span class="type">IntArray</span></span></span></span><br><span class="line"><span class="function"><span class="params">       )</span></span> &#123;</span><br><span class="line">           <span class="keyword">super</span>.onRequestPermissionsResult(requestCode, permissions, grantResults)</span><br><span class="line">           <span class="keyword">when</span>(requestCode)&#123;</span><br><span class="line">               <span class="number">1</span> -&gt; &#123;</span><br><span class="line">                   <span class="keyword">if</span> (grantResults.isNotEmpty() &amp;&amp;</span><br><span class="line">                           grantResults[<span class="number">0</span>] == PackageManager.PERMISSION_GRANTED)&#123;</span><br><span class="line">                       call()</span><br><span class="line">                   &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                       Toast.makeText(<span class="keyword">this</span>,<span class="string">"You denied the permission"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">                   &#125;</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   </span><br><span class="line">       <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">call</span><span class="params">()</span></span>&#123;</span><br><span class="line">           <span class="keyword">try</span> &#123;</span><br><span class="line">               <span class="keyword">val</span> intent = Intent(Intent.ACTION_CALL)</span><br><span class="line">               intent.<span class="keyword">data</span> = Uri.parse(<span class="string">"tel:10086"</span>)</span><br><span class="line">               startActivity(intent)</span><br><span class="line">           &#125;<span class="keyword">catch</span> (e:SecurityException)&#123;</span><br><span class="line">               e.printStackTrace()</span><br><span class="line">        &#125;</span><br><span class="line">       &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    <strong>运行时权限的核心就是在程序运行过程中由用户授权我们去执行某些危险操作</strong>，程序是不可以擅自做主去执行这些危险操作的。ContextCompat.checkSelfPermission()方法可以判断是否授权。</p>
+<p>checkSelfPermission()方法接收两个参数：</p>
+<ul>
+<li>第一个参数是Context，这个没什么好说的；</li>
+<li>第二个参数是具体的权限名，比如打电话的权限名就是Manifest.permission.CALL_PHONE。</li>
+</ul>
+<p>如果没有授权的话，则需要调用ActivityCompat.requestPermissions()方法向用户申请授权。调用完requestPermissions()方法之后，系统会弹出一个权限申请的对话框，用户可以选择同意或拒绝我们的权限申请。不论是哪种结果，最终都会回调到onRequestPermissionsResult()方法中，而授权的结果则会封装在grantResults参数当中。</p>
+</li>
+</ol>
+<h2 id="访问其他程序中的数据"><a href="#访问其他程序中的数据" class="headerlink" title="访问其他程序中的数据"></a>访问其他程序中的数据</h2><p>cntentProvider的用法一般有两种：</p>
+<ul>
+<li>一种是使用现有的ContentProvider读取和操作相应程序中的数据；</li>
+<li>另一种是创建自己的ContentProvider，给程序的数据提供外部访问接口。</li>
+</ul>
+<p>​       如果一个应用程序通过ContentProvider对其数据提供了外部访问接口，那么任何其他的应用程序都可以对这部分数据进行访问。</p>
+<p>​       Android系统中自带的通讯录、短信、媒体库等程序都提供了类似的访问接口，这就使得第三方应用程序可以充分地利用这部分数据实现更好的功能。</p>
+<h3 id="ContentResolver的基本用法"><a href="#ContentResolver的基本用法" class="headerlink" title="ContentResolver的基本用法"></a>ContentResolver的基本用法</h3><p>​        对于每一个应用程序来说，如果想要访问ContentProvider中共享的数据，就一定要借助ContentResolver类，可以<strong>通过Context中的getContentResolver()方法获取该类的实例</strong>。</p>
+<p>​        ContentResolver中提供了一系列的方法用于对数据进行增删改查操作，其中insert()方法用于添加数据，update()方法用于更新数据，delete()方法用于删除数据，query()方法用于查询数据。</p>
+<p>​        不同于SQLiteDatabase，ContentResolver中的增删改查方法都是不接收表名参数的，而是使用一个<strong>Uri</strong>参数代替，这个参数被称为内容URI。    </p>
+<p>URI给ContentProvider中的数据建立了唯一标识符，它主要由两部分组成：authority和path。</p>
+<ol>
+<li>authority是用于对不同的应用程序做区分的，一般为了避免冲突，会采用应用包名的方式进行命名。</li>
+<li>path则是用于对同一应用程序中不同的表做区分的，通常会添加到authority的后面。</li>
+</ol>
+<p>​      比如某个应用的数据库里存在两张表table1和table2，这时就可以将path分别命名为/table1和/table2，然后把authority和path进行组合，内容URI就变成了com.example.app.provider/table1和com.example.app.provider/table2。不过，目前还很难辨认出这两个字符串就是两个内容URI，我们还需要在字符串的头部加上协议声明。因此，<strong>内容URI</strong>最标准的格式如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">content://com.example.app.provider/table1</span><br><span class="line">content://com.example.app.provider/table2</span><br></pre></td></tr></table></figure>
+
+<p>ContentResolver中的增删改查方法都接收Uri对象作为参数。如果使用表名的话，系统将无法得知我们期望访问的是哪个应用程序里的表。</p>
+<p>在得到了内容URI字符串之后，我们还需要将它解析成Uri对象才可以作为参数传入。解析的方法也相当简单，代码如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> uri = uri.parse(<span class="string">"content://com.example.app.provider/table1"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>只需要调用Uri.parse()方法，就可以将内容URI字符串解析成Uri对象了。</p>
+<p>现在我们就可以使用这个Uri对象查询table1表中的数据了，代码如下所示：    </p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> cursor = contentResolver.query(</span><br><span class="line">	uri,</span><br><span class="line">    projection,</span><br><span class="line">    selection,</span><br><span class="line">    selectionArgs,</span><br><span class="line">    sortOrder</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/04/20/ContentProvider/2.png" alt></p>
+<p>​       查询完成后返回的仍然是一个Cursor对象，这时我们就可以将数据从Cursor对象中逐个读取出来了。读取的思路仍然是通过移动游标的位置遍历Cursor的所有行，然后取出每一行中相应列的数据，代码如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(cursor.moveToNext())&#123;</span><br><span class="line">    <span class="keyword">val</span> column1 = cursor.getString(cursor.getColumnIndex(<span class="string">"column1"</span>))</span><br><span class="line">    <span class="keyword">val</span> column2 = cursor.getString(cursor.getColumnIndex(<span class="string">"column2"</span>))</span><br><span class="line">&#125;</span><br><span class="line">cursor.close()</span><br></pre></td></tr></table></figure>
+
+<p>看看如何向table1表中<strong>添加</strong>一条数据，代码如下所示：</p>
+<p>将待添加的数据组装到ContentValues中，然后调用ContentResolver的insert()方法，将Uri和ContentValues作为参数传入即可。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> values = contentValuesOf(<span class="string">"column1"</span> to <span class="string">"text"</span>,<span class="string">"column2"</span> to <span class="number">1</span>)</span><br><span class="line">contentResolver.insert(uri,values)</span><br></pre></td></tr></table></figure>
+
+<p><strong>更新</strong>这条新添加的数据，把column1的值清空，可以借助ContentResolver的update()方法实现，代码如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> values = contentValuesOf(<span class="string">"column1"</span> to <span class="string">""</span>)</span><br><span class="line">contentResolver.update(uri,values,<span class="string">"column1 = ? and column2 = ?"</span>,arrayOf(<span class="string">"text"</span>,<span class="string">"1"</span>))</span><br></pre></td></tr></table></figure>
+
+<p>注意，上述代码使用了selection和selectionArgs参数来对想要更新的数据进行约束，以防止所有的行都会受影响。</p>
+<p>可以调用ContentResolver的delete()方法将这条数据删除掉，代码如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">contentResolver.delete(uri,values,<span class="string">"column2 = ?"</span>,arrayOf(<span class="string">"1"</span>))</span><br></pre></td></tr></table></figure>
+
+<h3 id="读取系统联系人"><a href="#读取系统联系人" class="headerlink" title="读取系统联系人"></a>读取系统联系人</h3><ol>
+<li><p>新建一个ContactsTest项目,修改activity_main.xml中的代码，如下所示：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">tools:context</span>=<span class="string">".MainActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">ListView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/contactsView"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>接着修改MainActivity中的代码，如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> contactsList = ArrayList&lt;String&gt;()</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> adapter:ArrayAdapter&lt;String&gt;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line">        adapter = ArrayAdapter(<span class="keyword">this</span>,android.R.layout.simple_list_item_1,contactsList)</span><br><span class="line">        binding.contactsView.adapter = adapter</span><br><span class="line">        <span class="keyword">if</span> (ContextCompat.checkSelfPermission(<span class="keyword">this</span>,Manifest.permission.READ_CONTACTS) !=</span><br><span class="line">                PackageManager.PERMISSION_GRANTED)&#123;</span><br><span class="line">            <span class="comment">//弹框是否授权</span></span><br><span class="line">            ActivityCompat.requestPermissions(<span class="keyword">this</span>, arrayOf(Manifest.permission.READ_CONTACTS),<span class="number">1</span>)</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            readContacts()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onRequestPermissionsResult</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        requestCode: <span class="type">Int</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">        permissions: <span class="type">Array</span>&lt;<span class="type">out</span> <span class="type">String</span>&gt;,</span></span></span><br><span class="line"><span class="function"><span class="params">        grantResults: <span class="type">IntArray</span></span></span></span><br><span class="line"><span class="function"><span class="params">    )</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onRequestPermissionsResult(requestCode, permissions, grantResults)</span><br><span class="line">        <span class="keyword">when</span>(requestCode)&#123;</span><br><span class="line">            <span class="number">1</span> -&gt; &#123;</span><br><span class="line">                <span class="keyword">if</span> (grantResults.isNotEmpty() &amp;&amp;</span><br><span class="line">                        grantResults[<span class="number">0</span>] == PackageManager.PERMISSION_GRANTED)&#123;</span><br><span class="line">                    readContacts()</span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    Toast.makeText(<span class="keyword">this</span>,<span class="string">"You denied the permission"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@SuppressLint(<span class="meta-string">"Range"</span>)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">readContacts</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//查询联系人数据</span></span><br><span class="line">        contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_FILTER_URI,</span><br><span class="line">            <span class="literal">null</span>,<span class="literal">null</span>,<span class="literal">null</span>,<span class="literal">null</span>)?.apply &#123;</span><br><span class="line">            <span class="keyword">while</span> (moveToNext())&#123;</span><br><span class="line">                <span class="comment">//获取联系人姓名</span></span><br><span class="line">                <span class="keyword">val</span> displayName = getString(getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))</span><br><span class="line">                <span class="comment">//获取联系人手机号</span></span><br><span class="line">                <span class="keyword">val</span> number = getString(getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))</span><br><span class="line">                contactsList.add(<span class="string">"<span class="variable">$displayName</span>\n<span class="variable">$number</span>"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            adapter.notifyDataSetChanged()</span><br><span class="line">            close()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>声明读取系统联系人的权限,修改AndroidManifest.xml中的代码，如下所示：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.READ_CONTACTS"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="创建自己的ContentProvider"><a href="#创建自己的ContentProvider" class="headerlink" title="创建自己的ContentProvider"></a>创建自己的ContentProvider</h2><p>​    在自己的程序中访问其他应用程序的数据。总体来说，思路还是非常简单的，只需要获得该应用程序的内容URI，然后借助ContentResolver进行增删改查操作就可以了。</p>
+<h3 id="创建ContentProvider的步骤"><a href="#创建ContentProvider的步骤" class="headerlink" title="创建ContentProvider的步骤"></a>创建ContentProvider的步骤</h3><p>如果想要实现跨程序共享数据的功能，可以通过新建一个类去继承ContentProvider的方式来实现。</p>
+<p>ContentProvider类中有6个抽象方法，我们在使用子类继承它的时候，需要将这6个方法全部重写。</p>
+<p>下面的代码示例：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyProvider</span>:<span class="type">ContentProvider</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">()</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">query</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        uri: <span class="type">Uri</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">        projection: <span class="type">Array</span>&lt;<span class="type">out</span> <span class="type">String</span>&gt;?,</span></span></span><br><span class="line"><span class="function"><span class="params">        selection: <span class="type">String</span>?,</span></span></span><br><span class="line"><span class="function"><span class="params">        selectionArgs: <span class="type">Array</span>&lt;<span class="type">out</span> <span class="type">String</span>&gt;?,</span></span></span><br><span class="line"><span class="function"><span class="params">        sortOrder: <span class="type">String</span>?</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span></span>: Cursor? &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getType</span><span class="params">(p0: <span class="type">Uri</span>)</span></span>: String? &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">insert</span><span class="params">(uri: <span class="type">Uri</span>, values: <span class="type">ContentValues</span>?)</span></span>: Uri? &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">delete</span><span class="params">(uri: <span class="type">Uri</span>, selection: <span class="type">String</span>?, selectionArgs: <span class="type">Array</span>&lt;<span class="type">out</span> <span class="type">String</span>&gt;?)</span></span>: <span class="built_in">Int</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">update</span><span class="params">(uri: <span class="type">Uri</span>, values: <span class="type">ContentValues</span>?, selection: <span class="type">String</span>?, selectionArgs: <span class="type">Array</span>&lt;<span class="type">out</span> <span class="type">String</span>&gt;?)</span></span>: <span class="built_in">Int</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>onCreate()。初始化ContentProvider的时候调用。通常会在这里完成对数据库的创建和升级等操作，返回true表示ContentProvider初始化成功，返回false则表示失败。</li>
+<li>query()。从ContentProvider中查询数据。uri参数用于确定查询哪张表，projection参数用于确定查询哪些列，selection和selectionArgs参数用于约束查询哪些行，sortOrder参数用于对结果进行排序，查询的结果存放在Cursor对象中返回。</li>
+<li>insert()。向ContentProvider中添加一条数据。uri参数用于确定要添加到的表，待添加的数据保存在values参数中。添加完成后，返回一个用于表示这条新记录的URI。</li>
+<li>update()。更新ContentProvider中已有的数据。uri参数用于确定更新哪一张表中的数据，新数据保存在values参数中，selection和selectionArgs参数用于约束更新哪些行，受影响的行数将作为返回值返回。</li>
+<li>delete()。从ContentProvider中删除数据。uri参数用于确定删除哪一张表中的数据，selection和selectionArgs参数用于约束删除哪些行，被删除的行数将作为返回值返回。</li>
+<li>getType()。根据传入的内容URI返回相应的MIME类型。</li>
+</ol>
+<p>很多方法里带有uri这个参数，这个参数也正是调用ContentResolver的增删改查方法时传递过来的。而现在我们需要对传入的uri参数进行解析，从中分析出调用方期望访问的表和数据。</p>
+<p>一个标准的内容URI写法是：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">content://com.example.app.provider/table1</span><br></pre></td></tr></table></figure>
+
+<p>这就表示调用方期望访问的是com.example.app这个应用的table1表中的数据。除此之外，我们还可以在这个内容URI的后面加上一个id，例如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">content://com.example.app.provider/table1/1</span><br></pre></td></tr></table></figure>
+
+<p>这就表示调用方期望访问的是com.example.app这个应用的table1表中id为1的数据。</p>
+<p>可以使用通配符分别匹配这两种格式的内容URI，规则如下。</p>
+<ul>
+<li>*表示匹配任意长度的任意字符。</li>
+<li>#表示匹配任意长度的数字。</li>
+</ul>
+<p>所以，一个能够匹配任意表的内容URI格式就可以写成：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">content://com.example.app.provider/*</span><br></pre></td></tr></table></figure>
+
+<p>一个能够匹配table1表中任意一行数据的内容URI格式就可以写成：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">content://com.example.app.provider/table1/#</span><br></pre></td></tr></table></figure>
+
+<p>接着，我们再<strong>借助UriMatcher这个类就可以轻松地实现匹配内容URI的功能</strong>。</p>
+<p>​        UriMatcher中提供了一个addURI()方法，这个方法接收3个参数，可以分别把authority、path和一个自定义代码传进去。这样，当调用UriMatcher的match()方法时，就可以将一个Uri对象传入，返回值是某个能够匹配这个Uri对象所对应的自定义代码，利用这个代码，我们就可以判断出调用方期望访问的是哪张表中的数据了。修改MyProvider中的代码，如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example.runtimepermissiontest</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.content.ContentProvider</span><br><span class="line"><span class="keyword">import</span> android.content.ContentValues</span><br><span class="line"><span class="keyword">import</span> android.content.UriMatcher</span><br><span class="line"><span class="keyword">import</span> android.database.Cursor</span><br><span class="line"><span class="keyword">import</span> android.net.Uri</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>： LJH</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Time</span>： 2022/4/20</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>：</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyProvider</span>:<span class="type">ContentProvider</span></span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> table1Dir = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> table1Item = <span class="number">1</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> table2Dir = <span class="number">2</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> table2Item = <span class="number">3</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> uriMatcher = UriMatcher(UriMatcher.NO_MATCH)</span><br><span class="line">    <span class="keyword">init</span> &#123;</span><br><span class="line">        uriMatcher.addURI(<span class="string">"com.example.app.provider"</span>,<span class="string">"table1"</span>,table1Dir)</span><br><span class="line">        uriMatcher.addURI(<span class="string">"com.example.app.provider"</span>,<span class="string">"table1/#"</span>,table1Item)</span><br><span class="line">        uriMatcher.addURI(<span class="string">"com.example.app.provider"</span>,<span class="string">"table2"</span>,table2Dir)</span><br><span class="line">        uriMatcher.addURI(<span class="string">"com.example.app.provider"</span>,<span class="string">"table2/#"</span>,table2Item)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">()</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">query</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        uri: <span class="type">Uri</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">        projection: <span class="type">Array</span>&lt;<span class="type">out</span> <span class="type">String</span>&gt;?,</span></span></span><br><span class="line"><span class="function"><span class="params">        selection: <span class="type">String</span>?,</span></span></span><br><span class="line"><span class="function"><span class="params">        selectionArgs: <span class="type">Array</span>&lt;<span class="type">out</span> <span class="type">String</span>&gt;?,</span></span></span><br><span class="line"><span class="function"><span class="params">        sortOrder: <span class="type">String</span>?</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span></span>: Cursor? &#123;</span><br><span class="line">        <span class="keyword">when</span>(uriMatcher.match(uri))&#123;</span><br><span class="line">            table1Dir -&gt; &#123;</span><br><span class="line">                <span class="comment">//查询table1表中的所有数据</span></span><br><span class="line">            &#125;</span><br><span class="line">            table1Item -&gt; &#123;</span><br><span class="line">                <span class="comment">//查询table1表中的单条数据</span></span><br><span class="line">            &#125;</span><br><span class="line">            table2Dir -&gt; &#123;</span><br><span class="line">                <span class="comment">//查询table2表中的所有数据</span></span><br><span class="line">            &#125;</span><br><span class="line">            table2Item -&gt; &#123;</span><br><span class="line">                <span class="comment">//查询table2表中的单条数据</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getType</span><span class="params">(p0: <span class="type">Uri</span>)</span></span>: String? &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">insert</span><span class="params">(uri: <span class="type">Uri</span>, values: <span class="type">ContentValues</span>?)</span></span>: Uri? &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">delete</span><span class="params">(uri: <span class="type">Uri</span>, selection: <span class="type">String</span>?, selectionArgs: <span class="type">Array</span>&lt;<span class="type">out</span> <span class="type">String</span>&gt;?)</span></span>: <span class="built_in">Int</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">update</span><span class="params">(uri: <span class="type">Uri</span>, values: <span class="type">ContentValues</span>?, selection: <span class="type">String</span>?, selectionArgs: <span class="type">Array</span>&lt;<span class="type">out</span> <span class="type">String</span>&gt;?)</span></span>: <span class="built_in">Int</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        getType()方法。它是所有的ContentProvider都必须提供的一个方法，<strong>用于获取Uri对象所对应的MIME类型</strong>。一个内容URI所对应的MIME字符串主要由3部分组成，Android对这3个部分做了如下格式规定。</p>
+<ul>
+<li>必须以vnd开头。</li>
+<li>如果内容URI以路径结尾，则后接android.cursor.dir/；如果内容URI以id结尾，则后接android.cursor.item/。</li>
+<li>最后接上vnd.&lt; authority&gt;.&lt; path&gt;。</li>
+</ul>
+<p>对于content://com.example.app.provider/table1这个内容URI，它所对应的MIME类型就可以写成：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vnd.android.cursor.dir/vnd.com.example.app.provider.table1</span><br></pre></td></tr></table></figure>
+
+<p>对于content://com.example.app.provider/table1/1这个内容URI，它所对应的MIME类型就可以写成：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vnd.android.cursor.item/vnd.com.example.app.provider.table1</span><br></pre></td></tr></table></figure>
+
+<p>继续完善MyProvider中的内容，这次来实现getType()方法中的逻辑，代码如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getType</span><span class="params">(uri: <span class="type">Uri</span>)</span></span>: String? = <span class="keyword">when</span>(uriMatcher.match(uri))&#123;</span><br><span class="line">    table1Dir -&gt; <span class="string">"vnd.android.cursor.dir/vnd.com.example.app.provider.table1"</span></span><br><span class="line"></span><br><span class="line">    table1Item -&gt; <span class="string">"vnd.android.cursor.item/vnd.com.example.app.provider.table1"</span></span><br><span class="line"></span><br><span class="line">    table2Dir -&gt; <span class="string">"vnd.android.cursor.dir/vnd.com.example.app.provider.table2"</span></span><br><span class="line"></span><br><span class="line">    table2Item -&gt; <span class="string">"vnd.android.cursor.item/vnd.com.example.app.provider.table2"</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">else</span> -&gt; <span class="literal">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="实现跨程序数据共享"><a href="#实现跨程序数据共享" class="headerlink" title="实现跨程序数据共享"></a>实现跨程序数据共享</h3><ol>
+<li><p>新建项目，创建一个ContentProvider，右击com.example.databasetest包→New→Other→Content Provider，会弹出如图所示的窗口。</p>
+<p><img src="/2022/04/20/ContentProvider/3.png" alt></p>
+</li>
+<li><p>接着我们修改DatabaseProvider中的代码，如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DBContentProvider</span> : <span class="type">ContentProvider</span></span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> bookDir = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> bookItem = <span class="number">1</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> categoryDir = <span class="number">2</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> categoryItem = <span class="number">3</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> authority = <span class="string">"com.example.databasetest.provider"</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> dbHelper: MyDatabaseHelper? = <span class="literal">null</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * by lazy代码块是Kotlin提供的一种懒加载技术，</span></span><br><span class="line"><span class="comment">     * 代码块中的代码一开始并不会执行，只有当uriMatcher变量首次被调用的时候才会执行，</span></span><br><span class="line"><span class="comment">     * 并且会将代码块中最后一行代码的返回值赋给uriMatcher。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> uriMatcher <span class="keyword">by</span> lazy &#123;</span><br><span class="line">        <span class="keyword">val</span> matcher = UriMatcher(UriMatcher.NO_MATCH)</span><br><span class="line">        matcher.addURI(authority,<span class="string">"book"</span>,bookDir)</span><br><span class="line">        matcher.addURI(authority,<span class="string">"book/#"</span>,bookItem)</span><br><span class="line">        matcher.addURI(authority,<span class="string">"category"</span>,categoryDir)</span><br><span class="line">        matcher.addURI(authority,<span class="string">"category/#"</span>,categoryItem)</span><br><span class="line">        matcher</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">delete</span><span class="params">(uri: <span class="type">Uri</span>, selection: <span class="type">String</span>?, selectionArgs: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;?)</span></span> = dbHelper?.let &#123;</span><br><span class="line">        <span class="comment">//删除数据</span></span><br><span class="line">        <span class="keyword">val</span> db = it.writableDatabase</span><br><span class="line">        <span class="keyword">val</span> deletedRows = <span class="keyword">when</span>(uriMatcher.match(uri))&#123;</span><br><span class="line">            bookDir -&gt; db.delete(<span class="string">"Book"</span>,selection,selectionArgs)</span><br><span class="line">            bookItem -&gt; &#123;</span><br><span class="line">                <span class="keyword">val</span> bookId = uri.pathSegments[<span class="number">1</span>]</span><br><span class="line">                db.delete(<span class="string">"Book"</span>,<span class="string">"id = ?"</span>, arrayOf(bookId))</span><br><span class="line">            &#125;</span><br><span class="line">            categoryDir -&gt; db.delete(<span class="string">"Category"</span>,selection,selectionArgs)</span><br><span class="line">            categoryItem -&gt; &#123;</span><br><span class="line">                <span class="keyword">val</span> categoryId = uri.pathSegments[<span class="number">1</span>]</span><br><span class="line">                db.delete(<span class="string">"Category"</span>,<span class="string">"id = ?"</span>, arrayOf(categoryId))</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> -&gt; <span class="number">0</span></span><br><span class="line">        &#125;</span><br><span class="line">        deletedRows</span><br><span class="line">    &#125;?:<span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getType</span><span class="params">(uri: <span class="type">Uri</span>)</span></span> = <span class="keyword">when</span>(uriMatcher.match(uri))&#123;</span><br><span class="line">        bookDir -&gt; <span class="string">"vnd.android.cursor.dir/vnd.com.example.app.provider.book"</span></span><br><span class="line"></span><br><span class="line">        bookItem -&gt; <span class="string">"vnd.android.cursor.item/vnd.com.example.app.provider.book"</span></span><br><span class="line"></span><br><span class="line">        categoryDir -&gt; <span class="string">"vnd.android.cursor.dir/vnd.com.example.app.provider.category"</span></span><br><span class="line"></span><br><span class="line">        categoryItem -&gt; <span class="string">"vnd.android.cursor.item/vnd.com.example.app.provider.category"</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">else</span> -&gt; <span class="literal">null</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">insert</span><span class="params">(uri: <span class="type">Uri</span>, values: <span class="type">ContentValues</span>?)</span></span> = dbHelper?.let &#123;</span><br><span class="line">        <span class="comment">//添加数据</span></span><br><span class="line">        <span class="keyword">val</span> db = it.writableDatabase</span><br><span class="line">        <span class="keyword">val</span> uriReturn = <span class="keyword">when</span> (uriMatcher.match(uri))&#123;</span><br><span class="line">            <span class="comment">//据传入的Uri参数判断用户想要往哪张表里添加数据</span></span><br><span class="line">            bookDir,bookItem -&gt; &#123;</span><br><span class="line">                <span class="keyword">val</span> newBookId = db.insert(<span class="string">"Book"</span>,<span class="literal">null</span>,values)</span><br><span class="line">                <span class="comment">//insert()方法要求返回一个能够表示这条新增数据的URI，</span></span><br><span class="line">                <span class="comment">// 所以我们还需要调用Uri.parse()方法，将一个内容URI解析成Uri对象</span></span><br><span class="line">                Uri.parse(<span class="string">"content://<span class="variable">$authority</span>/book/<span class="variable">$newBookId</span>"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            categoryDir,categoryItem -&gt; &#123;</span><br><span class="line">                <span class="keyword">val</span> newCategoryId = db.insert(<span class="string">"Category"</span>,<span class="literal">null</span>,values)</span><br><span class="line">                Uri.parse(<span class="string">"content://<span class="variable">$authority</span>/category/<span class="variable">$newCategoryId</span>"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> -&gt; <span class="literal">null</span></span><br><span class="line">        &#125;</span><br><span class="line">        uriReturn</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 首先调用了getContext()方法并借助?.操作符和let函数判断它的返回值是否为空：</span></span><br><span class="line"><span class="comment">     * 如果为空就使用?:操作符返回false，表示ContentProvider初始化失败；</span></span><br><span class="line"><span class="comment">     * 如果不为空就执行let函数中的代码。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> Boolean</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">()</span></span> = context?.let&#123;</span><br><span class="line">        dbHelper = MyDatabaseHelper(it,<span class="string">"BookStore.db"</span>,<span class="number">2</span>)</span><br><span class="line">        <span class="comment">//返回true表示ContentProvider初始化成功</span></span><br><span class="line">        <span class="literal">true</span></span><br><span class="line">    &#125;?:<span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">query</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        uri: <span class="type">Uri</span>, projection: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;?, selection: <span class="type">String</span>?,</span></span></span><br><span class="line"><span class="function"><span class="params">        selectionArgs: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;?, sortOrder: <span class="type">String</span>?</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span></span> = dbHelper?.let &#123;</span><br><span class="line">        <span class="comment">//查询数据</span></span><br><span class="line">        <span class="keyword">val</span> db = it.readableDatabase</span><br><span class="line">        <span class="keyword">val</span> cursor = <span class="keyword">when</span> (uriMatcher.match(uri))&#123;</span><br><span class="line">            bookDir -&gt; db.query(<span class="string">"Book"</span>,projection,selection,selectionArgs,<span class="literal">null</span>,<span class="literal">null</span>,sortOrder)</span><br><span class="line">            bookItem -&gt; &#123;</span><br><span class="line">                <span class="comment">//内容URI权限之后的部分以“/”符号进行分割，</span></span><br><span class="line">                <span class="comment">// 并把分割后的结果放入一个字符串列表中，</span></span><br><span class="line">                <span class="comment">// 那这个列表的第0个位置存放的就是路径，第1个位置存放的就是id了</span></span><br><span class="line">                <span class="keyword">val</span> bookId = uri.pathSegments[<span class="number">1</span>]</span><br><span class="line">                db.query(<span class="string">"Book"</span>,projection,<span class="string">"id = ?"</span>, arrayOf(bookId),<span class="literal">null</span>,<span class="literal">null</span>,sortOrder)</span><br><span class="line">            &#125;</span><br><span class="line">            categoryDir -&gt; db.query(<span class="string">"Category"</span>,projection,selection,selectionArgs,<span class="literal">null</span>,<span class="literal">null</span>,sortOrder)</span><br><span class="line">            categoryItem -&gt; &#123;</span><br><span class="line">                <span class="keyword">val</span> categoryId = uri.pathSegments[<span class="number">1</span>]</span><br><span class="line">                db.query(<span class="string">"Category"</span>,projection,<span class="string">"id = ?"</span>, arrayOf(categoryId),<span class="literal">null</span>,<span class="literal">null</span>,sortOrder)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> -&gt; <span class="literal">null</span></span><br><span class="line">        &#125;</span><br><span class="line">        cursor</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">update</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        uri: <span class="type">Uri</span>, values: <span class="type">ContentValues</span>?, selection: <span class="type">String</span>?,</span></span></span><br><span class="line"><span class="function"><span class="params">        selectionArgs: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;?</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span></span> = dbHelper?.let &#123;</span><br><span class="line">        <span class="comment">//更新数据</span></span><br><span class="line">        <span class="keyword">val</span> db = it.writableDatabase</span><br><span class="line">        <span class="keyword">val</span> updatedRows = <span class="keyword">when</span>(uriMatcher.match(uri))&#123;</span><br><span class="line">            bookDir -&gt; db.update(<span class="string">"Book"</span>,values,selection,selectionArgs)</span><br><span class="line">            bookItem -&gt; &#123;</span><br><span class="line">                <span class="keyword">val</span> bookId = uri.pathSegments[<span class="number">1</span>]</span><br><span class="line">                db.update(<span class="string">"Book"</span>,values,<span class="string">"id = ?"</span>, arrayOf(bookId))</span><br><span class="line">            &#125;</span><br><span class="line">            categoryDir -&gt; db.update(<span class="string">"Category"</span>,values,selection,selectionArgs)</span><br><span class="line">            categoryItem -&gt; &#123;</span><br><span class="line">                <span class="keyword">val</span> bookId = uri.pathSegments[<span class="number">1</span>]</span><br><span class="line">                db.update(<span class="string">"Category"</span>,values,<span class="string">"id = ?"</span>, arrayOf(bookId))</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> -&gt; <span class="number">0</span></span><br><span class="line">        &#125;</span><br><span class="line">        updatedRows</span><br><span class="line">    &#125;?: <span class="number">0</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>ContentProvider一定要在AndroidManifest.xml文件中注册才可以使用:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">application</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:allowBackup</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:icon</span>=<span class="string">"@mipmap/ic_launcher"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:label</span>=<span class="string">"@string/app_name"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:roundIcon</span>=<span class="string">"@mipmap/ic_launcher_round"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:supportsRtl</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:theme</span>=<span class="string">"@style/Theme.DatabaseTest"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">provider</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:name</span>=<span class="string">".DBContentProvider"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:authorities</span>=<span class="string">"com.example.databasetest.provider"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:enabled</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:exported</span>=<span class="string">"true"</span>&gt;</span><span class="tag">&lt;/<span class="name">provider</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">activity</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:name</span>=<span class="string">".MainActivity"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:exported</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">                <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">application</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建新项目，通过这个程序去访问DatabaseTest中的数据。修改activity_main.xml中的代码，如下所示：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">tools:context</span>=<span class="string">".MainActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"Add to Book"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/addData"</span></span></span><br><span class="line"><span class="tag">         /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"Query a Book"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/selectData"</span></span></span><br><span class="line"><span class="tag">        /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"Update a Book"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/updateData"</span></span></span><br><span class="line"><span class="tag">        /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">"delete a Book"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">"@+id/deleteData"</span></span></span><br><span class="line"><span class="tag">        /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后修改MainActivity中的代码，如下所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line">    <span class="keyword">var</span> bookId:String? = <span class="literal">null</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@SuppressLint(<span class="meta-string">"Range"</span>)</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line"></span><br><span class="line">        binding.addData.setOnClickListener &#123;</span><br><span class="line">            <span class="comment">//添加数据</span></span><br><span class="line">            <span class="keyword">val</span> uri = Uri.parse(<span class="string">"content://com.example.databasetest.provider/book"</span>)</span><br><span class="line">            <span class="keyword">val</span> values = contentValuesOf(<span class="string">"name"</span> to <span class="string">"Thinking in JAVA"</span>,</span><br><span class="line">                <span class="string">"author"</span> to <span class="string">"Mac"</span>,<span class="string">"pages"</span> to <span class="number">1024</span>,<span class="string">"price"</span> to <span class="number">19.99</span>)</span><br><span class="line">            <span class="keyword">val</span> newUri = contentResolver.insert(uri,values)</span><br><span class="line">            <span class="comment">// insert()方法会返回一个Uri对象，这个对象中包含了新增数据的id，</span></span><br><span class="line">            <span class="comment">// 我们通过getPathSegments()方法将这个id取出</span></span><br><span class="line">            bookId = newUri?.pathSegments?.<span class="keyword">get</span>(<span class="number">1</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        binding.selectData.setOnClickListener &#123;</span><br><span class="line">            <span class="comment">//查询数据</span></span><br><span class="line">            <span class="keyword">val</span> uri = Uri.parse(<span class="string">"content://com.example.databasetest.provider/book"</span>)</span><br><span class="line">            contentResolver.query(uri,<span class="literal">null</span>,<span class="literal">null</span>,<span class="literal">null</span>,<span class="literal">null</span>)?.apply &#123;</span><br><span class="line">                <span class="keyword">while</span> (moveToNext())&#123;</span><br><span class="line">                    <span class="keyword">val</span>  name = getString(getColumnIndex(<span class="string">"name"</span>))</span><br><span class="line">                    <span class="keyword">val</span>  author = getString(getColumnIndex(<span class="string">"author"</span>))</span><br><span class="line">                    <span class="keyword">val</span>  pages = getInt(getColumnIndex(<span class="string">"pages"</span>))</span><br><span class="line">                    <span class="keyword">val</span>  price = getDouble(getColumnIndex(<span class="string">"price"</span>))</span><br><span class="line">                    Log.d(<span class="string">"Main"</span>,name)</span><br><span class="line">                    Log.d(<span class="string">"Main"</span>,author)</span><br><span class="line">                    Log.d(<span class="string">"Main"</span>,<span class="string">"总页数：<span class="variable">$pages</span>"</span>)</span><br><span class="line">                    Log.d(<span class="string">"Main"</span>,<span class="string">"价格：<span class="variable">$price</span>"</span>)</span><br><span class="line">                &#125;</span><br><span class="line">                close()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        binding.updateData.setOnClickListener &#123;</span><br><span class="line">            <span class="comment">//更新数据</span></span><br><span class="line">            bookId?.let &#123;</span><br><span class="line">                <span class="keyword">val</span> uri = Uri.parse(<span class="string">"content://com.example.databasetest.provider/book/<span class="variable">$it</span>"</span>)</span><br><span class="line">                <span class="keyword">val</span> values = contentValuesOf(<span class="string">"name"</span> to <span class="string">"Thinking in JAVA"</span>,</span><br><span class="line">                    <span class="string">"author"</span> to <span class="string">"Mac"</span>,<span class="string">"pages"</span> to <span class="number">1024</span>,<span class="string">"price"</span> to <span class="number">88.99</span>)</span><br><span class="line">                contentResolver.update(uri,values,<span class="literal">null</span>,<span class="literal">null</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        binding.deleteData.setOnClickListener &#123;</span><br><span class="line">            <span class="comment">//删除数据</span></span><br><span class="line">            bookId?.let &#123;</span><br><span class="line">                <span class="keyword">val</span> uri = Uri.parse(<span class="string">"content://com.example.databasetest.provider/book/<span class="variable">$it</span>"</span>)</span><br><span class="line">                contentResolver.delete(uri,<span class="literal">null</span>,<span class="literal">null</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/19/%E8%AF%A6%E8%A7%A3%E6%8C%81%E4%B9%85%E5%8C%96%E6%8A%80%E6%9C%AF/" rel="prev" title="详解持久化技术">
+      <i class="fa fa-chevron-left"></i> 详解持久化技术
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/21/%E6%89%8B%E6%9C%BA%E5%A4%9A%E5%AA%92%E4%BD%93/" rel="next" title="手机多媒体">
+      手机多媒体 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行时权限"><span class="nav-number">2.</span> <span class="nav-text">运行时权限</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Android权限机制详解"><span class="nav-number">2.1.</span> <span class="nav-text">Android权限机制详解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在程序运行时申请权限"><span class="nav-number">2.2.</span> <span class="nav-text">在程序运行时申请权限</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#访问其他程序中的数据"><span class="nav-number">3.</span> <span class="nav-text">访问其他程序中的数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ContentResolver的基本用法"><span class="nav-number">3.1.</span> <span class="nav-text">ContentResolver的基本用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#读取系统联系人"><span class="nav-number">3.2.</span> <span class="nav-text">读取系统联系人</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建自己的ContentProvider"><span class="nav-number">4.</span> <span class="nav-text">创建自己的ContentProvider</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建ContentProvider的步骤"><span class="nav-number">4.1.</span> <span class="nav-text">创建ContentProvider的步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现跨程序数据共享"><span class="nav-number">4.2.</span> <span class="nav-text">实现跨程序数据共享</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

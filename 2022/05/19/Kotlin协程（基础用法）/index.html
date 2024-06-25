@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="转载文章 在 app 的build.gradle中引用相关配置： 123456&#x2F;&#x2F; Kotlin    implementation &quot;org.jetbrains.kotlin:kotlin-stdlib:1.4.32&quot;    &#x2F;&#x2F; 协程核心库    implementation &quot;org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3&quot;    &#x2F;&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kotlin协程（基础用法）">
+<meta property="og:url" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="转载文章 在 app 的build.gradle中引用相关配置： 123456&#x2F;&#x2F; Kotlin    implementation &quot;org.jetbrains.kotlin:kotlin-stdlib:1.4.32&quot;    &#x2F;&#x2F; 协程核心库    implementation &quot;org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3&quot;    &#x2F;&#x2F;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/3.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/4.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/5.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/6.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/7.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/8.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/9.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/10.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/11.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/12.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/13.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/14.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/15.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/16.png">
+<meta property="og:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/17.png">
+<meta property="article:published_time" content="2022-05-19T06:39:00.468Z">
+<meta property="article:modified_time" content="2022-06-03T06:53:23.315Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Kotlin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Kotlin协程（基础用法） | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kotlin协程（基础用法）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-19 14:39:00" itemprop="dateCreated datePublished" datetime="2022-05-19T14:39:00+08:00">2022-05-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-06-03 14:53:23" itemprop="dateModified" datetime="2022-06-03T14:53:23+08:00">2022-06-03</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>15k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>13 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a href="https://juejin.cn/post/6953441828100112392" target="_blank" rel="noopener">转载文章</a></p>
+<p>在 app 的<code>build.gradle</code>中引用相关配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// Kotlin</span><br><span class="line">    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.4.32"</span><br><span class="line">    // 协程核心库</span><br><span class="line">    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3"</span><br><span class="line">    // 协程Android支持库</span><br><span class="line">    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3"</span><br></pre></td></tr></table></figure>
+
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>​        以同步的方式去编写异步执行的代码。协程是依赖于线程，但是协程挂起时不需要阻塞线程，几乎是无代价的。所以协程像是一种用户态的线程，非常轻量级，一个线程中可以创建 N 个协程。</p>
+<h2 id="启动方式"><a href="#启动方式" class="headerlink" title="启动方式"></a>启动方式</h2><p>协程的创建是过<code>CoroutineScope</code>创建, 协程的启动方式有三种：</p>
+<ol>
+<li><code>runBlocking：T</code> 启动一个新的协程并阻塞调用它的线程，直到里面的代码执行完毕, 返回值是泛型<code>T</code>，就是你协程体中最后一行是什么类型，最终返回的是什么类型<code>T</code>就是什么类型。</li>
+<li><code>launch：Job</code> 启动一个协程但不会阻塞调用线程, <strong>必须要在协程作用域 (<code>CoroutineScope</code>) 中才能调用</strong>, 返回值是一个 Job。</li>
+<li><code>async:Deferred&lt;T&gt;</code> 启动一个协程但不会阻塞调用线程,<strong>必须要在协程作用域 (<code>CoroutineScope</code>) 中才能调用</strong>。以<code>Deferred</code>对象的形式返回协程任务。返回值泛型<code>T</code>同<code>runBlocking</code>类似都是协程体最后一行的类型。</li>
+</ol>
+<h3 id="什么是Job，Deferred，协程作用域"><a href="#什么是Job，Deferred，协程作用域" class="headerlink" title="什么是Job，Deferred，协程作用域"></a>什么是Job，Deferred，协程作用域</h3><h4 id="Job"><a href="#Job" class="headerlink" title="Job"></a>Job</h4><p>​    <code>Job</code>我们可以认为他就是一个协程作业是通过<code>CoroutineScope.launch</code>生成的，同时它运行一个指定的代码块，并在该代码块完成时完成。我们可以通过<code>isActive</code>、<code>isCompleted</code>、<code>isCancelled</code>来获取到<code>Job</code>的当前状态。<code>Job</code>的状态如下图所示，摘自官方文档：</p>
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/1.png" alt></p>
+<a id="more"></a>
+<h4 id="Deferred"><a href="#Deferred" class="headerlink" title="Deferred"></a>Deferred</h4><p><code>Deferred</code>继承自<code>Job</code>，我们可以把它看做一个带有返回值的<code>Job</code>，</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Deferred</span>&lt;<span class="type">out T</span>&gt; : <span class="type">Job &#123;</span></span></span><br><span class="line">    <span class="comment">//返回结果值，或者如果延迟被取消，则抛出相应的异常</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">await</span><span class="params">()</span></span>: T  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">val</span> onAwait: SelectClause1&lt;T&gt;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">getCompleted</span><span class="params">()</span></span>: T</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">getCompletionExceptionOrNull</span><span class="params">()</span></span>: Throwable?</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​        我们需要重点关注<code>await()</code>方法，可以看到<code>await()</code>方法返回结果是<code>T</code>，说明我们可以通过<code>await()</code>方法获取执行流的返回值，当然如果出现异常或者被取消执行，则会抛出相对应的异常。</p>
+<h4 id="协程作用域"><a href="#协程作用域" class="headerlink" title="协程作用域"></a>协程作用域</h4><p>​        协程作用域 (<code>Coroutine Scope</code>) 是协程运行的作用范围。<code>launch</code>、<code>async</code>都是<code>CoroutineScope</code>的<a href="https://link.juejin.cn/?target=https%3A%2F%2Fwww.kotlincn.net%2Fdocs%2Freference%2Fextensions.html%23%E6%89%A9%E5%B1%95">扩展函数</a>，<code>CoroutineScope</code>定义了新启动的协程作用范围，同时会继承了他的<code>coroutineContext</code>自动传播其所有的<code>elements</code>和取消操作。</p>
+<h2 id="基础使用"><a href="#基础使用" class="headerlink" title="基础使用"></a>基础使用</h2><h3 id="运行第一个协程"><a href="#运行第一个协程" class="headerlink" title="运行第一个协程"></a>运行第一个协程</h3><p>​        在 Android 中有一个名为<code>GlobalScope</code>全局顶级协程，这个协程是在<strong>整个应用程序生命周期内运行</strong>的。我们就以此协程来使用<code>launch</code>和<code>async</code>启动，代码如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> binding: ActivityMainBinding</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        binding = ActivityMainBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(binding.root)</span><br><span class="line"></span><br><span class="line">        binding.start.setOnClickListener &#123;</span><br><span class="line">            start()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">start</span><span class="params">()</span></span>&#123;</span><br><span class="line">        runBlocking &#123;</span><br><span class="line">            Log.d(<span class="string">"runBlocking"</span>,<span class="string">"runBlocking启动一个协程<span class="subst">$&#123;Thread.currentThread()&#125;</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        GlobalScope.launch &#123;</span><br><span class="line">            Log.d(<span class="string">"GlobalScope"</span>,<span class="string">"启动一个协程1<span class="subst">$&#123;Thread.currentThread()&#125;</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        GlobalScope.async &#123;</span><br><span class="line">            Log.d(<span class="string">"GlobalScope"</span>,<span class="string">"启动一个协程2<span class="subst">$&#123;Thread.currentThread()&#125;</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/2.png" alt></p>
+<p>​        上面提到过三种启动方式分别会的得到各自的返回信息。我们现在增加三个变量然后分别用协程进行赋值，同时进行输出：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">start</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> runBlocking = runBlocking &#123;</span><br><span class="line">            Log.d(<span class="string">"runBlocking"</span>, <span class="string">"runBlocking启动一个协程"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        Log.d(<span class="string">"runBlocking"</span>, <span class="string">"<span class="variable">$runBlocking</span>"</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">val</span> launch = GlobalScope.launch &#123;</span><br><span class="line">            Log.d(<span class="string">"launch"</span>, <span class="string">"启动一个协程1"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        Log.d(<span class="string">"launch"</span>, <span class="string">"<span class="variable">$launch</span>"</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">val</span> async = GlobalScope.async &#123;</span><br><span class="line">            Log.d(<span class="string">"async"</span>, <span class="string">"启动一个协程2"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        Log.d(<span class="string">"async"</span>, <span class="string">"<span class="variable">$async</span>"</span>)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/3.png" alt></p>
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/4.png" alt></p>
+<p>​        后面 4 条日志顺序还是随机的,这是因为<code>runBlocking</code>启动的是一个新的协程并阻塞调用它的线程，<strong><code>runBlocking</code>会阻塞调用它的线程，直到<code>runBlocking</code>运行结束才继续往下执行。</strong></p>
+<p>​        但是<code>launchJob</code>始终在<code>asyncJob</code>前面。而<code>launch</code>和<code>async</code>协程体内的日志输出是无序的。<code>launch</code>和<code>async</code>都是启动一个协程但不会阻塞调用线程，所以<code>launchJob</code>始终在<code>asyncJob</code>前面</p>
+<h3 id="runBlocking的返回值"><a href="#runBlocking的返回值" class="headerlink" title="runBlocking的返回值"></a>runBlocking的返回值</h3><p>​    <strong>runBlocking默认返回是一个该协程作业的当前状态</strong>，也可以在<code>runBlocking</code>协程最后一行增加一个返回值。</p>
+<p>​    <strong><code>runBlocking</code>它的设计目的是将常规的阻塞代码连接到一起，主要用于<code>main</code>函数和测试中。</strong></p>
+<h3 id="挂起函数"><a href="#挂起函数" class="headerlink" title="挂起函数"></a>挂起函数</h3><p>​        <code>suspend</code>是协程的关键字，表示这个一个挂起函数，他会挂起调用他的协程。每一个被<code>suspend</code>饰的方法只能在<code>suspend</code>方法或者在协程中调用。</p>
+<h3 id="协程并发与同步"><a href="#协程并发与同步" class="headerlink" title="协程并发与同步"></a>协程并发与同步</h3><p>如果某个协程满足以下几点，那它里面的子协程将会是同步执行的:</p>
+<ul>
+<li>父协程的协程调度器是处于<code>Dispatchers.Main</code>情况下启动。</li>
+<li>同时子协程在不修改协程调度器下的情况下启动。</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">start</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> async = GlobalScope.async(Dispatchers.Main) &#123;</span><br><span class="line">            <span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>..<span class="number">10</span>)&#123;</span><br><span class="line">                <span class="comment">//同步执行</span></span><br><span class="line">                launch &#123;</span><br><span class="line">                    Log.d(<span class="string">"async"</span>, <span class="string">"启动一个协程<span class="variable">$i</span>"</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/5.png" alt></p>
+<p>​        <strong>如果协程处于<code>Dispatchers.Main</code>调度器，它会将协程调度到 UI 事件循环中执行，即通常在主线程上执行</strong>，这样就能理解为什么是同步执行了吧。如果是不同步的话，那我在操作 UI 刷新的时候，就会出现各种问题啦</p>
+<p>并发执行：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">start</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> async = GlobalScope.async&#123;</span><br><span class="line">            <span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>..<span class="number">10</span>)&#123;</span><br><span class="line">                <span class="comment">//并发执行</span></span><br><span class="line">                launch &#123;</span><br><span class="line">                    Log.d(<span class="string">"async"</span>, <span class="string">"启动一个协程<span class="variable">$i</span>"</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/6.png" alt></p>
+<h2 id="协程调度器"><a href="#协程调度器" class="headerlink" title="协程调度器"></a>协程调度器</h2><p>协程调度器<code>CoroutineDispatcher</code></p>
+<ul>
+<li><strong>调度器它确定了相关的协程在哪个线程或哪些线程上执行。协程调度器可以将协程限制在一个特定的线程执行，或将它分派到一个线程池，亦或是让它不受限地运行。</strong></li>
+</ul>
+<p>官方框架中预置了 4 个调度器，我们可以通过<code>Dispatchers</code>对象直接访问它们:</p>
+<ol>
+<li><code>Default</code>：默认调度器，CPU 密集型任务调度器，适合处理后台计算。通常处理一些单纯的计算任务，或者执行时间较短任务。比如：Json 的解析，数据计算等</li>
+<li><code>IO</code>：IO 调度器，，IO 密集型任务调度器，适合执行 IO 相关操作。比如：网络处理，数据库操作，文件操作等</li>
+<li><code>Main</code>：UI 调度器， 即在主线程上执行，通常用于 UI 交互，刷新等</li>
+<li><code>Unconfined</code>：非受限调度器，又或者称为 “无所谓” 调度器，不要求协程执行在特定线程上。</li>
+</ol>
+<p>官方在 Android 协程框架库中，已经为我们定义好了几个供我们开发使用，如:<code>MainScope</code>、<code>lifecycleScope</code>、<code>viewModelScope</code>。它们都是使用的<code>Dispatchers.Main</code></p>
+<p>​        现在我们需要通过网络请求获取到数据的时候填充到我们的布局当中，但是网络处理在<code>IO</code>线程上，而刷新 UI 是在<code>主线程</code>上，那我们应该怎么办？</p>
+<p>​        官方为我们提供了一个<code>withContext</code>顶级函数，<strong>使用<code>withContext</code>函数来改变协程的上下文，而仍然驻留在相同的协程中，同时<code>withContext</code>还携带有一个泛型<code>T</code>返回值。</strong></p>
+<p>​        我们可以先使用<code>launch(Dispatchers.Main)</code>启动协程，然后再通过<code>withContext(Dispatchers.IO)</code>调度到<code>IO</code>线程上去做网络请求，把得到的结果返回, 这样我们就解决了我们上面的问题了。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">GlobalScope.launch(Dispatchers.Main) &#123;</span><br><span class="line">    <span class="keyword">val</span> result = withContext(Dispatchers.IO)&#123;</span><br><span class="line">        <span class="comment">//网络请求..</span></span><br><span class="line">        <span class="string">"请求结果"</span></span><br><span class="line">    &#125;</span><br><span class="line">    binding.start.text = result</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="协程上下文"><a href="#协程上下文" class="headerlink" title="协程上下文"></a>协程上下文</h2><p>​        <code>CoroutineContext</code>即协程上下文。<strong>它是一个包含了用户定义的一些各种不同元素的<code>Element</code>对象集合。</strong>其中主要元素是<code>Job</code>、协程调度器<code>CoroutineDispatcher</code>、还有包含协程异常<code>CoroutineExceptionHandler</code>、拦截器<code>ContinuationInterceptor</code>、协程名<code>CoroutineName</code>等。这些数据都是和协程密切相关的，每一个<code>Element</code>都一个唯一 key。</p>
+<p>​        <code>Element</code>是<code>CoroutineContext</code>的内部接口，同时它又实现了<code>CoroutineContext</code>接口，这么设计的原因是为了保证<code>Element</code>中一定只能存放的<code>Element</code>它自己，而不能存放其他类型的数据。</p>
+<p>​        <code>CoroutineContext</code>内还有一个内部接口<code>Key</code>，同时它又是<code>Element</code>的一个属性，这个属性很重要。</p>
+<p>​        <code>Job</code>、<code>CoroutineDispatcher</code>、<code>CoroutineExceptionHandler</code>、<code>ContinuationInterceptor</code>、<code>CoroutineName</code>等为什么又可以存放到<code>CoroutineContext</code>中呢？他们都是实现了<code>Element</code>接口, 同时都有个<code>CoroutineContext.Key</code>类型的伴生对象<code>key</code>。这个属性的作用是什么？来看看<code>CoroutineContext</code>接口的几个方法：</p>
+<ol>
+<li><code>plus</code>方法，<code>plus</code>有个关键字<code>operator</code>表示这是一个运算符重载的方法，类似 <a href="https://link.juejin.cn/?target=https%3A%2F%2Fwww.kotlincn.net%2Fdocs%2Freference%2Fcollection-plus-minus.html%23plus-%E4%B8%8E-minus-%E6%93%8D%E4%BD%9C%E7%AC%A6">List.plus</a> 的运算符，可以通过<code>+</code>号来返回一个包含原始集合和第二个操作数中的元素的结果。同理<code>CoroutineContext</code>中是通过<code>plus</code>来返回一个由原始的<code>Element</code>集合和通过<code>+</code>号引入的<code>Element</code>产生新的<code>Element</code>集合。</li>
+<li><code>get</code>方法，顾名思义。可以通过<code>key</code> 来获取一个<code>Element</code></li>
+<li><code>fold</code>方法它和集合中的 <a href="https://link.juejin.cn/?target=https%3A%2F%2Fkotlinlang.org%2Fapi%2Flatest%2Fjvm%2Fstdlib%2Fkotlin.collections%2F-collection%2F">fold</a> 是一样的，用来遍历当前协程上下文中的<code>Element</code>集合.</li>
+<li><code>minusKey</code>方法<code>plus</code>作用相反，它相当于是做减法, 是用来取出除<code>key</code>以外的当前协程上下文其他<code>Element</code>，返回的就是不包含<code>key</code>的协程上下文。</li>
+</ol>
+<p>​    之前说<code>Element</code>中的<code>key</code>这个属性很重要。因为我们就是<strong>通过key从协程上下文中获取我们想要的<code>Element</code></strong>，同时也解释为什么<code>Job</code>、<code>CoroutineDispatcher</code>、<code>CoroutineExceptionHandler</code>、<code>ContinuationInterceptor</code>、<code>CoroutineName</code>等等，这些<code>Element</code>都有需要有一个<code>CoroutineContext.Key</code>类型的伴生对象<code>key</code>。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">start</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> coroutineContext1 = Job() + CoroutineName(<span class="string">"这是第一个上下文"</span>)</span><br><span class="line">        Log.d(<span class="string">"coroutineContext1"</span>,<span class="string">"<span class="variable">$coroutineContext1</span>"</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">val</span> coroutineContext2 = coroutineContext1 + Dispatchers.Default + CoroutineName(<span class="string">"这是第二个上下文"</span>)</span><br><span class="line">        Log.d(<span class="string">"coroutineContext2"</span>,<span class="string">"<span class="variable">$coroutineContext2</span>"</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">val</span> coroutineContext3 = coroutineContext2 + Dispatchers.Main + CoroutineName(<span class="string">"这是第三个上下文"</span>)</span><br><span class="line">        Log.d(<span class="string">"coroutineContext3"</span>,<span class="string">"<span class="variable">$coroutineContext3</span>"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/7.png" alt></p>
+<p>我们通过对比日志输出信息可以看到，通过<code>+</code>号我们可以把多个<code>Element</code>整合到一个集合中，同时我们也发现:</p>
+<ul>
+<li>三个上下文中的<code>Job</code>是同一个对象。</li>
+<li>第二个上下文在第一个的基础上增加了一个新的<code>CoroutineName</code>, 新增的<code>CoroutineName</code>替换了第一个上下文中的<code>CoroutineName</code>。</li>
+<li>第三个上下文在第二个的基础上又增加了一个新的<code>CoroutineName</code>和<code>Dispatchers</code>, 同时他们也替换了第二个上下文中的<code>CoroutineName</code>和<code>Dispatchers</code>。</li>
+</ul>
+<p>但是因为这个<code>+</code>运算符是不对称的，所以在我们实际的运用过程中，通过<code>+</code>增加<code>Element</code>的时候一定要注意它们结合的顺序。</p>
+<h2 id="协程启动模式"><a href="#协程启动模式" class="headerlink" title="协程启动模式"></a>协程启动模式</h2><p><code>CoroutineStart</code>协程启动模式，是启动协程时需要传入的第二个参数。协程启动有 4 种：</p>
+<ol>
+<li><code>DEFAULT</code> 默认启动模式，我们可以称之为饿汉启动模式，因为协程创建后立即开始调度，虽然是立即调度，单不是立即执行，有可能在执行前被取消。</li>
+<li><code>LAZY</code> 懒汉启动模式，启动后并不会有任何调度行为，直到我们需要它执行的时候才会产生调度。也就是说只有我们主动的调用<code>Job</code>的<code>start</code>、<code>join</code>或者<code>await</code>等函数时才会开始调度。</li>
+<li><code>ATOMIC</code> 一样也是在协程创建后立即开始调度，但是它和<code>DEFAULT</code>模式有一点不一样，通过<code>ATOMIC</code>模式启动的协程执行到第一个挂起点之前是不响应<code>cancel</code>取消操作的，<code>ATOMIC</code>一定要涉及到协程挂起后<code>cancel</code>取消操作的时候才有意义。</li>
+<li><code>UNDISPATCHED</code> 协程在这种模式下会直接开始在当前线程下执行，直到运行到第一个挂起点。这听起来有点像 <code>ATOMIC</code>，不同之处在于<code>UNDISPATCHED</code>是不经过任何调度器就开始执行的。当然遇到挂起点之后的执行，将取决于挂起点本身的逻辑和协程上下文中的调度器。</li>
+</ol>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">start</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">val</span> defaultJob = GlobalScope.launch &#123;</span><br><span class="line">            Log.d(<span class="string">"defaultJob"</span>,<span class="string">"CoroutineStart.Default"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        defaultJob.cancel()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">val</span> lazyJob = GlobalScope.launch(start = CoroutineStart.LAZY) &#123;</span><br><span class="line">            Log.d(<span class="string">"lazyJob"</span>, <span class="string">"CoroutineStart.LAZY"</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">val</span> atomicJob = GlobalScope.launch(start = CoroutineStart.ATOMIC) &#123;</span><br><span class="line">            Log.d(<span class="string">"atomicJob"</span>, <span class="string">"CoroutineStart.ATOMIC挂起前"</span>)</span><br><span class="line">            delay(<span class="number">200</span>)</span><br><span class="line">            Log.d(<span class="string">"atomicJob"</span>, <span class="string">"CoroutineStart.ATOMIC挂起后"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        atomicJob.cancel()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">val</span> unDispatchedJob = GlobalScope.launch(start = CoroutineStart.UNDISPATCHED) &#123;</span><br><span class="line">            Log.d(<span class="string">"unDispatchedJob"</span>, <span class="string">"CoroutineStart.UNDISPATCHED挂起前"</span>)</span><br><span class="line">            delay(<span class="number">200</span>)</span><br><span class="line">            Log.d(<span class="string">"unDispatchedJob"</span>, <span class="string">"CoroutineStart.UNDISPATCHED挂起后"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        unDispatchedJob.cancel()</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/8.png" alt></p>
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/9.png" alt></p>
+<ol>
+<li><p>为什么会出现 2 种情况。我们上面提到过<code>DEFAULT</code>模式协程创建后立即开始调度，但不是立即执行，所以它有可能会被<code>cancel</code>取消，导致没有输出<code>defaultJob</code>这条日志。</p>
+</li>
+<li><p>同样的<code>ATOMIC</code>模式启动的时候也接着调用了<code>cancel</code>取消协程，但是因为没有遇到挂起点，所以挂起前的日志输出了，但是挂起后的日志没有输出。</p>
+</li>
+<li><p>而<code>UNDISPATCHED</code>模式启动的时候也接着调用了<code>cancel</code>取消协程，同样的因为没有遇到挂起点所以输出了<code>UNDISPATCHED挂起前</code>，<code>UNDISPATCHED</code>是立即执行的</p>
+</li>
+</ol>
+<p>上面有提到当以<code>UNDISPATCHED</code>模式启动时，遇到挂起点之后的执行，将取决于挂起点本身的逻辑和协程上下文中的调度器。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">start</span><span class="params">()</span></span>&#123;</span><br><span class="line">        GlobalScope.launch(Dispatchers.Main) &#123;</span><br><span class="line">            <span class="keyword">val</span> job = launch(Dispatchers.IO) &#123;</span><br><span class="line">                Log.d(<span class="string">"<span class="subst">$&#123;Thread.currentThread().name&#125;</span>线程"</span>,<span class="string">"-&gt; 挂起前"</span>)</span><br><span class="line">                delay(<span class="number">100</span>)</span><br><span class="line">                Log.d(<span class="string">"<span class="subst">$&#123;Thread.currentThread().name&#125;</span>线程"</span>,<span class="string">"-&gt; 挂起后"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            Log.d(<span class="string">"<span class="subst">$&#123;Thread.currentThread().name&#125;</span>线程"</span>,<span class="string">"-&gt; join前"</span>)</span><br><span class="line">            job.join()</span><br><span class="line">            Log.d(<span class="string">"<span class="subst">$&#123;Thread.currentThread().name&#125;</span>线程"</span>,<span class="string">"-&gt; join后"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/10.png" alt></p>
+<p>我们在子协程<code>launch</code>的时候使用<code>UNDISPATCHED</code>模式启动：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">start</span><span class="params">()</span></span>&#123;</span><br><span class="line">        GlobalScope.launch(Dispatchers.Main) &#123;</span><br><span class="line">            <span class="keyword">val</span> job = launch(Dispatchers.IO,start = CoroutineStart.UNDISPATCHED) &#123;</span><br><span class="line">                Log.d(<span class="string">"<span class="subst">$&#123;Thread.currentThread().name&#125;</span>线程"</span>,<span class="string">"-&gt; 挂起前"</span>)</span><br><span class="line">                delay(<span class="number">100</span>)</span><br><span class="line">                Log.d(<span class="string">"<span class="subst">$&#123;Thread.currentThread().name&#125;</span>线程"</span>,<span class="string">"-&gt; 挂起后"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            Log.d(<span class="string">"<span class="subst">$&#123;Thread.currentThread().name&#125;</span>线程"</span>,<span class="string">"-&gt; join前"</span>)</span><br><span class="line">            job.join()</span><br><span class="line">            Log.d(<span class="string">"<span class="subst">$&#123;Thread.currentThread().name&#125;</span>线程"</span>,<span class="string">"-&gt; join后"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/11.png" alt></p>
+<p>​        我们看到当以<code>UNDISPATCHED</code>模式即使我们指定了协程调度器<code>Dispatchers.IO</code>，<code>挂起前</code>还是在<code>main</code>线程里执行，但是<code>挂起后</code>是在<code>worker-1</code>线程里面执行，这是因为当以<strong><code>UNDISPATCHED</code>启动时, 协程在这种模式下会直接开始在当前线程下执行，直到第一个挂起点。</strong>遇到挂起点之后的执行，将取决于挂起点本身的逻辑和协程上下文中的调度器，即<code>join</code>处恢复执行时，因为所在的协程有调度器，所以后面的执行将会在调度器对应的线程上执行。</p>
+<p>把子协程在<code>launch</code>的时候使用<code>UNDISPATCHED</code>模式启动，去掉<code>Dispatchers.IO</code>调度器，那又会出现什么情况呢?</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">start</span><span class="params">()</span></span>&#123;</span><br><span class="line">        GlobalScope.launch(Dispatchers.Main) &#123;</span><br><span class="line">            <span class="keyword">val</span> job = launch(start = CoroutineStart.UNDISPATCHED) &#123;</span><br><span class="line">                Log.d(<span class="string">"<span class="subst">$&#123;Thread.currentThread().name&#125;</span>线程"</span>,<span class="string">"-&gt; 挂起前"</span>)</span><br><span class="line">                delay(<span class="number">100</span>)</span><br><span class="line">                Log.d(<span class="string">"<span class="subst">$&#123;Thread.currentThread().name&#125;</span>线程"</span>,<span class="string">"-&gt; 挂起后"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            Log.d(<span class="string">"<span class="subst">$&#123;Thread.currentThread().name&#125;</span>线程"</span>,<span class="string">"-&gt; join前"</span>)</span><br><span class="line">            job.join()</span><br><span class="line">            Log.d(<span class="string">"<span class="subst">$&#123;Thread.currentThread().name&#125;</span>线程"</span>,<span class="string">"-&gt; join后"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/12.png" alt></p>
+<p>​        我们发现它们都在一个线程里面执行了。这是因为当通过<code>UNDISPATCHED</code>启动后遇到挂起，<code>join</code>处恢复执行时，如果所在的协程没有指定调度器，那么就会在<code>join</code>处恢复执行的线程里执行，即<code>挂起后</code>是在父协程<code>(Dispatchers.Main</code>线程里面执行，而最后<code>join后</code>这条日志的输出调度取决于这个最外层的协程的调度规则。</p>
+<p>总结一下，当以<code>UNDISPATCHED</code>启动时：</p>
+<ul>
+<li>无论我们是否指定协程调度器，<code>挂起前</code>的执行都是在当前线程下执行。</li>
+<li>如果所在的协程没有指定调度器，那么就会在<code>join</code>处恢复执行的线程里执行，即我们上述案例中的<code>挂起后</code>的执行是在<code>main</code>线程中执行。</li>
+<li>当我们指定了协程调度器时，遇到挂起点之后的执行将取决于挂起点本身的逻辑和协程上下文中的调度器。即<code>join</code>处恢复执行时，因为所在的协程有调度器，所以后面的执行将会在调度器对应的线程上执行。</li>
+</ul>
+<h2 id="协程作用域-1"><a href="#协程作用域-1" class="headerlink" title="协程作用域"></a>协程作用域</h2><p>​        协程作用域<code>CoroutineScope</code>为协程定义作用范围，每个协程生成器<code>launch</code>、<code>async</code>等都是<code>CoroutineScope</code>的扩展，并继承了它的<code>coroutineContext</code>自动传播其所有<code>Element</code>和取消。协程作用域本质是一个接口, 不建议手工实现该接口，而应该首选委托实现。</p>
+<ul>
+<li><code>CoroutineScope</code>也重载了<code>plus</code>方法，通过<code>+</code>号来新增或者修改我们<code>CoroutineContext</code>协程上下文中的<code>Element</code>。</li>
+<li>同时官方也为我们定义好了<code>MainScope</code>和<code>GlobalScope</code>2 个顶级作用域。</li>
+</ul>
+<p>​       <code>MainScope</code>的上下文是通过<code>SupervisorJob</code>和<code>Dispatchers.Main</code>组合的，说明它是一个在主线程执行的协程作用域， Android 实战开发中，会结合 Activity、Fragment，dialog 等使用它。</p>
+<p>​        之前提到过<strong>父协程和子协程</strong>的概念，既然有父协程和子协程，那么必然也有<strong>父协程作用域和子父协程作用域</strong>。不过我们不是这么称呼，因为他们不仅仅是父与子的概念。<strong>协程作用域分为三种：</strong></p>
+<ul>
+<li><code>顶级作用域</code> –&gt; 没有父协程的协程所在的作用域称之为顶级作用域。</li>
+<li><code>协同作用域</code> –&gt; 在协程中启动一个协程，新协程为所在协程的子协程。子协程所在的作用域默认为协同作用域。此时子协程抛出未捕获的异常时，会将异常传递给父协程处理，如果父协程被取消，则所有子协程同时也会被取消。</li>
+<li><code>主从作用域</code> 官方称之为<code>监督作用域</code>。与协同作用域一致，<strong>区别在于该作用域下的协程取消操作的单向传播性，子协程的异常不会导致其它子协程取消。但是如果父协程被取消，则所有子协程同时也会被取消。</strong></li>
+</ul>
+<p>同时补充一点：<strong>父协程需要等待所有的子协程执行完毕之后才会进入<code>Completed</code>状态，不管父协程自身的协程体是否已经执行完成。</strong></p>
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/13.png" alt></p>
+<p>​        子协程会继承父协程的协程上下文中的<code>Element</code>，如果自身有相同 key 的成员，则覆盖对应的<code>key</code>，覆盖的效果仅限自身范围内有效。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">start</span><span class="params">()</span></span>&#123;</span><br><span class="line">    GlobalScope.launch(Dispatchers.Main) &#123;</span><br><span class="line">        Log.d(<span class="string">"父协程上下文"</span>,<span class="string">"<span class="variable">$coroutineContext</span>"</span>)</span><br><span class="line">        launch(CoroutineName(<span class="string">"第一个子协程"</span>)) &#123;</span><br><span class="line">            Log.d(<span class="string">"第一个子协程上下文"</span>,<span class="string">"<span class="variable">$coroutineContext</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        launch(Dispatchers.Unconfined) &#123;</span><br><span class="line">            Log.d(<span class="string">"第二个子协程上下文"</span>,<span class="string">"<span class="variable">$coroutineContext</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/14.png" alt></p>
+<p>​        可以看到第一个子协程的覆盖了父协程的<code>coroutineContext</code>, 它继承了父协程的调度器<code>Dispatchers.Main</code>，同时也新增了一个<code>CoroutineName</code>属性。第二个子协程覆盖了父协程的<code>coroutineContext</code>中的<code>Dispatchers</code>，也就是将父协程的调度器<code>Dispatchers.Main</code>覆盖为<code>Dispatchers.Unconfined</code>，但是他没有继承第一个子协程的<code>CoroutineName</code>，这就是我们说的覆盖的效果仅限自身范围内有效。</p>
+<h3 id="协同作用域"><a href="#协同作用域" class="headerlink" title="协同作用域"></a>协同作用域</h3><p><code>协同作用域</code>如果子协程抛出未捕获的异常时，会将异常传递给父协程处理，如果父协程被取消，则所有子协程同时也会被取消。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">start</span><span class="params">()</span></span>&#123;</span><br><span class="line">       <span class="keyword">val</span> exceptionHandler = CoroutineExceptionHandler&#123;</span><br><span class="line">           coroutineContext, throwable -&gt;</span><br><span class="line">           run &#123;</span><br><span class="line">               Log.d(<span class="string">"exceptionHandler"</span>, <span class="string">"<span class="subst">$&#123;coroutineContext[CoroutineName]&#125;</span> <span class="variable">$throwable</span>"</span>)</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       GlobalScope.launch(Dispatchers.Main + CoroutineName(<span class="string">"scop1"</span>) + exceptionHandler) &#123;</span><br><span class="line">           Log.d(<span class="string">"scope"</span>,<span class="string">"------1"</span>)</span><br><span class="line">           launch(CoroutineName(<span class="string">"scop2"</span>) + exceptionHandler) &#123;</span><br><span class="line">               Log.d(<span class="string">"scop"</span>,<span class="string">"------2"</span>)</span><br><span class="line">               <span class="keyword">throw</span> NullPointerException(<span class="string">"空指针"</span>)</span><br><span class="line">               Log.d(<span class="string">"scop"</span>,<span class="string">"------3"</span>)</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="keyword">val</span> scop3 = launch(CoroutineName(<span class="string">"scop3"</span>) + exceptionHandler) &#123;</span><br><span class="line">               Log.d(<span class="string">"scop"</span>,<span class="string">"------4"</span>)</span><br><span class="line">               delay(<span class="number">2000</span>)</span><br><span class="line">               Log.d(<span class="string">"scop"</span>,<span class="string">"------5"</span>)</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="comment">//为了保证它一定是会执行</span></span><br><span class="line">           scop3.join()</span><br><span class="line">           Log.d(<span class="string">"scop"</span>,<span class="string">"------6"</span>)</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/15.png" alt></p>
+<p>​        可以看到子协程<code>scope2</code>抛出了一个异常，将异常传递给父协程<code>scope1</code>处理，但是因为任何一个子协程异常退出会导致整体都将退出。所以导致父协程<code>scope1</code>未执行完成成就被取消，同时还未执行完子协程<code>scope3</code>也被取消了。</p>
+<h3 id="主从（监督）作用域"><a href="#主从（监督）作用域" class="headerlink" title="主从（监督）作用域"></a>主从（监督）作用域</h3><p><code>主从(监督)作用域</code>与<code>协同作用域</code>一致，区别在于该作用域下的协程取消操作的单向传播性，<strong>子协程的异常不会导致其它子协程取消。</strong>分析<code>主从(监督)作用域</code>的时候，我们需要用到<code>supervisorScope</code>或者<code>SupervisorJob</code>，如下代码块：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">start</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">val</span> exceptionHandler = CoroutineExceptionHandler&#123;</span><br><span class="line">        coroutineContext, throwable -&gt;</span><br><span class="line">        run &#123;</span><br><span class="line">            Log.d(<span class="string">"exceptionHandler"</span>, <span class="string">"<span class="subst">$&#123;coroutineContext[CoroutineName]&#125;</span> <span class="variable">$throwable</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    GlobalScope.launch(Dispatchers.Main + CoroutineName(<span class="string">"scop1"</span>) + exceptionHandler) &#123;</span><br><span class="line">        supervisorScope &#123;</span><br><span class="line">            Log.d(<span class="string">"scope"</span>,<span class="string">"------1"</span>)</span><br><span class="line">            launch(CoroutineName(<span class="string">"scop2"</span>) + exceptionHandler) &#123;</span><br><span class="line">                Log.d(<span class="string">"scop"</span>,<span class="string">"------2"</span>)</span><br><span class="line">                <span class="keyword">throw</span> NullPointerException(<span class="string">"空指针"</span>)</span><br><span class="line">                Log.d(<span class="string">"scop"</span>,<span class="string">"------3"</span>)</span><br><span class="line">                <span class="keyword">val</span> scop3 = launch(CoroutineName(<span class="string">"scop3"</span>) + exceptionHandler) &#123;</span><br><span class="line">                    Log.d(<span class="string">"scop"</span>,<span class="string">"------4"</span>)</span><br><span class="line">                    delay(<span class="number">2000</span>)</span><br><span class="line">                    Log.d(<span class="string">"scop"</span>,<span class="string">"------5"</span>)</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//为了保证它一定是会执行</span></span><br><span class="line">                scop3.join()</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">val</span> scope4 = launch(CoroutineName(<span class="string">"scope4"</span>)) &#123;</span><br><span class="line">                Log.d(<span class="string">"scop"</span>,<span class="string">"------6"</span>)</span><br><span class="line">                delay(<span class="number">2000</span>)</span><br><span class="line">                Log.d(<span class="string">"scop"</span>,<span class="string">"------7"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            scope4.join()</span><br><span class="line">            Log.d(<span class="string">"scop"</span>,<span class="string">"------8"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/16.png" alt></p>
+<p>​        可以看到子协程<code>scope2</code>抛出了一个异常，并将异常传递给父协程<code>scope1</code>处理，同时也结束了自己本身。因为在于<code>主从(监督)作用域</code>下的协程取消操作是单向传播性，因此协程<code>scope2</code>的异常并没有导致父协程退出，所以<code>6</code> <code>7</code> <code>8</code>都照常输出，而<code>3</code> <code>4</code> <code>5</code>因为在协程<code>scope2</code>里面所以没有输出。</p>
+<p>我们刚刚使用了<code>supervisorScope</code>实现了<code>主从(监督)作用域</code>, 那我们通过<code>SupervisorJob</code>又该如何实现呢。我们把<code>supervisorScope</code>称之为<code>主从(监督)作用域</code>，那么<code>SupervisorJob</code>就可以称之为<code>主从(监督)作业</code>，如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">start</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">val</span> exceptionHandler = CoroutineExceptionHandler&#123;</span><br><span class="line">        coroutineContext, throwable -&gt;</span><br><span class="line">        run &#123;</span><br><span class="line">            Log.d(<span class="string">"exceptionHandler"</span>, <span class="string">"<span class="subst">$&#123;coroutineContext[CoroutineName]&#125;</span> <span class="variable">$throwable</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> coroutineScope = CoroutineScope(SupervisorJob()+CoroutineName(<span class="string">"coroutineScope"</span>))</span><br><span class="line">    GlobalScope.launch(Dispatchers.Main + CoroutineName(<span class="string">"scope1"</span>) + exceptionHandler) &#123;</span><br><span class="line">        with(coroutineScope) &#123;</span><br><span class="line">            <span class="keyword">val</span> scope2 = launch(CoroutineName(<span class="string">"scope2"</span>) + exceptionHandler) &#123;</span><br><span class="line">                Log.d(<span class="string">"scope"</span>,<span class="string">"1------<span class="subst">$&#123;coroutineContext[CoroutineName]&#125;</span>"</span>)</span><br><span class="line">                <span class="keyword">throw</span> NullPointerException(<span class="string">"空指针"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">val</span> scope3 = launch(CoroutineName(<span class="string">"scope3"</span>) + exceptionHandler) &#123;</span><br><span class="line">                scope2.join()</span><br><span class="line">                Log.d(<span class="string">"scope"</span>,<span class="string">"2------<span class="subst">$&#123;coroutineContext[CoroutineName]&#125;</span>"</span>)</span><br><span class="line">                delay(<span class="number">2000</span>)</span><br><span class="line">                Log.d(<span class="string">"scope"</span>,<span class="string">"3------<span class="subst">$&#123;coroutineContext[CoroutineName]&#125;</span>"</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            scope2.join()</span><br><span class="line">            Log.d(<span class="string">"scope"</span>,<span class="string">"4------<span class="subst">$&#123;coroutineContext[CoroutineName]&#125;</span>"</span>)</span><br><span class="line">            coroutineScope.cancel()</span><br><span class="line">            scope3.join()</span><br><span class="line">            Log.d(<span class="string">"scope"</span>,<span class="string">"5------<span class="subst">$&#123;coroutineContext[CoroutineName]&#125;</span>"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        Log.d(<span class="string">"scope"</span>,<span class="string">"6------<span class="subst">$&#123;coroutineContext[CoroutineName]&#125;</span>"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/19/Kotlin%E5%8D%8F%E7%A8%8B%EF%BC%88%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95%EF%BC%89/17.png" alt></p>
+<p>​        子协程<code>scope2</code>抛出了一个异常，通过协程<code>scope2</code>自己内部消化了，同时也结束了自己本身。</p>
+<p>​        因为协程<code>scope2</code>的异常并没有导致<code>coroutineScope</code>作用域下的协程取消退出，所以协程<code>scope3</code>照常运行输出<code>2</code>，后又因为调用了我们定义的协程作用域<code>coroutineScope</code>的<code>cancel</code>方法取消了协程，所以即使我们后面调用了协程<code>scope3</code>的<code>join</code>, 也没有输出<code>3</code>, 因为<code>SupervisorJob</code>的取消是向下传播的，所以后面的<code>4</code> <code>5</code>都是在<code>coroutineScope</code>的作用域中输出的。</p>
+<h2 id="挂起函数-1"><a href="#挂起函数-1" class="headerlink" title="挂起函数"></a>挂起函数</h2><p>​        使用<code>suspend</code>关键字修饰的函数叫作<code>挂起函数</code>，<code>挂起函数</code>只能在协程体内，或着在其他<code>挂起函数</code>内调用。</p>
+<p>首先一个<code>挂起函数</code>既然要挂起，那么他必定得有一个<code>挂起点</code>，不然我们怎么知道函数是否挂起，从哪挂起呢。</p>
+<p>在协程内部<code>挂起函数</code>的调用处就是<code>挂起点</code>，如果<code>挂起点</code>出现异步调用，那么当前协程就被挂起，<strong>直到对应的<code>Continuation</code>通过调用<code>resumeWith</code>函数才会恢复协程的执行，同时返回<code>Result&lt;T&gt;</code>类型的成功或者失败的结果。</strong></p>
+<p>需要注意的是<code>挂起函数</code>不一定真的会挂起，如果只是提供了挂起的条件，但是协程没有产生异步调用，那么协程还是不会被挂起。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/05/18/RxJava%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C%E7%AC%A6/" rel="prev" title="RxJava常用操作符">
+      <i class="fa fa-chevron-left"></i> RxJava常用操作符
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/05/20/Android%E4%BD%BF%E7%94%A8Kotlin%E5%8D%8F%E7%A8%8B/" rel="next" title="Android使用Kotlin协程">
+      Android使用Kotlin协程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动方式"><span class="nav-number">2.</span> <span class="nav-text">启动方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是Job，Deferred，协程作用域"><span class="nav-number">2.1.</span> <span class="nav-text">什么是Job，Deferred，协程作用域</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Job"><span class="nav-number">2.1.1.</span> <span class="nav-text">Job</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Deferred"><span class="nav-number">2.1.2.</span> <span class="nav-text">Deferred</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#协程作用域"><span class="nav-number">2.1.3.</span> <span class="nav-text">协程作用域</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基础使用"><span class="nav-number">3.</span> <span class="nav-text">基础使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#运行第一个协程"><span class="nav-number">3.1.</span> <span class="nav-text">运行第一个协程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#runBlocking的返回值"><span class="nav-number">3.2.</span> <span class="nav-text">runBlocking的返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#挂起函数"><span class="nav-number">3.3.</span> <span class="nav-text">挂起函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#协程并发与同步"><span class="nav-number">3.4.</span> <span class="nav-text">协程并发与同步</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协程调度器"><span class="nav-number">4.</span> <span class="nav-text">协程调度器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协程上下文"><span class="nav-number">5.</span> <span class="nav-text">协程上下文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协程启动模式"><span class="nav-number">6.</span> <span class="nav-text">协程启动模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协程作用域-1"><span class="nav-number">7.</span> <span class="nav-text">协程作用域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#协同作用域"><span class="nav-number">7.1.</span> <span class="nav-text">协同作用域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主从（监督）作用域"><span class="nav-number">7.2.</span> <span class="nav-text">主从（监督）作用域</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#挂起函数-1"><span class="nav-number">8.</span> <span class="nav-text">挂起函数</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>

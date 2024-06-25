@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hluck.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="​        App开发常用的一些网络通信技术  如何使用多线程完成异步操作  如何进行HTTP接口调用与图片获取  如何实现文件上传和下载操作  如何运用Socket通信技术  “仿应用宝的应用更新功能”和“仿手机QQ的聊天功能”的设计与实现。 权限相关： 12345678910111213141516171819&lt;!-- 互联网 --&gt;    &lt;uses-permissi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络通信">
+<meta property="og:url" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/index.html">
+<meta property="og:site_name" content="余一">
+<meta property="og:description" content="​        App开发常用的一些网络通信技术  如何使用多线程完成异步操作  如何进行HTTP接口调用与图片获取  如何实现文件上传和下载操作  如何运用Socket通信技术  “仿应用宝的应用更新功能”和“仿手机QQ的聊天功能”的设计与实现。 权限相关： 12345678910111213141516171819&lt;!-- 互联网 --&gt;    &lt;uses-permissi">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/1.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/2.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/3.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/4.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/5.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/6.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/7.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/8.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/9.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/10.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/11.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/12.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/13.png">
+<meta property="og:image" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/14.png">
+<meta property="article:published_time" content="2022-07-11T02:27:04.042Z">
+<meta property="article:modified_time" content="2022-08-07T12:19:48.564Z">
+<meta property="article:author" content="余一">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/1.png">
+
+<link rel="canonical" href="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>网络通信 | 余一</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="余一" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">余一</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          网络通信
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-07-11 10:27:04" itemprop="dateCreated datePublished" datetime="2022-07-11T10:27:04+08:00">2022-07-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-07 20:19:48" itemprop="dateModified" datetime="2022-08-07T20:19:48+08:00">2022-08-07</time>
+              </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>26k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>24 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>​        App开发常用的一些网络通信技术</p>
+<ol>
+<li><p>如何使用多线程完成异步操作</p>
+</li>
+<li><p>如何进行HTTP接口调用与图片获取</p>
+</li>
+<li><p>如何实现文件上传和下载操作</p>
+</li>
+<li><p>如何运用Socket通信技术</p>
+</li>
+<li><p>“仿应用宝的应用更新功能”和“仿手机QQ的聊天功能”的设计与实现。</p>
+<p>权限相关：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 互联网 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.INTERNET"</span> /&gt;</span> <span class="comment">&lt;!-- 查看网络状态 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.ACCESS_NETWORK_STATE"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.ACCESS_WIFI_STATE"</span> /&gt;</span> <span class="comment">&lt;!-- 定位 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.ACCESS_FINE_LOCATION"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.ACCESS_COARSE_LOCATION"</span> /&gt;</span> <span class="comment">&lt;!-- 查看手机状态 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.READ_PHONE_STATE"</span> /&gt;</span> <span class="comment">&lt;!-- 下载时不提示通知栏 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"</span> /&gt;</span> <span class="comment">&lt;!-- 拍照 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.CAMERA"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-feature</span> <span class="attr">android:name</span>=<span class="string">"android.hardware.camera.autofocus"</span> /&gt;</span> <span class="comment">&lt;!-- 录像/录音 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.RECORD_VIDEO"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.RECORD_AUDIO"</span> /&gt;</span> <span class="comment">&lt;!-- 震动 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.VIBRATE"</span> /&gt;</span> <span class="comment">&lt;!-- SD卡 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.WRITE_EXTERNAL_STORAGE"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.READ_EXTERNAL_STORAGE"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:name</span>=<span class="string">"android.permission.MOUNT_UNMOUNT_FILESYSTEMS"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:ignore</span>=<span class="string">"ProtectedPermissions"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h2><h3 id="消息传递Message"><a href="#消息传递Message" class="headerlink" title="消息传递Message"></a>消息传递Message</h3><p>​        多线程技术并非单单用于拍照预览，还用于网络通信、后台服务等耗时场合，并且这些场合往往希望操纵现有的界面，而不是操纵表面视图。</p>
+<p>​        分线程向主线程传递消息并无捷径，为此Android设计了一个Message消息工具，通过结合Handler与Message可简单有效地实现线程之间的通信。</p>
+<a id="more"></a>
+<p>主线程与分线程之间传递消息的步骤主要有4步，说明如下：</p>
+<ol>
+<li><p><strong>在主线程中构造一个Handler对象，并启动分线程</strong></p>
+<p>​        处理器Handler是大家的老朋友了，凡是需要进行延迟处理的场合，基本都用到了Handler。在介绍简单动画的实现时还专门对Handler+Runnable组合做了详细说明：<a href="https://hluck.gitee.io/2022/06/24/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/" target="_blank" rel="noopener">自定义控件</a>。Thread类是Runnable接口的一个具体实现，Handler调用Runnable对象的各种post方法也适用于Thread对象。<strong>启动分线程有两种方式，既可通过Handler对象的post方法启动Thread，也可直接调用Thread对象的start方法。</strong></p>
+</li>
+<li><p><strong>在分线程中构造一个Message对象的消息包</strong></p>
+<p>​        Message是多线程通信中存放消息的包裹，作用类似于Intent机制的Bundle工具。实例可通过自身的obtain方法获得，也可通过Handler对象的obtainMessage方法获得。下面来看Message类的主要参数说明。</p>
+<ul>
+<li>what：整型的消息标识，用于标识本次消息的唯一编号。</li>
+<li>arg1：整型数，可存放消息的处理结果。</li>
+<li>arg2：整型数，可存放消息的处理代码。</li>
+<li>obj：Object类型，可存放返回消息的数据结构。</li>
+<li>replyTo：Messenger类型，回应信使，在跨进程通信中使用，多线程通信用不着。</li>
+</ul>
+</li>
+<li><p><strong>在分线程中通过Handler对象将Message消息发出去</strong></p>
+<p>​        处理器Handler的消息发送操作主要是各类send方法。下面介绍相关方法说明。</p>
+<ul>
+<li>obtainMessage：获取当前消息的对象。</li>
+<li>sendMessage：立即发送消息。</li>
+<li>sendMessageDelayed：延迟一段时间后发送消息。</li>
+<li>sendMessageAtTime：在指定时间点发送消息。</li>
+<li>sendEmptyMessage：立即发送空消息。</li>
+<li>sendEmptyMessageDelayed：延迟一段时间后发送空消息。</li>
+<li>sendEmptyMessageAtTime：在指定时间点发送空消息。</li>
+<li>removeMessages：从消息队列中根据指定标识移除对应消息。</li>
+<li>hasMessages：判断消息队列中是否存在指定标识的消息。</li>
+</ul>
+</li>
+<li><p><strong>主线程中的Handler对象处理接收到的消息</strong></p>
+<p>​        主线程处理分线程发出的消息需要实现Handler对象的handleMessage方法，根据Message消息的具体内容分别进行相应处理。注意，因为handleMessage方法处于主线程（UI线程）中，所以该方法内部可以直接操作界面元素。下面是利用多线程实现新闻滚动的完整代码，结合使用了Handler与Message。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MessageActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityMessageBinding</span>&gt;</span>(),View.OnClickListener &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> begin = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> scroll = <span class="number">1</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> end = <span class="number">2</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> bPlay = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> newsArray = arrayOf(</span><br><span class="line">        <span class="string">"中国航天员在天宫二号泡茶，羡煞歪果仁"</span>,</span><br><span class="line">        <span class="string">"美国大选顺利闭幕，特朗普高票当选"</span>,</span><br><span class="line">        <span class="string">"越南撤销日本获得订单的核电站计划"</span>,</span><br><span class="line">        <span class="string">"上海建成卓越全球城市，新市镇轨交全覆盖"</span>,</span><br><span class="line">        <span class="string">"土耳其老人怀抱受伤山羊错跑入医院急诊室"</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityMessageBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="comment">//设置tv内部文本的对齐方式为靠左且靠下</span></span><br><span class="line">        tvMessage.gravity = Gravity.LEFT and Gravity.BOTTOM</span><br><span class="line">        <span class="comment">//设置tv高度为8行文字那么高</span></span><br><span class="line">        tvMessage.setLines(<span class="number">8</span>)</span><br><span class="line">        <span class="comment">//设置tv最多显示8行文字</span></span><br><span class="line">        tvMessage.maxLines = <span class="number">8</span></span><br><span class="line">        <span class="comment">//设置tv内部文本的移动方式为滚动形式</span></span><br><span class="line">        tvMessage.movementMethod = ScrollingMovementMethod()</span><br><span class="line">        btnStartMessage.setOnClickListener(<span class="keyword">this</span><span class="symbol">@MessageActivity</span>)</span><br><span class="line">        btnStopMessage.setOnClickListener(<span class="keyword">this</span><span class="symbol">@MessageActivity</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onClick</span><span class="params">(v: <span class="type">View</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">when</span>(v?.id)&#123;</span><br><span class="line">            mBinding.btnStartMessage.id -&gt; &#123;</span><br><span class="line">                <span class="keyword">if</span> (!bPlay)&#123;</span><br><span class="line">                    bPlay = <span class="literal">true</span></span><br><span class="line">                    <span class="comment">//创建并启动新闻播放线程</span></span><br><span class="line">                    PlayThread().start()</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            mBinding.btnStopMessage.id -&gt; &#123;</span><br><span class="line">                bPlay = <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">PlayThread</span>:<span class="type">Thread</span></span>()&#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">run</span><span class="params">()</span></span> &#123;</span><br><span class="line">            handler.sendEmptyMessage(begin)</span><br><span class="line">            <span class="keyword">while</span> (bPlay)&#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="comment">//分线程每隔两秒添加一条新闻；</span></span><br><span class="line">                    sleep(<span class="number">2000</span>)</span><br><span class="line">                &#125;<span class="keyword">catch</span> (e:InterruptedException)&#123;</span><br><span class="line">                    e.printStackTrace()</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">val</span> message = Message.obtain()</span><br><span class="line">                message.what = scroll</span><br><span class="line">                message.obj = newsArray[(Math.random()*<span class="number">30</span>%<span class="number">5</span>).toInt()]</span><br><span class="line">                handler.sendMessage(message)</span><br><span class="line">            &#125;</span><br><span class="line">            bPlay = <span class="literal">true</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                sleep(<span class="number">2000</span>)</span><br><span class="line">            &#125;<span class="keyword">catch</span> (e:InterruptedException)&#123;</span><br><span class="line">                e.printStackTrace()</span><br><span class="line">            &#125;</span><br><span class="line">            handler.sendEmptyMessage(end)</span><br><span class="line">            bPlay = <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> handler = <span class="keyword">object</span> :Handler(Looper.getMainLooper())&#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">handleMessage</span><span class="params">(msg: <span class="type">Message</span>)</span></span> &#123;</span><br><span class="line">            <span class="keyword">var</span> desc = mBinding.tvMessage.text.toString()</span><br><span class="line">            <span class="keyword">when</span>(msg.what)&#123;</span><br><span class="line">                begin -&gt; desc = <span class="string">"<span class="variable">$desc</span>\n<span class="subst">$&#123;DateUtil.getNowTime()&#125;</span> 下面开始播放新闻"</span></span><br><span class="line">                scroll -&gt; &#123;</span><br><span class="line">                    desc = <span class="string">"<span class="variable">$desc</span>\n<span class="subst">$&#123;DateUtil.getNowTime()&#125;</span> <span class="subst">$&#123;msg.obj.toString()&#125;</span>"</span></span><br><span class="line">                &#125;</span><br><span class="line">                end -&gt; desc = <span class="string">"<span class="variable">$desc</span>\n<span class="subst">$&#123;DateUtil.getNowTime()&#125;</span> 新闻播放结束，谢谢观看"</span></span><br><span class="line">            &#125;</span><br><span class="line">            mBinding.tvMessage.text = desc</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<p>   <img src="/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/1.png" alt></p>
+<h3 id="进度对话框ProgressDialog"><a href="#进度对话框ProgressDialog" class="headerlink" title="进度对话框ProgressDialog"></a>进度对话框ProgressDialog</h3><p>​        有时，分线程在处理事务期间不允许用户继续操作界面控件，但是还想提示用户“页面正在加载，请耐心等待”之类信息，必要时还会告知用户当前的处理进度，这种情况就会用到进度对话框ProgressDialog。分线程正在处理时，界面弹出进度对话框；分线程处理结束时，自动关闭进度对话框。这样既确保分线程不受干扰，又缓解了用户的焦急等待。</p>
+<p>​        进度对话框继承自提醒对话框AlertDialog，内部集成了进度条ProgressBar，既拥有AlertDialog的所有方法，又实现了ProgressBar的公开API。下面是进度对话框的常用方法。</p>
+<p>​        进度对话框继承自提醒对话框AlertDialog，内部集成了进度条ProgressBar，既拥有AlertDialog的所有方法，又实现了ProgressBar的公开API。下面是进度对话框的常用方法。</p>
+<ul>
+<li>setTitle：设置对话框的标题文本。</li>
+<li>setMessage：设置对话框的消息内容。</li>
+<li>setIcon：设置对话框的图标。</li>
+<li>setProgress：设置当前进度的数值。</li>
+<li>setSecondaryProgress：设置当前第二进度的数值。</li>
+<li>setMax：设置进度条的最大进度数值。</li>
+<li>setProgressStyle：设置进度条的样式。取值ProgressDialog.STYLE_SPINNER表示转圈风格（默认值），取值ProgressDialog.STYLE_HORIZONTAL表示长条风格。</li>
+<li>show：显示对话框。需要在各属性设置完成后调用show方法。</li>
+<li>isShowing：判断对话框是否正在显示。</li>
+<li>dismiss：关闭对话框。</li>
+</ul>
+<p>​       静态的show方法：简化的调用方法，一句代码就搞定进度对话框的设置与显示。可同时指定标题文字和消息内容，进度条样式为默认的转圈，示例代码如下：</p>
+<p><img src="/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/2.png" alt></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ProgressDialogActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityProgressDialogBinding</span>&gt;</span>(),</span><br><span class="line">    AdapterView.OnItemSelectedListener &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> descArray = arrayOf(<span class="string">"圆圈进度"</span>, <span class="string">"水平进度条"</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> styleArray = arrayOf(ProgressDialog.STYLE_SPINNER, ProgressDialog.STYLE_HORIZONTAL)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mStyleDesc:String = <span class="string">""</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mProgressDialog:ProgressDialog? = <span class="literal">null</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityProgressDialogBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> styleAdapter = ArrayAdapter&lt;String&gt;(<span class="keyword">this</span><span class="symbol">@ProgressDialogActivity</span>,R.layout.item_select,descArray)</span><br><span class="line">        spStyle.prompt = <span class="string">"请选择对话框样式"</span></span><br><span class="line">        spStyle.adapter = styleAdapter</span><br><span class="line">        spStyle.onItemSelectedListener = <span class="keyword">this</span><span class="symbol">@ProgressDialogActivity</span></span><br><span class="line">        spStyle.setSelection(<span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?, view: <span class="type">View</span>?, position: <span class="type">Int</span>, id: <span class="type">Long</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (mProgressDialog == <span class="literal">null</span> || !mProgressDialog!!.isShowing)&#123;</span><br><span class="line">            mStyleDesc = descArray[position]</span><br><span class="line">            <span class="keyword">var</span> style = styleArray[position]</span><br><span class="line">            <span class="keyword">if</span> (style == ProgressDialog.STYLE_SPINNER)&#123;</span><br><span class="line">                mProgressDialog = ProgressDialog.show(<span class="keyword">this</span>,<span class="string">"请稍后"</span>,<span class="string">"正在努力加载页面"</span>)</span><br><span class="line">                mHandler.postDelayed(mCloseDialog,<span class="number">1500</span>)</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                mProgressDialog = ProgressDialog(<span class="keyword">this</span>)</span><br><span class="line">                mProgressDialog!!.setTitle(<span class="string">"请稍后"</span>)</span><br><span class="line">                mProgressDialog!!.setMessage(<span class="string">"正在努力加载页面"</span>)</span><br><span class="line">                mProgressDialog!!.max = <span class="number">100</span></span><br><span class="line">                mProgressDialog!!.setProgressStyle(style)</span><br><span class="line">                mProgressDialog!!.show()</span><br><span class="line">                RefreshThread().start()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mCloseDialog = Runnable &#123;</span><br><span class="line">        <span class="keyword">if</span> (mProgressDialog!!.isShowing)&#123;</span><br><span class="line">            mProgressDialog!!.dismiss()</span><br><span class="line">            mBinding.tvResult.text = <span class="string">"<span class="subst">$&#123;DateUtil.getNowTime()&#125;</span> <span class="subst">$&#123;mStyleDesc&#125;</span>加载完成"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onNothingSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?)</span></span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">RefreshThread</span> :<span class="type">Thread</span></span>()&#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">run</span><span class="params">()</span></span> &#123;</span><br><span class="line">            <span class="keyword">for</span>(i <span class="keyword">in</span> <span class="number">0</span>..<span class="number">9</span>)&#123;</span><br><span class="line">                <span class="keyword">val</span> message = Message.obtain()</span><br><span class="line">                message.what = <span class="number">0</span></span><br><span class="line">                message.arg1 = i * <span class="number">10</span></span><br><span class="line">                mHandler.sendMessage(message)</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    sleep(<span class="number">500</span>)</span><br><span class="line">                &#125; <span class="keyword">catch</span> (e:InterruptedException) &#123;</span><br><span class="line">                    e.printStackTrace()</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            mHandler.sendEmptyMessage(<span class="number">1</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mHandler = <span class="keyword">object</span>: Handler(Looper.getMainLooper())&#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">handleMessage</span><span class="params">(msg: <span class="type">Message</span>)</span></span> &#123;</span><br><span class="line">            <span class="keyword">when</span>(msg.what)&#123;</span><br><span class="line">                <span class="number">0</span> -&gt; mProgressDialog?.progress = msg.arg1</span><br><span class="line">                <span class="number">1</span> -&gt; post(mCloseDialog)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/3.png" alt></p>
+<p>​        Android默认的进度条并不好看，而且没有自带的进度文字提示，实际开发中往往要重新定制，使之符合用户的视觉习惯。主要的改造方向有两种：在长条进度中增加文字说明和在圆圈进度中增加文字说明。</p>
+<p>自定义view:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TextProgressBar</span></span>(context: Context,attributeSet: AttributeSet):ProgressBar(context,attributeSet,<span class="number">0</span>) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mProgressText = <span class="string">""</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mPaint = Paint()</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mTextColor = Color.WHITE</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mTextSize = <span class="number">30F</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span> &#123;</span><br><span class="line">        mPaint.color = Color.WHITE</span><br><span class="line">        mPaint.textSize = <span class="number">30f</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setProgressText</span><span class="params">(text:<span class="type">String</span>)</span></span>&#123;</span><br><span class="line">        mProgressText = text</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">getProgressText</span><span class="params">()</span></span>:String&#123;</span><br><span class="line">        <span class="keyword">return</span> mProgressText</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setTextColor</span><span class="params">(textColor:<span class="type">Int</span>)</span></span>&#123;</span><br><span class="line">        mTextColor = textColor</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">getTextColor</span><span class="params">()</span></span>:<span class="built_in">Int</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mTextColor</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setTextSize</span><span class="params">(textSize:<span class="type">Float</span>)</span></span>&#123;</span><br><span class="line">        mTextSize = textSize</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">getTextSize</span><span class="params">()</span></span>:<span class="built_in">Float</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mTextSize</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDraw</span><span class="params">(canvas: <span class="type">Canvas</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onDraw(canvas)</span><br><span class="line">        <span class="keyword">val</span> rect = Rect()</span><br><span class="line">        mPaint.getTextBounds(mProgressText,<span class="number">0</span>,mProgressText.length,rect)</span><br><span class="line">        <span class="keyword">val</span> x = (width/<span class="number">2</span>) - rect.centerX()</span><br><span class="line">        <span class="keyword">val</span> y = (height/<span class="number">2</span>) - rect.centerY()</span><br><span class="line">        canvas?.drawText(mProgressText, x.toFloat(), y.toFloat(),mPaint)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>xml:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".ui.ProgressTextActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">RelativeLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"40dp"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/tv_progress"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_alignParentLeft</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"请选择进度值 "</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Spinner</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/sp_progress"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_toRightOf</span>=<span class="string">"@+id/tv_progress"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"left|center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:spinnerMode</span>=<span class="string">"dialog"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">RelativeLayout</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">com.example.networkclient.widget.TextProgressBar</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/tpb_progress"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"30dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">style</span>=<span class="string">"?android:attr/progressBarStyleHorizontal"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:progressDrawable</span>=<span class="string">"@drawable/progress_green"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>activity:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ProgressTextActivity</span>:<span class="type">Activity</span></span>()&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> mBinding:ActivityProgressTextBinding</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> progressArray = arrayOf(<span class="string">"0"</span>, <span class="string">"10"</span>, <span class="string">"20"</span>, <span class="string">"30"</span>, <span class="string">"40"</span>, <span class="string">"50"</span>,</span><br><span class="line">        <span class="string">"60"</span>, <span class="string">"70"</span>, <span class="string">"80"</span>, <span class="string">"90"</span>, <span class="string">"100"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        mBinding = ActivityProgressTextBinding.inflate(layoutInflater)</span><br><span class="line">        setContentView(mBinding.root)</span><br><span class="line">        initBinding()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> progressAdapter = ArrayAdapter&lt;String&gt;(<span class="keyword">this</span><span class="symbol">@ProgressTextActivity</span>,R.layout.item_select,progressArray)</span><br><span class="line">        mBinding.spProgress.prompt = <span class="string">"请选择进度值"</span></span><br><span class="line">        mBinding.spProgress.adapter = progressAdapter</span><br><span class="line">        mBinding.spProgress.onItemSelectedListener = DividerSelectedListener()</span><br><span class="line">        mBinding.spProgress.setSelection(<span class="number">0</span>)</span><br><span class="line">        Toast.makeText(<span class="keyword">this</span><span class="symbol">@ProgressTextActivity</span>,<span class="string">"启动"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">DividerSelectedListener</span>:<span class="type">AdapterView.OnItemSelectedListener&#123;</span></span></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?, view: <span class="type">View</span>?, position: <span class="type">Int</span>, id: <span class="type">Long</span>)</span></span> &#123;</span><br><span class="line">            <span class="keyword">val</span> progress = progressArray[position].toInt()</span><br><span class="line">            mBinding.tpbProgress.progress = progress</span><br><span class="line">            mBinding.tpbProgress.setProgressText(<span class="string">"当前处理进度为：<span class="variable">$progress</span>"</span>)</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span><span class="symbol">@ProgressTextActivity</span>,<span class="string">"启动"</span>,Toast.LENGTH_SHORT).show()</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onNothingSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?)</span></span> &#123;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/4.png" alt></p>
+<p>自定义view</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TextProgressCircle</span></span>(context: Context,attributeSet: AttributeSet):View(context,attributeSet) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> mPaintBack:Paint</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> mPaintFore:Paint</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> mPaintText:Paint</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mLineWidth = <span class="number">10f</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mLineColor = Color.GREEN</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mTextSize = <span class="number">50f</span></span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> rectF: RectF</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mProgress = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span> &#123;</span><br><span class="line">        mPaintBack = Paint()</span><br><span class="line">        mPaintBack.isAntiAlias = <span class="literal">true</span></span><br><span class="line">        mPaintBack.color = Color.LTGRAY</span><br><span class="line">        mPaintBack.strokeWidth = mLineWidth</span><br><span class="line">        mPaintBack.style = Paint.Style.STROKE</span><br><span class="line"></span><br><span class="line">        mPaintFore = Paint()</span><br><span class="line">        mPaintFore.isAntiAlias = <span class="literal">true</span></span><br><span class="line">        mPaintFore.color = mLineColor</span><br><span class="line">        mPaintFore.strokeWidth = mLineWidth</span><br><span class="line">        mPaintFore.style = Paint.Style.STROKE</span><br><span class="line"></span><br><span class="line">        mPaintText = Paint()</span><br><span class="line">        mPaintText.isAntiAlias = <span class="literal">true</span></span><br><span class="line">        mPaintText.color = Color.BLUE</span><br><span class="line">        mPaintText.textSize = mTextSize</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDraw</span><span class="params">(canvas: <span class="type">Canvas</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onDraw(canvas)</span><br><span class="line">        <span class="keyword">val</span> width = measuredWidth</span><br><span class="line">        <span class="keyword">val</span> height = measuredHeight</span><br><span class="line">        <span class="keyword">if</span> (width &lt;= <span class="number">0</span> || height &lt;= <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">val</span> diameter = Math.min(width,height)</span><br><span class="line">        rectF = RectF(</span><br><span class="line">            (width - diameter)/<span class="number">2</span> + mLineWidth,</span><br><span class="line">            (height - diameter)/<span class="number">2</span> + mLineWidth,</span><br><span class="line">            (width + diameter)/<span class="number">2</span> - mLineWidth,</span><br><span class="line">            (height + diameter)/<span class="number">2</span> - mLineWidth</span><br><span class="line">        )</span><br><span class="line">        canvas?.drawArc(rectF,<span class="number">0F</span>,<span class="number">360F</span>,<span class="literal">false</span>,mPaintBack)</span><br><span class="line">        canvas?.drawArc(rectF,<span class="number">0F</span>,mProgress*<span class="number">360F</span>/<span class="number">100</span>,<span class="literal">false</span>,mPaintFore)</span><br><span class="line">        <span class="keyword">val</span> text = <span class="string">"<span class="variable">$mProgress</span>%"</span></span><br><span class="line">        <span class="keyword">val</span> rect = Rect()</span><br><span class="line">        mPaintText.getTextBounds(text,<span class="number">0</span>,text.length,rect)</span><br><span class="line">        <span class="keyword">val</span> x = (getWidth() / <span class="number">2</span>) - rect.centerX()</span><br><span class="line">        <span class="keyword">val</span> y = (getHeight() / <span class="number">2</span>) - rect.centerY()</span><br><span class="line">        canvas?.drawText(text,x.toFloat(),y.toFloat(),mPaintText)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setProgress</span><span class="params">(progress:<span class="type">Int</span>,textSize:<span class="type">Float</span>)</span></span>&#123;</span><br><span class="line">        mProgress = progress</span><br><span class="line">        <span class="keyword">if</span> (textSize &gt; <span class="number">0</span>)&#123;</span><br><span class="line">            mTextSize = textSize</span><br><span class="line">            mPaintText.textSize = mTextSize</span><br><span class="line">        &#125;</span><br><span class="line">        invalidate()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setProgressStyle</span><span class="params">(lineWidth:<span class="type">Float</span>,lineColor:<span class="type">Int</span>)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (lineWidth &gt; <span class="number">0</span>)&#123;</span><br><span class="line">            mLineWidth = lineWidth</span><br><span class="line">            mPaintFore.strokeWidth = mLineWidth</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (lineColor &gt; <span class="number">0</span>)&#123;</span><br><span class="line">            mLineColor = lineColor</span><br><span class="line">            mPaintFore.color = mLineColor</span><br><span class="line">        &#125;</span><br><span class="line">        invalidate()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>xml:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:padding</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".ui.ProgressCircleActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">RelativeLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"40dp"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/tv_progress"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_alignParentLeft</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"请选择进度值 "</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Spinner</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/sp_progress"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_toRightOf</span>=<span class="string">"@+id/tv_progress"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"left|center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:spinnerMode</span>=<span class="string">"dialog"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">RelativeLayout</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">com.example.networkclient.widget.TextProgressCircle</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/tpc_progress"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"200dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_gravity</span>=<span class="string">"center"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>activity</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ProgressCircleActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityProgressCircleBinding</span>&gt;</span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> progressArray = arrayOf(<span class="string">"0"</span>, <span class="string">"10"</span>, <span class="string">"20"</span>, <span class="string">"30"</span>, <span class="string">"40"</span>, <span class="string">"50"</span>,</span><br><span class="line">        <span class="string">"60"</span>, <span class="string">"70"</span>, <span class="string">"80"</span>, <span class="string">"90"</span>, <span class="string">"100"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityProgressCircleBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> adapter = ArrayAdapter&lt;String&gt;(<span class="keyword">this</span><span class="symbol">@ProgressCircleActivity</span>,R.layout.item_select,progressArray)</span><br><span class="line">        spProgress.prompt = <span class="string">"请选择进度值"</span></span><br><span class="line">        spProgress.adapter = adapter</span><br><span class="line">        spProgress.onItemSelectedListener = DividerSelectedListener()</span><br><span class="line">        spProgress.setSelection(<span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">DividerSelectedListener</span>:<span class="type">AdapterView.OnItemSelectedListener&#123;</span></span></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?, view: <span class="type">View</span>?, position: <span class="type">Int</span>, id: <span class="type">Long</span>)</span></span> &#123;</span><br><span class="line">            <span class="keyword">var</span> progress = progressArray[position].toInt()</span><br><span class="line">            mBinding.tpcProgress.setProgress(progress,-<span class="number">1F</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onNothingSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/5.png" alt></p>
+<h3 id="异步任务AsyncTask"><a href="#异步任务AsyncTask" class="headerlink" title="异步任务AsyncTask"></a>异步任务AsyncTask</h3><p>​        Thread+Handler方式虽然能够实现多线程的通信处理，但是写代码颇为麻烦，不但调用流程很烦琐，而且处理代码跟活动页面代码混在一起，非常不宜维护。基于以上问题，Android提供了AsyncTask这个轻量级的异步任务工具，内部已经封装好Thread+Handler的线程通信机制，开发者只需按部就班地编写业务代码，无须关心线程通信的复杂流程。<strong>AsyncTask通常用于网络访问操作，包括HTTP接口调用、文件下载与上传等</strong>。</p>
+<p>​        AsyncTask是一个模板类（AsyncTask&lt;Params, Progress, Result&gt;），<strong>从它派生而来的新类需要指定模板的参数类型</strong>。下面来看模板参数说明。</p>
+<ul>
+<li><strong>Params</strong>：任务启动时的输入参数，比如HTTP访问的URL地址、请求报文等。可设置为String类型或自定义的数据结构。</li>
+<li><strong>Progress</strong>：任务执行过程中的进度。一般设置为Integer类型，表示当前处理进度。</li>
+<li><strong>Result</strong>：任务执行完的结果参数，比如HTTP调用的执行结果、返回报文等。可设置为String类型或自定义的数据结构。</li>
+</ul>
+<p>开发者自定义的任务类需要实现以下方法。</p>
+<ul>
+<li><strong>onPreExecute</strong>：准备执行任务时触发。该方法在doInBackground方法执行之前调用。</li>
+<li><strong>doInBackground</strong>：在后台执行的业务处理。网络请求等异步处理操作都放在该方法中，输入参数对应execute方法的输入参数，输出参数对应onPostExecute方法的输入参数。<strong>注意，该方法运行于分线程，不能操作界面，其他方法都能操作界面。</strong></li>
+<li><strong>onProgressUpdate</strong>：在doInBackground方法中调用publishProgress方法时触发。该方法通常用于在处理过程中刷新进度条。</li>
+<li><strong>onPostExecute</strong>：任务执行完成时触发，方法内部可在页面上显示处理结果。该方法在doInBackground方法执行完毕后调用，输入参数对应doInBackground方法的输出参数。</li>
+<li><strong>onCancelled</strong>：调用任务对象的cancel方法时触发。表示取消任务并返回。</li>
+</ul>
+<p>另外，AsyncTask有如下可直接调用的启停方法。</p>
+<ul>
+<li><p><strong>execute</strong>：开始执行异步处理任务。</p>
+</li>
+<li><p><strong>executeOnExecutor</strong>：以指定的线程池模式执行任务。AsyncTask内置的线程池模式有以下两个。</p>
+<ol>
+<li>AsyncTask.THREAD_POOL_EXECUTOR：表示异步线程池（各任务间没有先后顺序，即有可能某任务在后面调用却先执行）。</li>
+<li>AsyncTask.SERIAL_EXECUTOR：表示同步线程池（各任务按照代码调用的先后顺序依次排队等待执行），execute方法默认使用SERIAL_EXECUTOR。</li>
+</ol>
+</li>
+<li><p><strong>publishProgress</strong>：更新进度。该方法只能在doInBackground方法中调用，调用后会触发onProgressUpdate方法。</p>
+</li>
+<li><p><strong>get</strong>：获取处理结果。</p>
+</li>
+<li><p><strong>cancel</strong>：取消任务。该方法调用后，doInBackground方法中的处理可能不会马上停止；若想立即停止处理，则可在doInBackground方法中加入isCancelled的判断。</p>
+</li>
+<li><p><strong>isCancelled</strong>：判断该任务是否取消。true表示取消，false表示未取消。getStatus：获取任务状态。任务状态的取值说明见表:</p>
+<p><img src="/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/6.png" alt></p>
+</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ProgressAsyncTask</span></span>(title:String):AsyncTask&lt;String,<span class="built_in">Int</span>,String&gt;() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mBook:String = title</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> mListener:OnProgressListener</span><br><span class="line"></span><br><span class="line">    <span class="keyword">companion</span> <span class="keyword">object</span>&#123;</span><br><span class="line">        <span class="comment">//定义一个进度更新的监听器接口</span></span><br><span class="line">        <span class="class"><span class="keyword">interface</span> <span class="title">OnProgressListener</span></span>&#123;</span><br><span class="line">            <span class="comment">//在线程处理结束时触发</span></span><br><span class="line">            <span class="function"><span class="keyword">fun</span> <span class="title">onFinish</span><span class="params">(result:<span class="type">String</span>)</span></span></span><br><span class="line">            <span class="comment">//在线程处理取消时触发</span></span><br><span class="line">            <span class="function"><span class="keyword">fun</span> <span class="title">onCancel</span><span class="params">(result:<span class="type">String</span>)</span></span></span><br><span class="line">            <span class="comment">//在线程处理过程中更新进度时触发</span></span><br><span class="line">            <span class="function"><span class="keyword">fun</span> <span class="title">onUpdate</span><span class="params">(request:<span class="type">String</span>,progress:<span class="type">Int</span>,subProgress:<span class="type">Int</span>)</span></span></span><br><span class="line">            <span class="comment">//在线程处理开始时触发</span></span><br><span class="line">            <span class="function"><span class="keyword">fun</span> <span class="title">onBegin</span><span class="params">(request:<span class="type">String</span>)</span></span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setOnProgressListener</span><span class="params">(listener: <span class="type">OnProgressListener</span>)</span></span>&#123;</span><br><span class="line">        mListener = listener</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 在后台执行的业务处理</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> params Array&lt;out String?&gt; 输入参数对应execute方法的输入参数</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> String 输出参数对应onPostExecute方法的输入参数</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">doInBackground</span><span class="params">(<span class="keyword">vararg</span> params: <span class="type">String</span>?)</span></span>: String? &#123;</span><br><span class="line">        <span class="keyword">var</span> ratio = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> (ratio <span class="keyword">in</span> <span class="number">0</span> .. <span class="number">100</span> step <span class="number">5</span>)&#123;</span><br><span class="line">            <span class="comment">//睡眠200毫秒模拟网络通信处理</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">200</span>)</span><br><span class="line">            &#125;<span class="keyword">catch</span> (e:Exception)&#123;</span><br><span class="line">                e.printStackTrace()</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//通报处理进展，调用该方法会触发onProgressUpdate函数</span></span><br><span class="line">            publishProgress(ratio)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> params[<span class="number">0</span>]</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 准备执行任务时触发。该方法在doInBackground方法执行之前调用。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onPreExecute</span><span class="params">()</span></span> &#123;</span><br><span class="line">        mListener.onBegin(mBook)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 任务执行完成时触发，方法内部可在页面上显示处理结果。该方法在doInBackground方法执行完毕后调用，</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> result String 输入参数对应doInBackground方法的输出参数。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onPostExecute</span><span class="params">(result: <span class="type">String</span>?)</span></span> &#123;</span><br><span class="line">        mListener.onFinish(result!!)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 在doInBackground方法中调用publishProgress方法时触发。该方法通常用于在处理过程中刷新进度条。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> values Array&lt;out Int?&gt;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onProgressUpdate</span><span class="params">(<span class="keyword">vararg</span> values: <span class="type">Int</span>?)</span></span> &#123;</span><br><span class="line">        mListener.onUpdate(mBook,values[<span class="number">0</span>]!!,<span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 调用任务对象的cancel方法时触发。表示取消任务并返回。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> result String</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCancelled</span><span class="params">(result: <span class="type">String</span>?)</span></span> &#123;</span><br><span class="line">        mListener.onCancel(result!!)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:padding</span>=<span class="string">"5dp"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">RelativeLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"40dp"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/tv_style"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_alignParentLeft</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:text</span>=<span class="string">"请选择要加载的小说 "</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">Spinner</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:id</span>=<span class="string">"@+id/sp_style"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:layout_toRightOf</span>=<span class="string">"@+id/tv_style"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:gravity</span>=<span class="string">"left|center"</span></span></span><br><span class="line"><span class="tag">                <span class="attr">android:spinnerMode</span>=<span class="string">"dialog"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">RelativeLayout</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">ProgressBar</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/pb_async"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">style</span>=<span class="string">"?android:attr/progressBarStyleHorizontal"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"30dp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/tv_async"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">"这里查看加载进度"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>activity:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AsyncTaskActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityAsyncTaskBinding</span>&gt;</span>(),ProgressAsyncTask.Companion.OnProgressListener &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mShowMode = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> BAR_HORIZONTAL = <span class="number">1</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> DIALOG_CIRCLE = <span class="number">2</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> DIALOG_HORIZONTAL = <span class="number">3</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mDialog:ProgressDialog? = <span class="literal">null</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> bookArray = arrayOf(<span class="string">"三国演义"</span>, <span class="string">"西游记"</span>, <span class="string">"红楼梦"</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> styleArray = arrayOf(BAR_HORIZONTAL, DIALOG_CIRCLE, DIALOG_HORIZONTAL)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">inner</span> <span class="class"><span class="keyword">class</span> <span class="title">StyleSelectedListener</span>:<span class="type">AdapterView.OnItemSelectedListener&#123;</span></span></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onItemSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?, view: <span class="type">View</span>?, position: <span class="type">Int</span>, id: <span class="type">Long</span>)</span></span> &#123;</span><br><span class="line">            <span class="comment">//启动书籍加载线程</span></span><br><span class="line">            startTask(styleArray[position],bookArray[position])</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onNothingSelected</span><span class="params">(parent: <span class="type">AdapterView</span>&lt;*&gt;?)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityAsyncTaskBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> adapter = ArrayAdapter&lt;String&gt;(<span class="keyword">this</span><span class="symbol">@AsyncTaskActivity</span>,R.layout.item_select,bookArray)</span><br><span class="line">        spStyle.prompt = <span class="string">"请选择要加载的小说"</span></span><br><span class="line">        spStyle.adapter = adapter</span><br><span class="line">        spStyle.onItemSelectedListener = StyleSelectedListener()</span><br><span class="line">        spStyle.setSelection(<span class="number">0</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">startTask</span><span class="params">(mode:<span class="type">Int</span>,msg:<span class="type">String</span>)</span></span>&#123;</span><br><span class="line">        mShowMode = mode</span><br><span class="line">        <span class="keyword">val</span> asyncTask = ProgressAsyncTask(msg)</span><br><span class="line">        asyncTask.setOnProgressListener(<span class="keyword">this</span>)</span><br><span class="line">        asyncTask.execute(msg)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">closeDialog</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mDialog != <span class="literal">null</span> &amp;&amp; mDialog!!.isShowing)&#123;</span><br><span class="line">            mDialog!!.dismiss()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onFinish</span><span class="params">(result: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">var</span> desc = <span class="string">"您要阅读的《<span class="variable">$result</span>》已经加载完毕"</span></span><br><span class="line">        mBinding.tvAsync.text = desc</span><br><span class="line">        closeDialog()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCancel</span><span class="params">(result: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">var</span> desc = <span class="string">"您要阅读的《<span class="variable">$result</span>》已经取消加载"</span></span><br><span class="line">        mBinding.tvAsync.text = desc</span><br><span class="line">        closeDialog()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onUpdate</span><span class="params">(request: <span class="type">String</span>, progress: <span class="type">Int</span>, subProgress: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">var</span> desc = <span class="string">"<span class="subst">$&#123;request&#125;</span>当前加载进度为<span class="subst">$&#123;progress&#125;</span>%"</span></span><br><span class="line">        mBinding.tvAsync.text = desc</span><br><span class="line">        <span class="keyword">if</span> (mShowMode == BAR_HORIZONTAL)&#123;</span><br><span class="line">            mBinding.pbAsync.progress = progress</span><br><span class="line">            mBinding.pbAsync.secondaryProgress = subProgress</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span> (mShowMode == DIALOG_HORIZONTAL)&#123;</span><br><span class="line">            mDialog?.progress = progress</span><br><span class="line">            mDialog?.secondaryProgress = subProgress</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onBegin</span><span class="params">(request: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">        mBinding.tvAsync.text = <span class="string">"<span class="subst">$&#123;request&#125;</span>开始加载..."</span></span><br><span class="line">        <span class="keyword">if</span> (mDialog == <span class="literal">null</span> || mDialog!!.isShowing)&#123;</span><br><span class="line">            <span class="keyword">if</span> (mShowMode == DIALOG_CIRCLE)&#123;</span><br><span class="line">                mDialog = ProgressDialog.show(<span class="keyword">this</span>,<span class="string">"稍等"</span>,<span class="string">"<span class="subst">$&#123;request&#125;</span>页面加载中..."</span>)</span><br><span class="line">            &#125;<span class="keyword">else</span> <span class="keyword">if</span> (mShowMode == DIALOG_HORIZONTAL)&#123;</span><br><span class="line">                mDialog = ProgressDialog(<span class="keyword">this</span>)</span><br><span class="line">                mDialog?.setTitle(<span class="string">"稍等"</span>)</span><br><span class="line">                mDialog?.setMessage(<span class="string">"<span class="subst">$&#123;request&#125;</span>页面加载中"</span>)</span><br><span class="line">                mDialog?.setIcon(R.drawable.ic_launcher_background)</span><br><span class="line">                mDialog?.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)</span><br><span class="line">                mDialog?.show()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/7.png" alt></p>
+<p>AsyncTask的设计不甚完美，使用过程中要注意以下两点：</p>
+<ol>
+<li>AsyncTask默认的线程池模式是SERIAL_EXECUTOR，即按照先后顺序依次调用。假设有两个网络请求任务，第一个是文件下载，第二个是接口调用，那么接口调用任务会等待文件下载完毕后执行，而不是在调用时立刻执行。</li>
+<li>由于顺序模式存在排队等待的情况，因此Android提供了executeOnExecutor方法，允许开发者指定任务线程池。不过AsyncTask自带的THREAD_POOL_EXECUTOR也存在瓶颈，该线程池模式的最大线程个数是CPU个数的两倍再加1（参见AsyncTask的源码“MAXIMUM_POOL_SIZE =CPU_COUNT * 2 + 1”）。如果用户手机采用了双核CPU，那么AsyncTask的最大并发线程数为2<em>2+1=5个，此时若并发任务数超过5个，则后面进来的任务只能排队等待。如果用户手机采用的是四核CPU，AsyncTask的最大并发线程数就为4</em>2+1=9个，因此CPU个数越多，App运行越流畅是有软件依据的。</li>
+</ol>
+<h3 id="异步服务IntentService"><a href="#异步服务IntentService" class="headerlink" title="异步服务IntentService"></a>异步服务IntentService</h3><p>​        服务Service虽然是在后台运行，但跟Activity一样都在主线程中，如果后台运行着的服务挂起，用户界面就会卡着不动，俗称死机。后台服务经常要做一些耗时操作，比如批量处理、文件导入、网络访问等，此时不应该影响用户在界面上的操作，而应该开启分线程执行耗时操作。可以通过Thread+Handler机制实现异步处理，也可以通过Android封装好的异步服务IntentService处理。</p>
+<p>​        使用IntentService有两个好处，一个是免去复杂的消息通信流程；另一个是处理完成后无须手工停止服务，开发者可集中精力进行业务逻辑的编码。话虽如此，我们还是有必要了解一下IntentService的具体实现，入了这行一般都要干上许多年，晚学不如早学。<strong>前面提到，处理器对象handler位于主线程中，分线程通过Handler对象通知主线程，然后主线程执行Handler对象的handleMessage方法刷新界面。反过来也是允许的，即处理器对象handler位于分线程中，主线程通过Handler对象通知分线程，然后分线程执行Handler对象的handleMessage方法进行耗时处理。</strong></p>
+<p>具体请看IntentService的实现步骤。</p>
+<ol>
+<li>创建异步服务时，初始化分线程的Handler对象，注意下面源码的thread.getLooper方法：</li>
+</ol>
+<p><img src="/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/8.png" alt></p>
+<ol start="2">
+<li>异步服务开始运行时，通过Handler对象将请求数据送给分线程，源码如下：</li>
+</ol>
+<p><img src="/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/9.png" alt></p>
+<ol start="3">
+<li>分线程在Handler对象的handleMessage方法中，先通过onHandleIntent方法执行具体的事务处理，再调用stopSelf结束指定标识的服务。源码如下：</li>
+</ol>
+<p><img src="/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/10.png" alt></p>
+<p>了解IntentService的实现思想后，使用过程中需要注意以下4点：</p>
+<ol>
+<li>增加一个构造方法，并分配内部线程的唯一名称。</li>
+<li>onStartCommand方法要调用父类的onStartCommand，因为父类方法会向分线程传递消息。</li>
+<li>耗时处理的业务代码要写在onHandleIntent方法中，不可写在onStartCommand方法中。因为<strong>onHandleIntent方法位于分线程，而onStartCommand方法位于主线程。</strong></li>
+<li>IntentService实现了onStart方法，却未实现onBind方法，意味着异步服务只能用普通方式启停，不能用绑定方式启停。</li>
+</ol>
+<p>定义一个异步服务：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AsyncService</span>:<span class="type">IntentService</span></span>(<span class="string">"com.example.AsyncService"</span>) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onStartCommand</span><span class="params">(intent: <span class="type">Intent</span>?, flags: <span class="type">Int</span>, startId: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> &#123;</span><br><span class="line">        Log.d(<span class="string">"AsyncService"</span>,<span class="string">"onStartCommand"</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onStartCommand(intent, flags, startId)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onHandleIntent</span><span class="params">(intent: <span class="type">Intent</span>?)</span></span> &#123;</span><br><span class="line">        Log.d(<span class="string">"AsyncService"</span>,<span class="string">"begin onHandleIntent"</span>)</span><br><span class="line">        <span class="comment">//在onHandleIntent这里执行耗时任务，不会影响页面的处理</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">30</span>*<span class="number">1000</span>)</span><br><span class="line">        &#125; <span class="keyword">catch</span> (e:Exception)&#123;</span><br><span class="line">            e.printStackTrace()</span><br><span class="line">        &#125;</span><br><span class="line">        Log.d(<span class="string">"AsyncService"</span>,<span class="string">"end onHandleIntent"</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>别忘了注册服务，否则不生效：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">service</span> <span class="attr">android:name</span>=<span class="string">".service.AsyncService"</span> <span class="attr">android:enabled</span>=<span class="string">"true"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>布局：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:orientation</span>=<span class="string">"vertical"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">tools:context</span>=<span class="string">".ui.IntentServiceActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/btn_intent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:gravity</span>=<span class="string">"center"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:padding</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">"点我看看有没有反应"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/tv_intent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:padding</span>=<span class="string">"5dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:text</span>=<span class="string">"这里查看点击结果"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textColor</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:textSize</span>=<span class="string">"17sp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Activity:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IntentServiceActivity</span> : <span class="type">BaseActivity</span>&lt;<span class="type">ActivityIntentServiceBinding</span>&gt;</span>(),View.OnClickListener &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> handler = Handler(Looper.getMainLooper())</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> ActivityIntentServiceBinding.<span class="title">initBinding</span><span class="params">()</span></span> &#123;</span><br><span class="line">        btnIntent.setOnClickListener(<span class="keyword">this</span><span class="symbol">@IntentServiceActivity</span>)</span><br><span class="line">        handler.postDelayed(mService,<span class="number">100</span>)</span><br><span class="line">        Log.d(<span class="string">"activity"</span>,getSystemVersion())</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onClick</span><span class="params">(v: <span class="type">View</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (v?.id == mBinding.btnIntent.id)&#123;</span><br><span class="line">            mBinding.tvIntent.text = <span class="string">"<span class="subst">$&#123;DateUtil.getNowTime()&#125;</span>您轻轻点了一下下(异步服务正在运行，不影响您在界面操作)"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> mService = Runnable &#123;</span><br><span class="line">        <span class="keyword">val</span> intent = Intent(<span class="keyword">this</span>,AsyncService::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>)</span></span><br><span class="line">        startService(intent)</span><br><span class="line">        Log.d(<span class="string">"Activity"</span>,<span class="string">"mService run..."</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">getSystemVersion</span><span class="params">()</span></span>:String&#123;</span><br><span class="line">        <span class="comment">// 系统版本号，例如：10，亦即表示Android 10</span></span><br><span class="line">        <span class="keyword">return</span>  Build.VERSION.RELEASE</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/11.png" alt></p>
+<h2 id="HTTP接口访问"><a href="#HTTP接口访问" class="headerlink" title="HTTP接口访问"></a>HTTP接口访问</h2><h3 id="网络连接检查"><a href="#网络连接检查" class="headerlink" title="网络连接检查"></a>网络连接检查</h3><p>​        谈到网络通信，首先要检查当前是否处于上网状态，然后进行网络访问操作。如果当前网络连接不可用，那么无须执行网络访问，直接提示用户“请开启网络连接”就好了。要检测网络连接，Android会要求App具备上网权限，所以首先打开AndroidManifest.xml，加上下面几行网络权限配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 互联网 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.INTERNET"</span> /&gt;</span> <span class="comment">&lt;!-- 查看网络状态 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.ACCESS_NETWORK_STATE"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.ACCESS_WIFI_STATE"</span> /&gt;</span> <span class="comment">&lt;!-- 定位 --&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​        添加网络权限配置后，可利用连接管理器ConnectivityManager检测网络连接，该工具的对象从系统服务Context.CONNECTIVITY_SERVICE中获取。调用连接管理器对象的getActiveNetworkInfo方法，返回一个NetworkInfo实例，通过该实例可获取详细的网络连接信息。下面是NetworkInfo的常用方法。</p>
+<ul>
+<li>getType：获取网络类型。网络类型的取值说明见表10-2。</li>
+</ul>
+<p><img src="/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/12.png" alt></p>
+<ul>
+<li>getState：获取网络状态。网络状态的取值说明见表10-3</li>
+</ul>
+<p><img src="/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/13.png" alt></p>
+<ul>
+<li>getSubtype：获取网络子类型。当网络类型为数据连接时，子类型为2G/3G/4G的细分类型，如CDMA、EVDO、HSDPA、LTE等。网络子类型的取值说明见表10-4。</li>
+</ul>
+<p><img src="/2022/07/11/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/14.png" alt></p>
+<h2 id="套接字Socket"><a href="#套接字Socket" class="headerlink" title="套接字Socket"></a>套接字Socket</h2><h3 id="网络地址InetAddress"><a href="#网络地址InetAddress" class="headerlink" title="网络地址InetAddress"></a>网络地址InetAddress</h3><p>​        有些时候，手机明明可以上网，App也加了网络访问权限，可是HTTP请求某个地址却总是连不上。遇到这种情况，很可能是把对方的地址弄错了，导致尝试连接一个根本连不了的地址。所以有必要在发起请求前检查一下能否与对方地址建立连接。</p>
+<p>​        检查设备自身与某个网络地址的连通性用到了InetAddress工具，这是对网络地址的一个封装。下面介绍该工具的主要方法说明。</p>
+<ul>
+<li>getByName：根据主机IP或主机名称获取InetAddress对象。</li>
+<li>getHostAddress：获取主机的IP地址。</li>
+<li>getHostName：获取主机的名称。</li>
+<li>isReachable：判断该地址是否可到达，即是否连通。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/07/09/%E4%BD%8D%E8%BF%90%E7%AE%97%E7%AC%A6/" rel="prev" title="位运算符">
+      <i class="fa fa-chevron-left"></i> 位运算符
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/07/13/Android%E7%9B%B4%E6%92%AD%E8%8A%82%E7%9B%AE%E6%A1%88%E4%BE%8B/" rel="next" title="Android直播节目案例">
+      Android直播节目案例 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程"><span class="nav-number">1.</span> <span class="nav-text">多线程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#消息传递Message"><span class="nav-number">1.1.</span> <span class="nav-text">消息传递Message</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进度对话框ProgressDialog"><span class="nav-number">1.2.</span> <span class="nav-text">进度对话框ProgressDialog</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异步任务AsyncTask"><span class="nav-number">1.3.</span> <span class="nav-text">异步任务AsyncTask</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异步服务IntentService"><span class="nav-number">1.4.</span> <span class="nav-text">异步服务IntentService</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP接口访问"><span class="nav-number">2.</span> <span class="nav-text">HTTP接口访问</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络连接检查"><span class="nav-number">2.1.</span> <span class="nav-text">网络连接检查</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#套接字Socket"><span class="nav-number">3.</span> <span class="nav-text">套接字Socket</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络地址InetAddress"><span class="nav-number">3.1.</span> <span class="nav-text">网络地址InetAddress</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="余一"
+      src="/images/avatar5.jpg">
+  <p class="site-author-name" itemprop="name">余一</p>
+  <div class="site-description" itemprop="description">纸上得来终觉浅，绝知此事要躬行。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.bilibili.com/" title="https:&#x2F;&#x2F;www.bilibili.com&#x2F;" rel="noopener" target="_blank">Bilibili</a>
+        </li>
+    </ul>
+  </div>
+
+	
+           
+         
+         <div style="">
+  <canvas id="canvas" style="width:60%;">��ǰ�������֧��canvas������������������</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //����canvas�Ŀ���
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //�洢ʱ������
+    var data = [];
+    //�洢�˶���С��
+    var balls = [];
+    //�������Ӱ뾶
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //�洢ʱ�����֣���ʮλСʱ����λСʱ��ð�š�ʮλ���ӡ���λ���ӡ�ð�š�ʮλ���ӡ���λ������7���������
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*���ɵ�������*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*����ʱ��*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //ʱ�䷢���仯
+            if(NewData[i] !== data[i]){
+                //���仯������ֵ����data�����е������洢��changeNumArray������
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //����С��
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*����С��״̬*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*����Ҫ�˶���С��*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*��Ⱦ*/
+    function render(){
+        //���û������ȣ��ﵽ��ջ�����Ч��
+        canvas.height = 100;
+        //��Ⱦʱ��
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //��ȾС��
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //����ʱ��
+        updateDigitTime();
+        //����С��״̬
+        updateBalls();
+        //��Ⱦ
+        render();
+    },50);
+}
+
+})();
+</script>
+      </div>
+	
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">余一</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+</body>
+</html>
