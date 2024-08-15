@@ -194,6 +194,161 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2024/08/15/%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar5.jpg">
+      <meta itemprop="name" content="余一">
+      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="余一">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/08/15/%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6/" class="post-title-link" itemprop="url">事件分发机制</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-08-15 19:03:43 / 修改时间：19:06:22" itemprop="dateCreated datePublished" datetime="2024-08-15T19:03:43+08:00">2024-08-15</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="什么是事件分发"><a href="#什么是事件分发" class="headerlink" title="什么是事件分发"></a>什么是事件分发</h2><ol>
+<li>用户通过屏幕与手机交互的时候，每一次<strong>点击</strong>，<strong>长按</strong>，<strong>移动</strong>等都是一个事件。</li>
+<li>事件分发机制：某一个事件从屏幕传递给各个View，由View来使用这一事件（消费事件）或者忽略这一事件(不消费事件)，这整个过程的控制。</li>
+</ol>
+<h2 id="事件分发的对象是谁"><a href="#事件分发的对象是谁" class="headerlink" title="事件分发的对象是谁"></a>事件分发的对象是谁</h2><p>事件分发：将<strong>触摸事件</strong>传递到某个<strong>view</strong>中的过程。</p>
+<p>系统把事件封装为<strong>MotionEvent</strong>对象，事件分发的过程就是<strong>MotionEvent</strong>分发的过程。</p>
+<h3 id="事件-MotionEvent-的类型"><a href="#事件-MotionEvent-的类型" class="headerlink" title="事件(MotionEvent)的类型"></a>事件(MotionEvent)的类型</h3><ul>
+<li><strong>按下(ACTION_DOWN)</strong>：手指刚刚接触到屏幕的时候</li>
+<li><strong>移动(ACTION_MOVE)：</strong>：手指在屏幕上移动的动作</li>
+<li><strong>抬起(ACTION_UP)：</strong>手指抬起</li>
+<li><strong>取消(ACTION_CANCLE)：</strong>假设ScrollView上有个Button，点击Button不松开同时进行下滑时，由ScrollView拦截到事件，对于Butoon来说点击事件就取消了。</li>
+</ul>
+<h3 id="事件序列"><a href="#事件序列" class="headerlink" title="事件序列"></a>事件序列</h3><p>从手指<strong>按下屏幕开始</strong>，到手指<strong>离开屏幕</strong>所产生的一系列事件。如<strong>点击（按下+抬起）</strong>，<strong>滑动（按下+移动+抬起）</strong>。</p>
+<h3 id="传递层级"><a href="#传递层级" class="headerlink" title="传递层级"></a>传递层级</h3><p>在Andorid中，所有的页面都是由Activity构成的，无论Activity中包含了多少个ViewGroup,View,或者是Fragment,它们都是由一个Activity来承载的。</p>
+<p>无论手指触摸到哪个View,ViewGroup都是触摸在Activity之上的，<strong>Activity并不负责视图的控制，它只控制生命周期，和处理事件</strong>。<strong>真正控制试图的是Window。</strong>一个Activity包含一个Window,一个Window才是真正代表一个窗口，一个Window中包含一个DecorView，通过setContentView设置的就是一个DecorView的子元素。View的事件都是先经过了DecorView才传递到View的。所以传递层级是：</p>
+<p><strong>Activity    –&gt;   Window    –&gt;    DecorView(继承ViewGroup)    –&gt;    ViewGroup(分发事件)     –&gt;    View</strong></p>
+<h4 id="传递涉及的主要对象及顺序"><a href="#传递涉及的主要对象及顺序" class="headerlink" title="传递涉及的主要对象及顺序"></a>传递涉及的主要对象及顺序</h4><ul>
+<li>Activity</li>
+<li>ViewGroup</li>
+<li>View</li>
+</ul>
+<h2 id="Activity处理事件方法"><a href="#Activity处理事件方法" class="headerlink" title="Activity处理事件方法"></a>Activity处理事件方法</h2><ul>
+<li><p><strong>dispatchTouchEvent(MotionEvent ev)</strong></p>
+</li>
+<li><p><strong>onTouchEvent(MotionEvent ev)</strong></p>
+</li>
+</ul>
+<p><img src="/2024/08/15/%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6/1.png" alt></p>
+<p><strong>相关源码：</strong></p>
+<p>Activity -&gt; dispatchTouchEvent:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">dispatchTouchEvent</span><span class="params">(MotionEvent ev)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//第一次触摸屏幕时，可通过onUserInteraction()方法返回true消费事件</span></span><br><span class="line">    <span class="keyword">if</span> (ev.getAction() == MotionEvent.ACTION_DOWN) &#123;</span><br><span class="line">        onUserInteraction();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//其实就是根视图ViewGroup里面的dispatchTouchEvent()方法返回值</span></span><br><span class="line">    <span class="keyword">if</span> (getWindow().superDispatchTouchEvent(ev)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> onTouchEvent(ev);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Activity -&gt; onTouchEvent:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTouchEvent</span><span class="params">(MotionEvent event)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//点击空白部分时是否让Activity销毁</span></span><br><span class="line">    <span class="keyword">if</span> (mWindow.shouldCloseOnTouch(<span class="keyword">this</span>, event)) &#123;</span><br><span class="line">        finish();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Window -&gt; shouldCloseOnTouch</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldCloseOnTouch</span><span class="params">(Context context, MotionEvent event)</span> </span>&#123;</span><br><span class="line">    	<span class="comment">// isOutside判断点击的是不是在DecorView界面之外的情况，比如点击了Dialog弹窗之外。</span></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> isOutside =</span><br><span class="line">                event.getAction() == MotionEvent.ACTION_UP &amp;&amp; isOutOfBounds(context, event)</span><br><span class="line">                || event.getAction() == MotionEvent.ACTION_OUTSIDE;</span><br><span class="line">    	<span class="comment">//mCloseOnTouchOutside是否支持点击空白部分让Activity消失，peekDecorView()获取当前的DecorView实例</span></span><br><span class="line">        <span class="keyword">if</span> (mCloseOnTouchOutside &amp;&amp; peekDecorView() != <span class="keyword">null</span> &amp;&amp; isOutside) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ViewGroup处理事件的方法"><a href="#ViewGroup处理事件的方法" class="headerlink" title="ViewGroup处理事件的方法"></a>ViewGroup处理事件的方法</h2><ul>
+<li><p><strong>dispatchTouchEvent(MotionEvent ev)：</strong></p>
+<ol>
+<li>去判断是否需要拦截事件</li>
+<li>在当前ViewGroup中找到用户真正点击的View</li>
+<li>分发事件到View上</li>
+</ol>
+</li>
+<li><p><strong>onInterceptTouchEvent(MotionEvent ev):</strong>在事件分发过程中调用，返回true表示当前的VeiwGroup会拦截掉这个事件，反之不会拦截。</p>
+</li>
+<li><p><strong>onTouchEvent(MotionEvent ev)</strong></p>
+</li>
+</ul>
+<p><img src="/2024/08/15/%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6/2.png" alt></p>
+<p>安全策略：该View是否在顶层可与用户交互而不是被其他视图覆盖，或其他无法与用户交互的情况。</p>
+<h2 id="View处理事件"><a href="#View处理事件" class="headerlink" title="View处理事件"></a>View处理事件</h2><ul>
+<li><strong>dispatchTouchEvent(MotionEvent  ev)</strong></li>
+<li><strong>onTouchEvent(MotionEvent ev)</strong></li>
+</ul>
+<p><img src="/2024/08/15/%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6/3.png" alt></p>
+<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><p>新建一个demo:</p>
+<p>MainActivity.kt:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> String.<span class="title">logd</span><span class="params">(tag: <span class="type">String</span> = <span class="string">"HelloTouchEvent"</span>)</span></span>&#123;</span><br><span class="line">    Log.d(tag,<span class="keyword">this</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        setContentView(R.layout.activity_main)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">dispatchTouchEvent</span><span class="params">(ev: <span class="type">MotionEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="string">"dispatchTouchEvent:<span class="subst">$&#123;ev?.action&#125;</span>"</span>.logd()</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.dispatchTouchEvent(ev)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onTouchEvent</span><span class="params">(event: <span class="type">MotionEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="string">"onTouchEvent:<span class="subst">$&#123;event?.action&#125;</span>"</span>.logd()</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onTouchEvent(event)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>MyViewGroup.kt:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyViewGroup</span></span>(context: Context,attributes: AttributeSet?=<span class="literal">null</span>):FrameLayout(context,attributes) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">dispatchTouchEvent</span><span class="params">(ev: <span class="type">MotionEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="string">"MyViewGroup.dispatchTouchEvent"</span>.logd()</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.dispatchTouchEvent(ev)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onInterceptTouchEvent</span><span class="params">(ev: <span class="type">MotionEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="string">"MyViewGroup.onInterceptTouchEvent"</span>.logd()</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onInterceptTouchEvent(ev)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onTouchEvent</span><span class="params">(event: <span class="type">MotionEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="string">"MyViewGroup.onTouchEvent"</span>.logd()</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onTouchEvent(event)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>MyView.kt:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyView</span></span>(context: Context,attributeSet: AttributeSet? = <span class="literal">null</span>):View(context,attributeSet) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">dispatchTouchEvent</span><span class="params">(event: <span class="type">MotionEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="string">"MyView.dispatchTouchEvent"</span>.logd()</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.dispatchTouchEvent(event)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onTouchEvent</span><span class="params">(event: <span class="type">MotionEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="string">"MyView.onTouchEvent"</span>.logd()</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onTouchEvent(event)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>main_layout:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">com.hluck.hellotouchevent.MyViewGroup</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">tools:context</span>=<span class="string">".MainActivity"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">com.hluck.hellotouchevent.MyView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:background</span>=<span class="string">"@color/black"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"200dp"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"200dp"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">com.hluck.hellotouchevent.MyViewGroup</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>默认调用流程：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MainActivity:dispatchTouchEvent  --&gt; MyViewGroup:dispatchTouchEvent --&gt; （默认返回<span class="literal">false</span>）MyViewGroup:onInterceptTouchEvent --&gt; MyView:dispatchTouchEvent --&gt; MyView:onTouchEvent --&gt; MyViewGroup:onTouchEvent --&gt; MainActivity:onTouchEvent</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/08/15/%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6/4.png" alt></p>
+<p>同一个事件序列，如果子view(viewGroup)没有处理该事件（没有消费事件），那么后续事件就不再传递到子View中：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MainActivity:dispatchTouchEvent  --&gt;  MainActivity:onTouchEvent</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/08/15/%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6/5.png" alt></p>
+<p>修改MyViewGroup,拦截事件：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyViewGroup</span></span>(context: Context,attributes: AttributeSet?=<span class="literal">null</span>):FrameLayout(context,attributes) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">dispatchTouchEvent</span><span class="params">(ev: <span class="type">MotionEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="string">"MyViewGroup.dispatchTouchEvent"</span>.logd()</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.dispatchTouchEvent(ev)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onInterceptTouchEvent</span><span class="params">(ev: <span class="type">MotionEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="string">"MyViewGroup.onInterceptTouchEvent"</span>.logd()</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onTouchEvent</span><span class="params">(event: <span class="type">MotionEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        <span class="string">"MyViewGroup.onTouchEvent"</span>.logd()</span><br><span class="line">        <span class="keyword">when</span> (event?.action) &#123;</span><br><span class="line">            MotionEvent.ACTION_DOWN -&gt; &#123;</span><br><span class="line">                <span class="string">"MyViewGroup.onTouchEvent.ACTION_DOWN:按下"</span>.logd()</span><br><span class="line">            &#125;</span><br><span class="line">            MotionEvent.ACTION_MOVE -&gt; &#123;</span><br><span class="line">                <span class="string">"MyViewGroup.onTouchEvent.ACTION_MOVE：移动"</span>.logd()</span><br><span class="line">            &#125;</span><br><span class="line">            MotionEvent.ACTION_UP -&gt; &#123;</span><br><span class="line">                <span class="string">"MyViewGroup.onTouchEvent.ACTION_UP：抬起"</span>.logd()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//表示事件由MyViewGroup处理</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2024/08/15/%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6/6.png" alt></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/12/29/Android%E6%8E%A7%E4%BB%B6%E8%AF%A6%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1023,99 +1178,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://hluck.github.io/2022/10/27/Kotlin%20Flow%E5%85%A5%E9%97%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar5.jpg">
-      <meta itemprop="name" content="余一">
-      <meta itemprop="description" content="纸上得来终觉浅，绝知此事要躬行。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="余一">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/10/27/Kotlin%20Flow%E5%85%A5%E9%97%A8/" class="post-title-link" itemprop="url">Kotlin Flow入门</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-10-27 09:54:22" itemprop="dateCreated datePublished" datetime="2022-10-27T09:54:22+08:00">2022-10-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-10-30 13:20:28" itemprop="dateModified" datetime="2022-10-30T13:20:28+08:00">2022-10-30</time>
-              </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>5.3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Kotlin-Flow-入门篇"><a href="#Kotlin-Flow-入门篇" class="headerlink" title="Kotlin Flow(入门篇)"></a>Kotlin Flow(入门篇)</h1><p>文章摘自：<a href="https://mp.weixin.qq.com/s/TRr_isgU7VVVuJ9rOMZUhw" target="_blank" rel="noopener">Kotlin Flow响应式编程，基础知识入门-郭霖</a></p>
-<hr>
-<p>title: Kotlin和响应式编程<br>tag: Kotlin<br>top: 66</p>
-<hr>
-<p>响应式思维：</p>
-<p>​    比如说有一头小牛住在山脚下，山上有一个湖，小牛每天需要跑很远的路拎着水桶去湖边打水。</p>
-<p><img src="/2022/10/27/Kotlin%20Flow%E5%85%A5%E9%97%A8/1.png" alt></p>
-<p>​        每天要跑很远的路就算了，关键是这个湖还时不时会干枯掉，有时小牛到了湖边发现湖已经干了，就完全白跑了一趟。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/10/27/Kotlin%20Flow%E5%85%A5%E9%97%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1187,7 +1249,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-count">172</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1517,7 +1579,7 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">22:32</span>
+    <span title="站点阅读时长">22:38</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
